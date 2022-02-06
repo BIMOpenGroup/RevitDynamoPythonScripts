@@ -1,0 +1,1378 @@
+<Workspace Version="1.3.1.1736" X="-1242.73618372466" Y="355.840213908788" zoom="0.899637795146747" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="DraftingView" resolvedName="Revit.Elements.Views.DraftingView" assemblyName="RevitNodes.dll" />
+    <ClassMap partialName="Revit.Sheet" resolvedName="Revit.Elements.Views.Sheet" assemblyName="RevitNodes.dll" />
+    <ClassMap partialName="Revit.Elements.Views.Sheet" resolvedName="Revit.Elements.Views.Sheet" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <PythonNodeModels.PythonNode guid="da621fed-e311-49b4-b205-709d3c54945f" type="PythonNodeModels.PythonNode" nickname="PyS Get Revit Selection" x="2933.02412106058" y="532.564392013833" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('RevitServices')
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from Autodesk.Revit.ApplicationServices import Application
+
+reset = IN[0]
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+ids = uidoc.Selection.GetElementIds()
+
+idd = [str(i) for i in ids]
+
+if isinstance(idd, list) == True:
+	elems = [doc.GetElement(ElementId(int(i))) for i in idd]
+else:
+	elems = doc.GetElement(ElementId(int(idd)))
+
+OUT = elems
+</Script>
+    </PythonNodeModels.PythonNode>
+    <Prorubim.DS.Common.ForceChildrensEval guid="3f8863ea-3c3e-4c9d-ab8a-5761d4d92294" type="Prorubim.DS.Common.ForceChildrensEval" nickname="ForceChildrensEval" x="1209.23198400456" y="563.384948464616" isVisible="false" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </Prorubim.DS.Common.ForceChildrensEval>
+    <PythonNodeModels.PythonNode guid="a1ce2e91-bbdc-4225-b8cf-1df5f7f57d0e" type="PythonNodeModels.PythonNode" nickname="Tool.PlaceViewsOnSheets [STEAM NODES]" x="3683.05768818708" y="202.78752548856" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="4">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <PortInfo index="3" default="False" />
+      <Script>#python nodes in dynamo 1.2
+#proposed by Julien Benoit @jbenoit44 
+#http://aecuandme.wordpress.com/
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+# Import geometry conversion extension methods
+clr.ImportExtensions(Revit.GeometryConversion)
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+from System.Collections.Generic import *
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+uidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+
+sheets = []
+for i in IN[0]:
+	sheets.append(UnwrapElement(i))
+views=[]	
+for i in IN[1]:
+	views.append(UnwrapElement(i))
+points=[]	
+for i in IN[2]:
+	points.append(UnwrapElement(i).ToXyz())
+
+# Start Transaction
+TransactionManager.Instance.EnsureInTransaction(doc)
+viewp=[]
+for s in sheets:
+	for v,p in zip(views,points):
+		lid = v.ViewId
+		l = doc.GetElement(lid)
+		a=Viewport.Create(doc, s.Id, l.Id, p)
+		viewp.append(a)
+
+# End Transaction
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT=viewp</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="42b7a5e9-82f1-470e-a95d-c14a106202cf" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="4014.7977708141" y="206.013901859969" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="Viewports;" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <PythonNodeModels.PythonNode guid="54ef9273-5252-4fd0-89c2-e2ae4a1c82aa" type="PythonNodeModels.PythonNode" nickname="View.ViewPortBoxCenter [STEAM NODES]" x="2912.44411829714" y="699.303457872293" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>#python nodes in dynamo 1.0
+#proposed by Julien Benoit @jbenoit44 
+#http://aecuandme.wordpress.com/
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+# Import geometry conversion extension methods
+clr.ImportExtensions(Revit.GeometryConversion)
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+from System.Collections.Generic import *
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+uidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+
+elt = []
+for i in IN[0]:
+	elt.append(UnwrapElement(i))
+
+# Start Transaction
+TransactionManager.Instance.EnsureInTransaction(doc)
+loc=[]
+for v in elt:
+	loc.append(v.GetBoxCenter().ToPoint())
+
+# End Transaction
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT=loc</Script>
+    </PythonNodeModels.PythonNode>
+    <DSRevitNodesUI.Categories guid="9adcf4f5-aa59-403f-bfa2-12401a3e4e8a" type="DSRevitNodesUI.Categories" nickname="Categories" x="-2043.2739385922" y="569.72382411505" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" index="225:Sheets" />
+    <DSRevitNodesUI.ElementsOfCategory guid="9f01ee11-2c6c-4aed-8303-35561b21a6a3" type="DSRevitNodesUI.ElementsOfCategory" nickname="All Elements of Category" x="-1820.1980366679" y="571.376419257863" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true">
+      <PortInfo index="0" default="False" />
+    </DSRevitNodesUI.ElementsOfCategory>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="1d014e99-1a89-4cd0-ae94-0222cc844658" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.GetParameterValueByName" x="-292.089762250839" y="605.703273813284" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.Element.GetParameterValueByName@string">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="af350735-a80c-4c92-a56f-1491e28bf120" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-1530.25057918721" y="1078.37389121076" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;Номер листа&quot;;&#xA;&quot;Имя листа&quot;;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="b861585b-fa0e-4c29-8f07-f148bf47ad52" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.GetParameterValueByName" x="-282.159512313434" y="1058.66225953736" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.Element.GetParameterValueByName@string">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="6f12e15b-da34-41a0-8328-d1eb0aab51e3" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="153.605406738111" y="807.828475366819" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" CodeText="N+&quot; - &quot;+name;" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="8f50d40f-0d33-4295-9441-9deeb561e24f" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Flatten - sheets" x="2735.13776810618" y="-224.395300572935" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="BuiltIn" function="Flatten@var[]..[]">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <PythonNodeModels.PythonNode guid="33db573c-61a9-4ffd-a597-f720695fd8fe" type="PythonNodeModels.PythonNode" nickname="UI.Listview Data [DATA SHAPE]" x="703.62031542968" y="-136.601016995744" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="4">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <PortInfo index="3" default="False" />
+      <Script>#Copyright (c) mostafa el ayoubi ,  2016
+#Data-Shapes www.data-shapes.net , elayoubi.mostafa@gmail.com
+
+class listview():
+
+    def __init__(self,inputname,height):
+        self.inputname = inputname
+        self.height = height
+
+    def __setitem__(self, key, item):
+        self.__dict__[key] = item
+
+    def __getitem__(self, key):
+        return self.__dict__[key]
+
+    def __iter__(self):
+        return iter(self.__dict__)
+
+    def values(self):
+        return self.__dict__.values()
+
+    def keys(self):
+        return self.__dict__.keys()
+
+    def __repr__(self):
+        return 'UI.ListView input'
+        
+x = listview(IN[0],IN[3])
+
+if isinstance(IN[1],list):
+	in1 = IN[1]
+else:
+	in1 = [IN[1]]
+
+if isinstance(IN[2],list):
+	in2 = IN[2]
+else:
+	in2 = [IN[2]]
+
+for k,v in zip(in1,in2):
+	try:
+		x[str(k)] = v
+	except:
+		x[k.encode('utf-8').decode('utf-8')] = v
+
+
+OUT = x</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="bb2801ca-cf61-4457-a6ea-74fccd61cfce" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="104.997569737198" y="-240.001477472343" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="InputName : string = &quot;После этого выберете листы:&quot;;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="3e4870f1-8463-4021-b072-bfc28fd649dd" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="350.937582783483" y="45.5446167703868" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="Height : int = 400;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="afa7d09a-fec1-4a69-90c1-25e7ba57dd3a" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="368.278586991679" y="-46.7382759873731" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="Values;" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="dadf7b47-3848-4338-88a7-c83d1712272d" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="377.653111330032" y="-138.578101778786" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="Keys;" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="07bb247e-a2f2-4593-bb4a-6b2df20be973" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2568.81900860676" y="-220.282298658742" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="OUT[0];&#xA;OUT[1];" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <PythonNodeModels.PythonNode guid="13652764-a6ca-40df-b20e-ac14e58c11d7" type="PythonNodeModels.PythonNode" nickname="UI.MultipleInputForm ++ [DATA SHAPE]" x="2258.04323698248" y="-220.916327804013" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="5">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <PortInfo index="3" default="False" />
+      <PortInfo index="4" default="False" />
+      <Script>#Copyright (c) mostafa el ayoubi ,  2016
+#Data-Shapes www.data-shapes.net , elayoubi.mostafa@gmail.com
+	
+import clr
+try:
+	clr.AddReference('System.Windows.Forms')
+	clr.AddReference('System.Drawing')
+	
+	from System.Drawing import Point , Size , Graphics, Bitmap, Image, Font, FontStyle, Icon, Color, Region , Rectangle
+	from System.Windows.Forms import Application, DockStyle, Button, Form, Label, TrackBar , ToolTip, ColumnHeader, TextBox, CheckBox, FolderBrowserDialog, OpenFileDialog, DialogResult, ComboBox, FormBorderStyle, FormStartPosition, ListView, ListViewItem , SortOrder, Panel, ImageLayout, GroupBox, RadioButton, BorderStyle, PictureBox, PictureBoxSizeMode
+	from System.Collections.Generic import *
+	from System.Windows.Forms import View as vi
+	clr.AddReference('System')
+	from System import IntPtr
+	from System.ComponentModel import Container
+	
+	
+	import sys
+	pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
+	sys.path.append(pyt_path)
+	import os
+	
+	clr.AddReference('RevitAPIUI')
+	from  Autodesk.Revit.UI import Selection
+	from  Autodesk.Revit.UI.Selection import ISelectionFilter
+	
+	importcolorselection = 0
+	try:
+		from  Autodesk.Revit.UI import ColorSelectionDialog
+	except:
+		importcolorselection = 1
+	
+	clr.AddReference('RevitNodes')
+	import Revit
+	clr.ImportExtensions(Revit.Elements)
+	clr.ImportExtensions(Revit.GeometryConversion)
+	
+	clr.AddReference('RevitServices')
+	from RevitServices.Persistence import DocumentManager
+	doc = DocumentManager.Instance.CurrentDBDocument
+	uidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+
+	class selectionfilter(ISelectionFilter):
+		def __init__(self,category):
+			self.category = category
+		def AllowElement(self,element):
+			if element.Category.Name in [c.Name for c in self.category]:
+				return True
+			else:
+				return False
+		def AllowReference(reference,point):
+			return False
+		
+	class MultiTextBoxForm(Form):
+	
+	
+	    def __init__(self):
+	        self.Text = 'Копирование легенд между листами'
+	        self.output = []
+	        self.values = []
+	
+	    def setclose(self, sender, event):
+	    	cbindexread = 0
+	    	for f in self.output:
+	    		if f.GetType() == TextBox:
+	    			self.values.append(f.Text)
+	    		if f.GetType() == CheckBox:
+	    			self.values.append(f.Checked)
+	    		if f.GetType() == Button:
+	    			if f.Tag == None :
+	    				self.values.append(f.Text)
+	    			else:
+	    				self.values.append(f.Tag)
+	    		if f.GetType() == ComboBox:
+	    			key = f.Text
+	    			self.values.append(f.Tag[key])
+	    		if f.GetType() == mylistview:
+	    			self.values.append([f.Values[i.Text] for i in f.CheckedItems])
+	    		if f.GetType() == mytrackbar:
+	    			self.values.append(f.startval+f.Value*f.step)
+	    		if f.GetType() == mygroupbox:
+	    			key = [j.Text for j in f.Controls if j.Checked == True][0]
+	    			self.values.append(f.Tag[key])
+	    	self.Close()
+	
+	    def reset(self, sender, event):
+			pass
+	
+	    def openfile(self, sender, event):
+			ofd = OpenFileDialog()
+			dr = ofd.ShowDialog()
+			if dr == DialogResult.OK:
+				sender.Text = ofd.FileName
+	
+	    def opendirectory(self, sender, event):
+			fbd = FolderBrowserDialog()
+			dr = fbd.ShowDialog()
+			if dr == DialogResult.OK:
+				sender.Text = fbd.SelectedPath
+	
+	    def pickobjects(self, sender, event):
+			sel = uidoc.Selection.PickObjects(Selection.ObjectType.Element,'')
+			selelem = [doc.GetElement(s.ElementId) for s in sel]
+			sender.Tag = (selelem)
+
+	    def pickobject(self, sender, event):
+			sel = uidoc.Selection.PickObject(Selection.ObjectType.Element,'')
+			selelem = doc.GetElement(sel.ElementId) 
+			sender.Tag = (selelem)
+			
+	    def pickobjectsofcat(self, sender, event):
+			if isinstance(sender.Tag,list):	    
+				category = UnwrapElement(sender.Tag)
+			else:
+				category = [UnwrapElement(sender.Tag)]
+			selfilt = selectionfilter(category)
+			sel = uidoc.Selection.PickObjects(Selection.ObjectType.Element,selfilt,'Select %s' %(', '.join([c.Name for c in category])))
+			selelem = [doc.GetElement(s.ElementId) for s in sel]
+			sender.Tag = (selelem)
+
+	    def pickobjectofcat(self, sender, event):
+			if isinstance(sender.Tag,list):	    
+				category = UnwrapElement(sender.Tag)
+			else:
+				category = [UnwrapElement(sender.Tag)]
+			selfilt = selectionfilter(category)
+			sel = uidoc.Selection.PickObject(Selection.ObjectType.Element,selfilt,'Select %s' %(', '.join([c.Name for c in category])))
+			selelem = doc.GetElement(sel.ElementId) 
+			sender.Tag = (selelem)
+			
+	    def pickfaces(self, sender, event):
+			selface = uidoc.Selection.PickObjects(Selection.ObjectType.Face,'')
+			faces = [uidoc.Document.GetElement(s).GetGeometryObjectFromReference(s).ToProtoType(True) for s in selface]
+			sender.Tag = [i for f in faces for i in f]
+	
+	    def pickedges(self, sender, event):
+			seledge = uidoc.Selection.PickObjects(Selection.ObjectType.Edge,'')
+			edges = [uidoc.Document.GetElement(s).GetGeometryObjectFromReference(s).AsCurve().ToProtoType(True) for s in seledge]
+			sender.Tag = edges
+
+	    def colorpicker(self, sender, event):
+			dialog = ColorSelectionDialog()
+			selection = ColorSelectionDialog.Show(dialog)
+			selected = dialog.SelectedColor
+			sender.Tag = selected
+			sender.BackColor = Color.FromArgb(selected.Red,selected.Green,selected.Blue)
+			sender.ForeColor = Color.FromArgb(selected.Red,selected.Green,selected.Blue)
+	
+	    def topmost(self):
+			self.TopMost = True
+	
+	    def lvadd(self, sender, event):
+			sender.Tag = [i for i in sender.CheckedItems]
+			
+	    def scroll(self, sender, event):
+			parent = sender.Parent
+			child = parent.GetChildAtPoint(Point(0,5))
+			child.Text = str(sender.startval+sender.Value*sender.step)
+
+	
+	class mylistview(ListView):
+	
+		def __init__(self):
+			self.Values = []
+
+	class mytrackbar(TrackBar):
+	
+		def __init__(self,startval,step):
+			self.startval = startval
+			self.step = step
+			
+	class mygroupbox(GroupBox):
+	
+		def __init__(self):
+			self.Values = []
+	
+	#Form initialization
+	
+	form = MultiTextBoxForm()
+	form.topmost()
+	
+	
+	xlabel = 25
+	xinput = 20
+	y = 20
+	fields = []
+	error = 0
+	
+	#Description 
+	
+	if IN[3] != "":
+		des = Label()
+		des.Font = Font("Arial", 15,FontStyle.Bold)
+		des.Location = Point(xlabel,y)
+		des.AutoSize = True
+		des.MaximumSize = Size(300,0)
+		des.Text = IN[3]
+		form.Controls.Add(des)
+		y = des.Bottom + 15
+	
+	#Input form
+	
+	
+	if isinstance(IN[0],list):
+		inputtypes = IN[0]
+	else:
+		inputtypes = [IN[0]]
+	
+	for j in inputtypes:
+
+		label = Label()
+		label.Location = Point(xlabel,y+4)
+		label.AutoSize = True
+		label.MaximumSize = Size(120,0)
+		label.Text = j.inputname
+		form.Controls.Add(label)
+
+		if j.__class__.__name__ == 'dropdown':
+			cb = ComboBox()
+			cb.Location = Point(xinput,y)
+			cb.Width = 160
+			[cb.Items.Add(i) for i in j.keys() if not (i == 'inputname' or i == 'height')]
+			cb.Tag = j
+			form.Controls.Add(cb)
+			form.output.append(cb)
+			y = label.Bottom + 25
+		elif j.__class__.__name__ == 'listview':
+			lv = mylistview()
+			lv.Values = j
+			lv.CheckBoxes = True
+			lv.View = vi.List
+			lv.Sorting = SortOrder.Ascending
+			[lv.Items.Add(i) for i in j.keys() if not (i == 'inputname' or i == 'height')]
+			lv.Location = Point(xinput,y+50)
+			lv.Width = 495
+			lv.Height = j.height
+			lv.Scrollable = True
+			form.Controls.Add(lv)
+			form.output.append(lv)
+			y = lv.Bottom + 25
+		elif j.__class__.__name__ == 'uitext':
+			tb = TextBox()
+			tb.Text = j.defaultvalue
+			tb.Width = 160
+			tb.Location = Point(xinput,y)
+			form.Controls.Add(tb)
+			form.Controls.Add(label)
+			form.output.append(tb)
+			y = label.Bottom + 25
+		elif j.__class__.__name__ == 'uitextnote':
+			gb = GroupBox()
+			gb.Text = j.title
+			gb.Parent = form
+			gb.SendToBack()
+			gb.BackColor = Color.Transparent
+			gb.Location = Point(xlabel, y)
+			tn = Label()
+			tn.Location = Point(xlabel,18)
+			tn.AutoSize = True
+			tn.MaximumSize = Size(260,0)
+			tn.Text = j.textnote
+			tn.BringToFront()
+			gb.Controls.Add(tn)
+			gb.Size = Size(285, tn.Bottom-tn.Top+25)
+			y = gb.Bottom + 25
+		elif j.__class__.__name__ == 'uibool':
+			yn = CheckBox()
+			yn.Width = 150
+			yn.Location = Point(xinput,y)
+			yn.Text = j.booltext
+			yn.Checked = j.defaultvalue
+			form.Controls.Add(yn)
+			form.output.append(yn)
+			y = label.Bottom + 25
+		elif j.__class__.__name__ == 'uiradio':
+			yrb = 20
+			rbs = []
+			rbgroup = mygroupbox()
+			rbgroup.Width = 160
+			rbgroup.Location = Point(xinput,y)
+			rbgroup.Tag = j
+			for key in j.keys():
+				if key != 'inputname':
+					rb = RadioButton()
+					rb.Text = key 
+					rb.Width = 130
+					rb.Location = Point(20,yrb)
+					rbgroup.Controls.Add(rb)
+					ybot = rb.Bottom
+					yrb = ybot + 5					
+				else:
+					pass
+			rbgroup.Height = ybot +20
+			[rbgroup.Controls.Add(rb) for rb in rbs]
+			form.Controls.Add(rbgroup)
+			form.output.append(rbgroup)
+			y = rbgroup.Bottom + 25
+		elif j.__class__.__name__  == 'uifilepath':
+			fp = Button()
+			fp.Width = 160
+			fp.Text = j.defaultvalue
+			fp.Location = Point(xinput,y)
+			form.Controls.Add(fp)
+			fp.Click += form.openfile
+			form.output.append(fp)
+			y = label.Bottom + 25
+		elif j.__class__.__name__ == 'uidirectorypath':
+			dp = Button()
+			dp.Width = 160
+			dp.Text = j.defaultvalue
+			dp.Location = Point(xinput,y)
+			form.Controls.Add(dp)
+			dp.Click += form.opendirectory
+			form.output.append(dp)
+			y = label.Bottom + 30
+		elif j.__class__.__name__ == 'uiselectelements':
+			se = Button()
+			se.Width = 160
+			se.Text = j.buttontext
+			se.Location = Point(xinput,y)
+			form.Controls.Add(se)
+			if j.multi == False:
+				se.Click += form.pickobjects
+			else:
+				se.Click  += form.pickobject
+			form.output.append(se)
+			y = label.Bottom + 25
+		elif j.__class__.__name__ == 'uiselectelementsofcat':
+			sec = Button()
+			sec.Width = 160
+			sec.Text = j.buttontext
+			sec.Tag = j.category
+			sec.Location = Point(xinput,y)
+			form.Controls.Add(sec)
+			if j.multi == False:
+				sec.Click += form.pickobjectsofcat
+			else:
+				sec.Click += form.pickobjectofcat
+			form.output.append(sec)
+			y = label.Bottom + 25
+		elif j.__class__.__name__ == 'uiselectfaces':
+			sf = Button()
+			sf.Width = 160
+			sf.Text = j.buttontext
+			sf.Location = Point(xinput,y)
+			form.Controls.Add(sf)
+			sf.Click += form.pickfaces
+			form.output.append(sf)
+			y = label.Bottom + 25
+		elif j.__class__.__name__ == 'uiselectedges':
+			sed = Button()
+			sed.Width = 160
+			sed.Text = j.buttontext
+			sed.Location = Point(xinput,y)
+			form.Controls.Add(sed)
+			sed.Click += form.pickedges
+			form.output.append(sed)
+			y = label.Bottom + 25
+			
+		elif j.__class__.__name__ == 'uislider':
+			gb = Panel()
+			if j.defaultvalue == '':
+				defval = j.minimum
+			else:
+				defval = j.defaultvalue
+			sl = mytrackbar(j.minimum,j.step)
+			gb.Width = 160 
+			gb.Height = 40
+			sl.Minimum = 0
+			sl.Maximum = (j.maximum-j.minimum)/j.step
+			sl.Value = (defval - j.minimum) / j.step
+			sl.TickFrequency = (j.maximum-j.minimum)/j.step/10
+			gb.Location = Point(xinput,y)
+			sl.Location = Point(40,0)
+			sl.Width = 125
+			sl.Orientation = Vertical
+			gb.Controls.Add(sl)
+			form.output.append(sl)
+			displabel = Label()
+			displabel.Width = 50
+			displabel.Location = Point(0,5)
+			displabel.Text = str(defval)
+			displabel.BringToFront()
+			gb.Controls.Add(displabel)	
+			form.Controls.Add(gb)			
+			sl.Scroll += form.scroll
+			y = label.Bottom + 25
+		elif j.__class__.__name__ == 'uiimage':
+			pic = Image.FromFile(j.image)
+			im = PictureBox()
+			im.BorderStyle = BorderStyle.Fixed3D
+			ratio = (pic.Height)/(pic.Width)
+			h = float(pic.Height)
+			w = float(pic.Width)
+			ratio = h/w
+			im.Size = Size(285,285*ratio)
+			scaledimage = Bitmap(285,285*ratio)
+			gr = Graphics.FromImage(scaledimage)
+			gr.DrawImage(pic,0,0,285,285*ratio)
+			im.Image = pic
+			im.SizeMode = PictureBoxSizeMode.Zoom
+			form.Controls.Add(im)
+			im.Location = Point(25,y+25)
+			y = im.Bottom + 25;
+	
+		elif j.__class__.__name__ == 'uicolorpick' and importcolorselection == 0:
+			cp = Button()
+			cp.Width = 160
+			cp.Text = j.buttontext
+			cp.Location = Point(xinput,y)
+			form.Controls.Add(cp)
+			cp.Click += form.colorpicker
+			form.output.append(cp)
+			y = label.Bottom + 25			
+		elif j.__class__.__name__ == 'uicolorpick' and importcolorselection == 1:
+			importcolorselection = 2
+			
+	
+	#Adding validation button
+	
+	button = Button()
+	button.Text = IN[1]
+	button.Width = 160
+	button.Location = Point (150,y+60)
+	button.Click += form.setclose
+	form.Controls.Add(button)
+	form.MaximizeBox = False
+	form.MinimizeBox = False
+	form.FormBorderStyle = FormBorderStyle.FixedSingle
+	
+	#Adding Logo 
+	#default logo in case no input
+	
+	try:
+	#There won't be a default logo if your package folder is not the default one
+		deflogopath = os.getenv('APPDATA')+"\\Dynamo\Dynamo Revit\\1.2\packages\Data-Shapes\extra\\a.png"
+		if IN[4] == '':
+			ima = Image.FromFile(deflogopath)
+		else :
+			ima = IN[4]
+		
+		logo = Panel()
+		logo.Size = Size(100,100)
+		ratio = (ima.Height)/(ima.Width)
+		h = float(ima.Height)
+		w = float(ima.Width)
+		ratio = h/w
+		scaledimage = Bitmap(100,100*ratio)
+		gr = Graphics.FromImage(scaledimage)
+		gr.DrawImage(ima,0,0,100,100*ratio)
+		logo.BackgroundImage = scaledimage
+		logo.BackgroundImageLayout = ImageLayout.Center
+		form.Controls.Add(logo)
+		logo.Location = Point(20,y+20)
+		
+		#Setting icon 
+		if IN[4] == '':
+			bmp = Bitmap.FromFile(deflogopath)
+		else:
+			bmp = Bitmap(IN[4])
+		thumb = bmp.GetThumbnailImage(64, 64, bmp.GetThumbnailImageAbort,IntPtr.Zero)
+		thumb.MakeTransparent();
+		icon = Icon.FromHandle(thumb.GetHicon())
+		form.Icon = icon
+	except:
+		form.ShowIcon = False
+		
+
+	
+	form.Height = y + 180
+	form.Width = 550
+		
+	uiviews = uidoc.GetOpenUIViews()
+	activeviewid = doc.ActiveView.Id
+	activeUIView = [v for v in uiviews if v.ViewId == activeviewid][0]
+	rect = activeUIView.GetWindowRectangle()
+	form.StartPosition = FormStartPosition.Manual
+	form.Location = Point(rect.Left-7,rect.Top)
+	
+	if importcolorselection != 2:
+		Application.Run(form)
+		result = form.values
+		OUT = result,True
+	else:
+		OUT = ['ColorSelection input is only available With Revit 2017'] , False
+		
+except:
+	import traceback
+	OUT = traceback.format_exc() , "error"
+</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="89779803-56a5-4868-8aca-0b56cb77dd2c" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1535.34046084782" y="-44.3981070731085" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="Description_optional : string = &quot;В окне ревита выберите легенды, которые хотите растиражировать &quot;;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="2e5b7009-d5fa-43de-8c12-d9d420a091b5" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1771.33041401117" y="87.4096585945305" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="Logo_optional : var = false;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="9f654a88-f241-4b21-8567-eced81be556d" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1534.17294217694" y="-135.355931684928" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="ButtonText_optional : string = &quot;Копировать&quot;;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="6a71d88f-35c3-451d-a00a-f31bd0ce45ad" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1541.902880162" y="-224.950477081789" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="Inputs;" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <PythonNodeModels.PythonNode guid="d9a4b490-4c8d-4d30-86a6-e0b2cf6d5bfa" type="PythonNodeModels.PythonNode" nickname="Python Script" x="2256.73826658082" y="-612.009363357055" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="true" isPinned="false" inputcount="5">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <PortInfo index="3" default="False" />
+      <PortInfo index="4" default="False" />
+      <Script>#Copyright (c) mostafa el ayoubi ,  2016
+#Data-Shapes www.data-shapes.net , elayoubi.mostafa@gmail.com
+	
+import clr
+try:
+	clr.AddReference('System.Windows.Forms')
+	clr.AddReference('System.Drawing')
+	
+	from System.Drawing import Point , Size , Graphics, Bitmap, Image, Font, FontStyle, Icon, Color, Region , Rectangle
+	from System.Windows.Forms import Application, DockStyle, Button, Form, Label, TrackBar , ToolTip, ColumnHeader, TextBox, CheckBox, FolderBrowserDialog, OpenFileDialog, DialogResult, ComboBox, FormBorderStyle, FormStartPosition, ListView, ListViewItem , SortOrder, Panel, ImageLayout, GroupBox, RadioButton, BorderStyle, PictureBox, PictureBoxSizeMode
+	from System.Collections.Generic import *
+	from System.Windows.Forms import View as vi
+	clr.AddReference('System')
+	from System import IntPtr
+	from System.ComponentModel import Container
+	
+	
+	import sys
+	pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
+	sys.path.append(pyt_path)
+	import os
+	
+	clr.AddReference('RevitAPIUI')
+	from  Autodesk.Revit.UI import Selection
+	from  Autodesk.Revit.UI.Selection import ISelectionFilter
+	
+	importcolorselection = 0
+	try:
+		from  Autodesk.Revit.UI import ColorSelectionDialog
+	except:
+		importcolorselection = 1
+	
+	clr.AddReference('RevitNodes')
+	import Revit
+	clr.ImportExtensions(Revit.Elements)
+	clr.ImportExtensions(Revit.GeometryConversion)
+	
+	clr.AddReference('RevitServices')
+	from RevitServices.Persistence import DocumentManager
+	doc = DocumentManager.Instance.CurrentDBDocument
+	uidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+
+	class selectionfilter(ISelectionFilter):
+		def __init__(self,category):
+			self.category = category
+		def AllowElement(self,element):
+			if element.Category.Name in [c.Name for c in self.category]:
+				return True
+			else:
+				return False
+		def AllowReference(reference,point):
+			return False
+		
+	class MultiTextBoxForm(Form):
+	
+	
+	    def __init__(self):
+	        self.Text = 'Копирование легенд между листами'
+	        self.output = []
+	        self.values = []
+	
+	    def setclose(self, sender, event):
+	    	cbindexread = 0
+	    	for f in self.output:
+	    		if f.GetType() == TextBox:
+	    			self.values.append(f.Text)
+	    		if f.GetType() == CheckBox:
+	    			self.values.append(f.Checked)
+	    		if f.GetType() == Button:
+	    			if f.Tag == None :
+	    				self.values.append(f.Text)
+	    			else:
+	    				self.values.append(f.Tag)
+	    		if f.GetType() == ComboBox:
+	    			key = f.Text
+	    			self.values.append(f.Tag[key])
+	    		if f.GetType() == mylistview:
+	    			self.values.append([f.Values[i.Text] for i in f.CheckedItems])
+	    		if f.GetType() == mytrackbar:
+	    			self.values.append(f.startval+f.Value*f.step)
+	    		if f.GetType() == mygroupbox:
+	    			key = [j.Text for j in f.Controls if j.Checked == True][0]
+	    			self.values.append(f.Tag[key])
+	    	self.Close()
+	
+	    def reset(self, sender, event):
+			pass
+	
+	    def openfile(self, sender, event):
+			ofd = OpenFileDialog()
+			dr = ofd.ShowDialog()
+			if dr == DialogResult.OK:
+				sender.Text = ofd.FileName
+	
+	    def opendirectory(self, sender, event):
+			fbd = FolderBrowserDialog()
+			dr = fbd.ShowDialog()
+			if dr == DialogResult.OK:
+				sender.Text = fbd.SelectedPath
+	
+	    def pickobjects(self, sender, event):
+			sel = uidoc.Selection.PickObjects(Selection.ObjectType.Element,'')
+			selelem = [doc.GetElement(s.ElementId) for s in sel]
+			sender.Tag = (selelem)
+
+	    def pickobject(self, sender, event):
+			sel = uidoc.Selection.PickObject(Selection.ObjectType.Element,'')
+			selelem = doc.GetElement(sel.ElementId) 
+			sender.Tag = (selelem)
+			
+	    def pickobjectsofcat(self, sender, event):
+			if isinstance(sender.Tag,list):	    
+				category = UnwrapElement(sender.Tag)
+			else:
+				category = [UnwrapElement(sender.Tag)]
+			selfilt = selectionfilter(category)
+			sel = uidoc.Selection.PickObjects(Selection.ObjectType.Element,selfilt,'Select %s' %(', '.join([c.Name for c in category])))
+			selelem = [doc.GetElement(s.ElementId) for s in sel]
+			sender.Tag = (selelem)
+
+	    def pickobjectofcat(self, sender, event):
+			if isinstance(sender.Tag,list):	    
+				category = UnwrapElement(sender.Tag)
+			else:
+				category = [UnwrapElement(sender.Tag)]
+			selfilt = selectionfilter(category)
+			sel = uidoc.Selection.PickObject(Selection.ObjectType.Element,selfilt,'Select %s' %(', '.join([c.Name for c in category])))
+			selelem = doc.GetElement(sel.ElementId) 
+			sender.Tag = (selelem)
+			
+	    def pickfaces(self, sender, event):
+			selface = uidoc.Selection.PickObjects(Selection.ObjectType.Face,'')
+			faces = [uidoc.Document.GetElement(s).GetGeometryObjectFromReference(s).ToProtoType(True) for s in selface]
+			sender.Tag = [i for f in faces for i in f]
+	
+	    def pickedges(self, sender, event):
+			seledge = uidoc.Selection.PickObjects(Selection.ObjectType.Edge,'')
+			edges = [uidoc.Document.GetElement(s).GetGeometryObjectFromReference(s).AsCurve().ToProtoType(True) for s in seledge]
+			sender.Tag = edges
+
+	    def colorpicker(self, sender, event):
+			dialog = ColorSelectionDialog()
+			selection = ColorSelectionDialog.Show(dialog)
+			selected = dialog.SelectedColor
+			sender.Tag = selected
+			sender.BackColor = Color.FromArgb(selected.Red,selected.Green,selected.Blue)
+			sender.ForeColor = Color.FromArgb(selected.Red,selected.Green,selected.Blue)
+	
+	    def topmost(self):
+			self.TopMost = True
+	
+	    def lvadd(self, sender, event):
+			sender.Tag = [i for i in sender.CheckedItems]
+			
+	    def scroll(self, sender, event):
+			parent = sender.Parent
+			child = parent.GetChildAtPoint(Point(0,5))
+			child.Text = str(sender.startval+sender.Value*sender.step)
+
+	
+	class mylistview(ListView):
+	
+		def __init__(self):
+			self.Values = []
+
+	class mytrackbar(TrackBar):
+	
+		def __init__(self,startval,step):
+			self.startval = startval
+			self.step = step
+			
+	class mygroupbox(GroupBox):
+	
+		def __init__(self):
+			self.Values = []
+	
+	#Form initialization
+	
+	form = MultiTextBoxForm()
+	form.topmost()
+	
+	
+	xlabel = 25
+	xinput = 150
+	y = 10
+	fields = []
+	error = 0
+	
+	#Description 
+	
+	if IN[3] != "":
+		des = Label()
+		des.Font = Font("Arial", 15,FontStyle.Bold)
+		des.Location = Point(xlabel,y)
+		des.AutoSize = True
+		des.MaximumSize = Size(300,0)
+		des.Text = IN[3]
+		form.Controls.Add(des)
+		y = des.Bottom + 15
+	
+	#Input form
+	
+	
+	if isinstance(IN[0],list):
+		inputtypes = IN[0]
+	else:
+		inputtypes = [IN[0]]
+	
+	for j in inputtypes:
+
+		label = Label()
+		label.Location = Point(xlabel,y+4)
+		label.AutoSize = True
+		label.MaximumSize = Size(120,0)
+		label.Text = j.inputname
+		form.Controls.Add(label)
+
+		if j.__class__.__name__ == 'dropdown':
+			cb = ComboBox()
+			cb.Location = Point(xinput,y)
+			cb.Width = 160
+			[cb.Items.Add(i) for i in j.keys() if not (i == 'inputname' or i == 'height')]
+			cb.Tag = j
+			form.Controls.Add(cb)
+			form.output.append(cb)
+			y = label.Bottom + 25
+		elif j.__class__.__name__ == 'listview':
+			lv = mylistview()
+			lv.Values = j
+			lv.CheckBoxes = True
+			lv.View = vi.List
+			lv.Sorting = SortOrder.Ascending
+			[lv.Items.Add(i) for i in j.keys() if not (i == 'inputname' or i == 'height')]
+			lv.Location = Point(xinput,y)
+			lv.Width = 160
+			lv.Height = j.height
+			lv.Scrollable = True
+			form.Controls.Add(lv)
+			form.output.append(lv)
+			y = lv.Bottom + 25
+		elif j.__class__.__name__ == 'uitext':
+			tb = TextBox()
+			tb.Text = j.defaultvalue
+			tb.Width = 160
+			tb.Location = Point(xinput,y)
+			form.Controls.Add(tb)
+			form.Controls.Add(label)
+			form.output.append(tb)
+			y = label.Bottom + 25
+		elif j.__class__.__name__ == 'uitextnote':
+			gb = GroupBox()
+			gb.Text = j.title
+			gb.Parent = form
+			gb.SendToBack()
+			gb.BackColor = Color.Transparent
+			gb.Location = Point(xlabel, y)
+			tn = Label()
+			tn.Location = Point(xlabel,18)
+			tn.AutoSize = True
+			tn.MaximumSize = Size(260,0)
+			tn.Text = j.textnote
+			tn.BringToFront()
+			gb.Controls.Add(tn)
+			gb.Size = Size(285, tn.Bottom-tn.Top+25)
+			y = gb.Bottom + 25
+		elif j.__class__.__name__ == 'uibool':
+			yn = CheckBox()
+			yn.Width = 150
+			yn.Location = Point(xinput,y)
+			yn.Text = j.booltext
+			yn.Checked = j.defaultvalue
+			form.Controls.Add(yn)
+			form.output.append(yn)
+			y = label.Bottom + 25
+		elif j.__class__.__name__ == 'uiradio':
+			yrb = 20
+			rbs = []
+			rbgroup = mygroupbox()
+			rbgroup.Width = 160
+			rbgroup.Location = Point(xinput,y)
+			rbgroup.Tag = j
+			for key in j.keys():
+				if key != 'inputname':
+					rb = RadioButton()
+					rb.Text = key 
+					rb.Width = 130
+					rb.Location = Point(20,yrb)
+					rbgroup.Controls.Add(rb)
+					ybot = rb.Bottom
+					yrb = ybot + 5					
+				else:
+					pass
+			rbgroup.Height = ybot +20
+			[rbgroup.Controls.Add(rb) for rb in rbs]
+			form.Controls.Add(rbgroup)
+			form.output.append(rbgroup)
+			y = rbgroup.Bottom + 25
+		elif j.__class__.__name__  == 'uifilepath':
+			fp = Button()
+			fp.Width = 160
+			fp.Text = j.defaultvalue
+			fp.Location = Point(xinput,y)
+			form.Controls.Add(fp)
+			fp.Click += form.openfile
+			form.output.append(fp)
+			y = label.Bottom + 25
+		elif j.__class__.__name__ == 'uidirectorypath':
+			dp = Button()
+			dp.Width = 160
+			dp.Text = j.defaultvalue
+			dp.Location = Point(xinput,y)
+			form.Controls.Add(dp)
+			dp.Click += form.opendirectory
+			form.output.append(dp)
+			y = label.Bottom + 30
+		elif j.__class__.__name__ == 'uiselectelements':
+			se = Button()
+			se.Width = 160
+			se.Text = j.buttontext
+			se.Location = Point(xinput,y)
+			form.Controls.Add(se)
+			if j.multi == False:
+				se.Click += form.pickobjects
+			else:
+				se.Click  += form.pickobject
+			form.output.append(se)
+			y = label.Bottom + 25
+		elif j.__class__.__name__ == 'uiselectelementsofcat':
+			sec = Button()
+			sec.Width = 160
+			sec.Text = j.buttontext
+			sec.Tag = j.category
+			sec.Location = Point(xinput,y)
+			form.Controls.Add(sec)
+			if j.multi == False:
+				sec.Click += form.pickobjectsofcat
+			else:
+				sec.Click += form.pickobjectofcat
+			form.output.append(sec)
+			y = label.Bottom + 25
+		elif j.__class__.__name__ == 'uiselectfaces':
+			sf = Button()
+			sf.Width = 160
+			sf.Text = j.buttontext
+			sf.Location = Point(xinput,y)
+			form.Controls.Add(sf)
+			sf.Click += form.pickfaces
+			form.output.append(sf)
+			y = label.Bottom + 25
+		elif j.__class__.__name__ == 'uiselectedges':
+			sed = Button()
+			sed.Width = 160
+			sed.Text = j.buttontext
+			sed.Location = Point(xinput,y)
+			form.Controls.Add(sed)
+			sed.Click += form.pickedges
+			form.output.append(sed)
+			y = label.Bottom + 25
+			
+		elif j.__class__.__name__ == 'uislider':
+			gb = Panel()
+			if j.defaultvalue == '':
+				defval = j.minimum
+			else:
+				defval = j.defaultvalue
+			sl = mytrackbar(j.minimum,j.step)
+			gb.Width = 160
+			gb.Height = 40
+			sl.Minimum = 0
+			sl.Maximum = (j.maximum-j.minimum)/j.step
+			sl.Value = (defval - j.minimum) / j.step
+			sl.TickFrequency = (j.maximum-j.minimum)/j.step/10
+			gb.Location = Point(xinput,y)
+			sl.Location = Point(40,0)
+			sl.Width = 125
+			gb.Controls.Add(sl)
+			form.output.append(sl)
+			displabel = Label()
+			displabel.Width = 50
+			displabel.Location = Point(0,5)
+			displabel.Text = str(defval)
+			displabel.BringToFront()
+			gb.Controls.Add(displabel)	
+			form.Controls.Add(gb)			
+			sl.Scroll += form.scroll
+			y = label.Bottom + 25
+		elif j.__class__.__name__ == 'uiimage':
+			pic = Image.FromFile(j.image)
+			im = PictureBox()
+			im.BorderStyle = BorderStyle.Fixed3D
+			ratio = (pic.Height)/(pic.Width)
+			h = float(pic.Height)
+			w = float(pic.Width)
+			ratio = h/w
+			im.Size = Size(285,285*ratio)
+			scaledimage = Bitmap(285,285*ratio)
+			gr = Graphics.FromImage(scaledimage)
+			gr.DrawImage(pic,0,0,285,285*ratio)
+			im.Image = pic
+			im.SizeMode = PictureBoxSizeMode.Zoom
+			form.Controls.Add(im)
+			im.Location = Point(25,y+25)
+			y = im.Bottom + 25;
+	
+		elif j.__class__.__name__ == 'uicolorpick' and importcolorselection == 0:
+			cp = Button()
+			cp.Width = 160
+			cp.Text = j.buttontext
+			cp.Location = Point(xinput,y)
+			form.Controls.Add(cp)
+			cp.Click += form.colorpicker
+			form.output.append(cp)
+			y = label.Bottom + 25			
+		elif j.__class__.__name__ == 'uicolorpick' and importcolorselection == 1:
+			importcolorselection = 2
+			
+	
+	#Adding validation button
+	
+	button = Button()
+	button.Text = IN[1]
+	button.Width = 160
+	button.Location = Point (150,y+60)
+	button.Click += form.setclose
+	form.Controls.Add(button)
+	form.MaximizeBox = False
+	form.MinimizeBox = False
+	form.FormBorderStyle = FormBorderStyle.FixedSingle
+	
+	#Adding Logo 
+	#default logo in case no input
+	
+	try:
+	#There won't be a default logo if your package folder is not the default one
+		deflogopath = os.getenv('APPDATA')+"\\Dynamo\Dynamo Revit\\1.2\packages\Data-Shapes\extra\\a.png"
+		if IN[4] == '':
+			ima = Image.FromFile(deflogopath)
+		else :
+			ima = IN[4]
+		
+		logo = Panel()
+		logo.Size = Size(100,100)
+		ratio = (ima.Height)/(ima.Width)
+		h = float(ima.Height)
+		w = float(ima.Width)
+		ratio = h/w
+		scaledimage = Bitmap(100,100*ratio)
+		gr = Graphics.FromImage(scaledimage)
+		gr.DrawImage(ima,0,0,100,100*ratio)
+		logo.BackgroundImage = scaledimage
+		logo.BackgroundImageLayout = ImageLayout.Center
+		form.Controls.Add(logo)
+		logo.Location = Point(20,y+20)
+		
+		#Setting icon 
+		if IN[4] == '':
+			bmp = Bitmap.FromFile(deflogopath)
+		else:
+			bmp = Bitmap(IN[4])
+		thumb = bmp.GetThumbnailImage(64, 64, bmp.GetThumbnailImageAbort,IntPtr.Zero)
+		thumb.MakeTransparent();
+		icon = Icon.FromHandle(thumb.GetHicon())
+		form.Icon = icon
+	except:
+		form.ShowIcon = False
+		
+
+	
+	form.Height = y + 180
+	form.Width = 350
+		
+	uiviews = uidoc.GetOpenUIViews()
+	activeviewid = doc.ActiveView.Id
+	activeUIView = [v for v in uiviews if v.ViewId == activeviewid][0]
+	rect = activeUIView.GetWindowRectangle()
+	form.StartPosition = FormStartPosition.Manual
+	form.Location = Point(rect.Left-7,rect.Top)
+	
+	if importcolorselection != 2:
+		Application.Run(form)
+		result = form.values
+		OUT = result,True
+	else:
+		OUT = ['ColorSelection input is only available With Revit 2017'] , False
+		
+except:
+	import traceback
+	OUT = traceback.format_exc() , "error"
+</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="f6990cb3-fd62-4ee5-9b97-057a3b5c16b6" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.GetParameterValueByName" x="3712.08553339958" y="-372.736803808095" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.Element.GetParameterValueByName@string">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="4a35e10e-4ee0-4dda-9191-0ac6a475a424" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="3453.93530134939" y="-331.466105009643" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;Номер листа&quot;;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="a1e39ba8-409a-4aed-bfa0-96978b0ca18d" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="SortByFunction" x="-921.922020164875" y="626.727914158013" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="BuiltIn" function="SortByFunction@var[]..[],_FunctionObject">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="cbbad81c-5148-441e-8aab-a2921b75569b" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.GetParameterValueByName" x="-1257.25464875017" y="813.492654038769" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.Element.GetParameterValueByName@string">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="da621fed-e311-49b4-b205-709d3c54945f" start_index="0" end="54ef9273-5252-4fd0-89c2-e2ae4a1c82aa" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="da621fed-e311-49b4-b205-709d3c54945f" start_index="0" end="a1ce2e91-bbdc-4225-b8cf-1df5f7f57d0e" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="3f8863ea-3c3e-4c9d-ab8a-5761d4d92294" start_index="0" end="da621fed-e311-49b4-b205-709d3c54945f" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="3f8863ea-3c3e-4c9d-ab8a-5761d4d92294" start_index="0" end="13652764-a6ca-40df-b20e-ac14e58c11d7" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="3f8863ea-3c3e-4c9d-ab8a-5761d4d92294" start_index="0" end="d9a4b490-4c8d-4d30-86a6-e0b2cf6d5bfa" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="3f8863ea-3c3e-4c9d-ab8a-5761d4d92294" start_index="0" end="a1ce2e91-bbdc-4225-b8cf-1df5f7f57d0e" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a1ce2e91-bbdc-4225-b8cf-1df5f7f57d0e" start_index="0" end="42b7a5e9-82f1-470e-a95d-c14a106202cf" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="54ef9273-5252-4fd0-89c2-e2ae4a1c82aa" start_index="0" end="a1ce2e91-bbdc-4225-b8cf-1df5f7f57d0e" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9adcf4f5-aa59-403f-bfa2-12401a3e4e8a" start_index="0" end="9f01ee11-2c6c-4aed-8303-35561b21a6a3" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9f01ee11-2c6c-4aed-8303-35561b21a6a3" start_index="0" end="a1e39ba8-409a-4aed-bfa0-96978b0ca18d" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="1d014e99-1a89-4cd0-ae94-0222cc844658" start_index="0" end="6f12e15b-da34-41a0-8328-d1eb0aab51e3" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="af350735-a80c-4c92-a56f-1491e28bf120" start_index="0" end="1d014e99-1a89-4cd0-ae94-0222cc844658" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="af350735-a80c-4c92-a56f-1491e28bf120" start_index="0" end="cbbad81c-5148-441e-8aab-a2921b75569b" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="af350735-a80c-4c92-a56f-1491e28bf120" start_index="1" end="b861585b-fa0e-4c29-8f07-f148bf47ad52" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b861585b-fa0e-4c29-8f07-f148bf47ad52" start_index="0" end="6f12e15b-da34-41a0-8328-d1eb0aab51e3" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="6f12e15b-da34-41a0-8328-d1eb0aab51e3" start_index="0" end="dadf7b47-3848-4338-88a7-c83d1712272d" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="8f50d40f-0d33-4295-9441-9deeb561e24f" start_index="0" end="a1ce2e91-bbdc-4225-b8cf-1df5f7f57d0e" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="8f50d40f-0d33-4295-9441-9deeb561e24f" start_index="0" end="f6990cb3-fd62-4ee5-9b97-057a3b5c16b6" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="33db573c-61a9-4ffd-a597-f720695fd8fe" start_index="0" end="6a71d88f-35c3-451d-a00a-f31bd0ce45ad" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="bb2801ca-cf61-4457-a6ea-74fccd61cfce" start_index="0" end="33db573c-61a9-4ffd-a597-f720695fd8fe" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="3e4870f1-8463-4021-b072-bfc28fd649dd" start_index="0" end="33db573c-61a9-4ffd-a597-f720695fd8fe" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="afa7d09a-fec1-4a69-90c1-25e7ba57dd3a" start_index="0" end="33db573c-61a9-4ffd-a597-f720695fd8fe" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="dadf7b47-3848-4338-88a7-c83d1712272d" start_index="0" end="33db573c-61a9-4ffd-a597-f720695fd8fe" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="07bb247e-a2f2-4593-bb4a-6b2df20be973" start_index="0" end="8f50d40f-0d33-4295-9441-9deeb561e24f" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="13652764-a6ca-40df-b20e-ac14e58c11d7" start_index="0" end="07bb247e-a2f2-4593-bb4a-6b2df20be973" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="89779803-56a5-4868-8aca-0b56cb77dd2c" start_index="0" end="13652764-a6ca-40df-b20e-ac14e58c11d7" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="89779803-56a5-4868-8aca-0b56cb77dd2c" start_index="0" end="d9a4b490-4c8d-4d30-86a6-e0b2cf6d5bfa" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="2e5b7009-d5fa-43de-8c12-d9d420a091b5" start_index="0" end="13652764-a6ca-40df-b20e-ac14e58c11d7" end_index="4" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="2e5b7009-d5fa-43de-8c12-d9d420a091b5" start_index="0" end="d9a4b490-4c8d-4d30-86a6-e0b2cf6d5bfa" end_index="4" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9f654a88-f241-4b21-8567-eced81be556d" start_index="0" end="13652764-a6ca-40df-b20e-ac14e58c11d7" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9f654a88-f241-4b21-8567-eced81be556d" start_index="0" end="d9a4b490-4c8d-4d30-86a6-e0b2cf6d5bfa" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="6a71d88f-35c3-451d-a00a-f31bd0ce45ad" start_index="0" end="13652764-a6ca-40df-b20e-ac14e58c11d7" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="6a71d88f-35c3-451d-a00a-f31bd0ce45ad" start_index="0" end="d9a4b490-4c8d-4d30-86a6-e0b2cf6d5bfa" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4a35e10e-4ee0-4dda-9191-0ac6a475a424" start_index="0" end="f6990cb3-fd62-4ee5-9b97-057a3b5c16b6" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a1e39ba8-409a-4aed-bfa0-96978b0ca18d" start_index="0" end="1d014e99-1a89-4cd0-ae94-0222cc844658" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a1e39ba8-409a-4aed-bfa0-96978b0ca18d" start_index="0" end="b861585b-fa0e-4c29-8f07-f148bf47ad52" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a1e39ba8-409a-4aed-bfa0-96978b0ca18d" start_index="0" end="afa7d09a-fec1-4a69-90c1-25e7ba57dd3a" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="cbbad81c-5148-441e-8aab-a2921b75569b" start_index="0" end="a1e39ba8-409a-4aed-bfa0-96978b0ca18d" end_index="1" portType="0" />
+  </Connectors>
+  <Notes>
+    <Dynamo.Graph.Notes.NoteModel guid="40d8c728-4b86-4af3-b80f-272ef664a5e9" text="ВСЁ ОСТАЛЬНОЕ" x="-760.189673451109" y="-910.893259754426" />
+    <Dynamo.Graph.Notes.NoteModel guid="a81691bb-32b7-40f4-ab88-a4da77cbec02" text="ИТОГОВАЯ КОНСОЛИДАЦИЯ ДАННЫХ" x="-1103.18944031559" y="-858.654003808116" />
+    <Dynamo.Graph.Notes.NoteModel guid="3ddabd83-063c-49c8-a094-03641cf5dd78" text="НОДЫ РАБОТАЮЩИЕ С ДАННЫМИ" x="-952.327239420793" y="-1104.70194745879" />
+    <Dynamo.Graph.Notes.NoteModel guid="d7725932-93d5-45eb-b891-477a58fa110e" text="ДОПОЛНИТЕЛЬНЫЕ. Градации серово по важности, темнее - важнее" x="-1167.88390415862" y="-569.008525173146" />
+    <Dynamo.Graph.Notes.NoteModel guid="4740b23c-e8f0-47af-8dd6-3155b39b3ebd" text="ИТОГОВАЯ КОНСОЛИДАЦИЯ ДАННЫХ" x="-1569.56380441468" y="-861.212765002704" />
+    <Dynamo.Graph.Notes.NoteModel guid="79909ffb-bce6-403d-84d4-481cbccad54c" text="ИСПОЛНИТЕЛЬНЫЕ НОДЫ " x="-1568.96558796471" y="-1103.58753328612" />
+    <Dynamo.Graph.Notes.NoteModel guid="ca657dd7-28da-4c87-82a8-ce77bc362082" text="ЗАПАСНЫЕ" x="-1566.68317653351" y="-577.891567519029" />
+    <Dynamo.Graph.Notes.NoteModel guid="3939baeb-68c9-4650-9111-51c06d1e0383" text="ПРОВЕРОЧНЫЕ НОДЫ" x="-1558.68229774674" y="-1404.94096224489" />
+    <Dynamo.Graph.Notes.NoteModel guid="8f969c5c-b8ad-440d-8e9d-ff7108379d67" text="ПРОВЕРОЧНЫЕ НОДЫ" x="-1338.61345022545" y="-1406.05537641757" />
+    <Dynamo.Graph.Notes.NoteModel guid="fd1db571-696a-468f-b178-710b185bfe0a" text="ПЕРЕДАЁМ ИНФОРМАЦИЮ В РЕВИТ" x="-1074.15870499883" y="-1395.32428662033" />
+    <Dynamo.Graph.Notes.NoteModel guid="4acd7139-3c7b-4787-b7ad-1d529dac903d" text="ПЕРЕДАЁМ ИНФОРМАЦИЮ В РЕВИТ" x="-670.289532974363" y="-1406.11240208264" />
+    <Dynamo.Graph.Notes.NoteModel guid="13fbfad7-8dcb-4d75-aafe-1aea2e497c9b" text="ПЕРЕМЕННЫЕ ЗНАЧЕНИЯ" x="-1816.8558340204" y="-1406.65131892731" />
+    <Dynamo.Graph.Notes.NoteModel guid="b50f825d-4a8b-4eed-b0d9-2ec9974b40cf" text="ЭЛЕМЕНТЫ УПРАВЛЕНИЯ" x="-2037.83645059102" y="-1405.53690475464" />
+    <Dynamo.Graph.Notes.NoteModel guid="7ddf7fa8-b141-4b7d-af45-17b7bdf5f976" text="GUIDELINES" x="-445.974003552038" y="-1658.59491606905" />
+    <Dynamo.Graph.Notes.NoteModel guid="c9121290-8d78-449f-95b0-7b4a7c328d7d" text="GUIDELINES" x="-2374.83006617193" y="-1657.05096561174" />
+    <Dynamo.Graph.Notes.NoteModel guid="92cebb96-2421-4037-8b25-df3fa27215d3" text="ПОЛУЧАЕМ ДАННЫЕ ИЗ РЕВИТ" x="-2356.4092702629" y="-1396.77146747701" />
+  </Notes>
+  <Annotations>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="0748fa31-0200-4cfa-942e-45ecf16e46fc" annotationText="&lt;Нажмите здесь, чтобы изменить заголовок группы&gt;" left="1199.23198400456" top="519.384948464616" width="218" height="137" fontSize="14" InitialTop="563.384948464616" InitialHeight="123" TextblockHeight="34" backgrouund="#FFFFAA45">
+      <Models ModelGuid="3f8863ea-3c3e-4c9d-ab8a-5761d4d92294" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="f406835b-361a-46d8-bed7-b1b72466e537" annotationText="КЛЮЧЕВЫЕ МОМЕНТЫ РАБОТЫ" left="-1579.56380441468" top="-929.212765002704" width="722.37436409909" height="114.558761194588" fontSize="48" InitialTop="-861.212765002704" InitialHeight="142.558761194588" TextblockHeight="58" backgrouund="#FFFFAA45">
+      <Models ModelGuid="a81691bb-32b7-40f4-ab88-a4da77cbec02" />
+      <Models ModelGuid="4740b23c-e8f0-47af-8dd6-3155b39b3ebd" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="a658a41a-9a21-4a13-86a2-f6713c59b3d5" annotationText="ИСПОЛНИТЕЛЬНЫЕ НОДЫ (фильтрование, подбор, списки и т.д.)" left="-1578.96558796471" top="-1229.70194745879" width="854.638348543917" height="170.11441417267" fontSize="48" InitialTop="-1104.70194745879" InitialHeight="141.114414172674" TextblockHeight="115" backgrouund="#FFC1D676">
+      <Models ModelGuid="3ddabd83-063c-49c8-a094-03641cf5dd78" />
+      <Models ModelGuid="79909ffb-bce6-403d-84d4-481cbccad54c" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="d6ddf2f4-9188-47f7-86f2-d4e9588a20a7" annotationText="ЗАПАСНЫЕ ВАРИАНТЫ, ДОПОЛНИТЕЛЬНЫЕ ОПЦИИ" left="-1576.68317653351" top="-702.891567519029" width="668.79927237489" height="192.883042345883" fontSize="48" InitialTop="-577.891567519029" InitialHeight="148.883042345883" TextblockHeight="115" backgrouund="#FFB5B5B5">
+      <Models ModelGuid="d7725932-93d5-45eb-b891-477a58fa110e" />
+      <Models ModelGuid="ca657dd7-28da-4c87-82a8-ce77bc362082" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="5a423aba-af0c-479a-8aa7-d501c1c71fc9" annotationText="ПРОВЕРОЧНЫЕ НОДЫ" left="-1568.68229774674" top="-1531.05537641757" width="384.06884752129" height="170.11441417268" fontSize="48" InitialTop="-1406.05537641757" InitialHeight="141.114414172673" TextblockHeight="115" backgrouund="#FF71C6A8">
+      <Models ModelGuid="8f969c5c-b8ad-440d-8e9d-ff7108379d67" />
+      <Models ModelGuid="3939baeb-68c9-4650-9111-51c06d1e0383" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="40e1168a-a7fc-41f4-82a4-4dd329e1b51a" annotationText="ПЕРЕДАЁМ ИНФОРМАЦИЮ В РЕВИТ" left="-1084.15870499883" top="-1531.11240208264" width="646.869172024467" height="179.78811546231" fontSize="48" InitialTop="-1406.11240208264" InitialHeight="150.788115462315" TextblockHeight="115" backgrouund="#FF48B9FF">
+      <Models ModelGuid="4acd7139-3c7b-4787-b7ad-1d529dac903d" />
+      <Models ModelGuid="fd1db571-696a-468f-b178-710b185bfe0a" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="419d4b15-40a6-4d98-8f88-2c98f3910852" annotationText="ЭЛЕМЕНТЫ УПРАВЛЕНИЯ" left="-2047.83645059102" top="-1531.65131892731" width="401.98061657062" height="170.11441417267" fontSize="48" InitialTop="-1406.65131892731" InitialHeight="141.114414172673" TextblockHeight="115" backgrouund="#FFFF7BAC">
+      <Models ModelGuid="13fbfad7-8dcb-4d75-aafe-1aea2e497c9b" />
+      <Models ModelGuid="b50f825d-4a8b-4eed-b0d9-2ec9974b40cf" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="6bf29b9a-d131-4623-86f2-fdc87d3f3a5a" annotationText="ПРИМЕЧАНИЯ ПО ЦВЕТОВОЙ ГРУППИРОВКЕ" left="-2384.83006617193" top="-1783.59491606905" width="2032.85606261989" height="170.54395045731" fontSize="96" InitialTop="-1658.59491606905" InitialHeight="141.543950457314" TextblockHeight="115" backgrouund="#FFFFAA45">
+      <Models ModelGuid="c9121290-8d78-449f-95b0-7b4a7c328d7d" />
+      <Models ModelGuid="7ddf7fa8-b141-4b7d-af45-17b7bdf5f976" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="ef26dcbc-cc32-40fe-8277-a081ebd86386" annotationText="ПОЛУЧАЕМ ДАННЫЕ ИЗ РЕВИТ" left="-2366.4092702629" top="-1536.77146747701" width="214" height="184" fontSize="36" InitialTop="-1396.77146747701" InitialHeight="140" TextblockHeight="130" backgrouund="#FFB9F9E1">
+      <Models ModelGuid="92cebb96-2421-4037-8b25-df3fa27215d3" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="ef5f76d9-f86f-4d77-84fb-c2aa36f2b04d" annotationText="&lt;Нажмите здесь, чтобы изменить заголовок группы&gt;" left="-2053.2739385922" top="487.72382411505" width="417.0759019243" height="176.652595142813" fontSize="30" InitialTop="569.72382411505" InitialHeight="124.652595142813" TextblockHeight="72" backgrouund="#FFB9F9E1">
+      <Models ModelGuid="9adcf4f5-aa59-403f-bfa2-12401a3e4e8a" />
+      <Models ModelGuid="9f01ee11-2c6c-4aed-8303-35561b21a6a3" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="3c3666bb-91ab-4d95-8f9e-7403ddd548e2" annotationText="&lt;Нажмите здесь, чтобы изменить заголовок группы&gt;" left="-1540.25057918721" top="559.703273813284" width="1887.85598592532" height="621.670617397476" fontSize="30" InitialTop="605.703273813284" InitialHeight="605.670617397474" TextblockHeight="36" backgrouund="#FFC1D676">
+      <Models ModelGuid="1d014e99-1a89-4cd0-ae94-0222cc844658" />
+      <Models ModelGuid="af350735-a80c-4c92-a56f-1491e28bf120" />
+      <Models ModelGuid="b861585b-fa0e-4c29-8f07-f148bf47ad52" />
+      <Models ModelGuid="6f12e15b-da34-41a0-8328-d1eb0aab51e3" />
+      <Models ModelGuid="a1e39ba8-409a-4aed-bfa0-96978b0ca18d" />
+      <Models ModelGuid="cbbad81c-5148-441e-8aab-a2921b75569b" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="2afdb077-456b-4b31-ac48-519d6ad050eb" annotationText="&lt;Нажмите здесь, чтобы изменить заголовок группы&gt;" left="94.997569737198" top="-286.001477472343" width="819.622745692482" height="424.54609424273" fontSize="30" InitialTop="-240.001477472343" InitialHeight="408.54609424273" TextblockHeight="36" backgrouund="#FFC1D676">
+      <Models ModelGuid="33db573c-61a9-4ffd-a597-f720695fd8fe" />
+      <Models ModelGuid="bb2801ca-cf61-4457-a6ea-74fccd61cfce" />
+      <Models ModelGuid="3e4870f1-8463-4021-b072-bfc28fd649dd" />
+      <Models ModelGuid="afa7d09a-fec1-4a69-90c1-25e7ba57dd3a" />
+      <Models ModelGuid="dadf7b47-3848-4338-88a7-c83d1712272d" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="721db598-4d28-4601-b0a1-8765fd663338" annotationText="&lt;Нажмите здесь, чтобы изменить заголовок группы&gt;" left="1524.17294217694" top="-270.950477081789" width="1399.96482592924" height="451.360135676319" fontSize="30" InitialTop="-224.950477081789" InitialHeight="585.373710172538" TextblockHeight="36" backgrouund="#FFC1D676">
+      <Models ModelGuid="07bb247e-a2f2-4593-bb4a-6b2df20be973" />
+      <Models ModelGuid="13652764-a6ca-40df-b20e-ac14e58c11d7" />
+      <Models ModelGuid="89779803-56a5-4868-8aca-0b56cb77dd2c" />
+      <Models ModelGuid="2e5b7009-d5fa-43de-8c12-d9d420a091b5" />
+      <Models ModelGuid="9f654a88-f241-4b21-8567-eced81be556d" />
+      <Models ModelGuid="6a71d88f-35c3-451d-a00a-f31bd0ce45ad" />
+      <Models ModelGuid="8f50d40f-0d33-4295-9441-9deeb561e24f" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="09b6b6a8-62ad-4b0f-a430-ae4a14c6e80c" annotationText="" left="2902.44411829714" top="486.564392013833" width="288" height="305.73906585846" fontSize="30" InitialTop="532.564392013833" InitialHeight="123" TextblockHeight="36" backgrouund="#FFB9F9E1">
+      <Models ModelGuid="da621fed-e311-49b4-b205-709d3c54945f" />
+      <Models ModelGuid="54ef9273-5252-4fd0-89c2-e2ae4a1c82aa" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="6485bfa0-90b0-4fb9-b009-faedb8f33842" annotationText="&lt;Нажмите здесь, чтобы изменить заголовок группы&gt;" left="3443.93530134939" top="-454.736803808095" width="541.15023205019" height="216.270698798452" fontSize="30" InitialTop="-372.736803808095" InitialHeight="164.270698798452" TextblockHeight="72" backgrouund="#FF71C6A8">
+      <Models ModelGuid="f6990cb3-fd62-4ee5-9b97-057a3b5c16b6" />
+      <Models ModelGuid="4a35e10e-4ee0-4dda-9191-0ac6a475a424" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="4dbc8b5a-35d5-4371-a4dc-c3b74bd1f80a" annotationText="&lt;Нажмите здесь, чтобы изменить заголовок группы&gt;" left="3673.05768818708" top="120.78752548856" width="535.74008262702" height="253" fontSize="30" InitialTop="202.78752548856" InitialHeight="201" TextblockHeight="72" backgrouund="#FF48B9FF">
+      <Models ModelGuid="a1ce2e91-bbdc-4225-b8cf-1df5f7f57d0e" />
+      <Models ModelGuid="42b7a5e9-82f1-470e-a95d-c14a106202cf" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="Фоновый просмотр" eyeX="-87.4258804321289" eyeY="1939.92370605469" eyeZ="752.056579589844" lookX="82.4258804321289" lookY="-1928.92370605469" lookZ="-760.056579589844" upX="0.0893825963139534" upY="0.559192895889282" upZ="-0.824205100536346" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,83 @@
+<Workspace Version="1.3.1.1736" X="-412.287866963393" Y="-234.092973599113" zoom="1.29289109579114" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="dea2ce02-d245-43b2-b81f-c5d2d02b4db2" type="PythonNodeModels.PythonNode" nickname="Python Script" x="800.465815194902" y="295.60776917163" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import JoinType
+import Autodesk
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+doc = DocumentManager.Instance.CurrentDBDocument
+
+
+
+wall = UnwrapElement(IN[0])
+rezult = []
+"""
+for e in wall:
+	Autodesk.Revit.DB.WallUtils.DisallowWallJoinAtEnd(e, 0)
+	Autodesk.Revit.DB.WallUtils.DisallowWallJoinAtEnd(e, 1)
+	
+for e in wall:
+	Autodesk.Revit.DB.WallUtils.AllowWallJoinAtEnd(e, 0)
+	Autodesk.Revit.DB.WallUtils.AllowWallJoinAtEnd(e, 1)
+"""
+for wa in wall: 
+	wallc = wa.Location
+	TransactionManager.Instance.EnsureInTransaction(doc)
+	join1 = wallc.set_JoinType(0,JoinType.Miter)
+	join2 = wallc.set_JoinType(1,JoinType.Miter)
+	TransactionManager.Instance.TransactionTaskDone()
+	rezult.append(wallc)
+	
+OUT = rezult</Script>
+    </PythonNodeModels.PythonNode>
+    <Prorubim.DS.Common.ForceChildrensEval guid="37d7089e-eaa1-4601-8f5a-5803d8985aa6" type="Prorubim.DS.Common.ForceChildrensEval" nickname="ForceChildrensEval" x="239.146676589617" y="286.137229226821" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </Prorubim.DS.Common.ForceChildrensEval>
+    <PythonNodeModels.PythonNode guid="5c57daa9-03fa-43f7-a349-c44b262db45f" type="PythonNodeModels.PythonNode" nickname="PyS Get Revit Selection" x="490.351822063413" y="296.69372519046" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('RevitServices')
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from Autodesk.Revit.ApplicationServices import Application
+
+reset = IN[0]
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+ids = uidoc.Selection.GetElementIds()
+
+idd = [str(i) for i in ids]
+
+if isinstance(idd, list) == True:
+	elems = [doc.GetElement(ElementId(int(i))) for i in idd]
+else:
+	elems = doc.GetElement(ElementId(int(idd)))
+
+OUT = elems
+</Script>
+    </PythonNodeModels.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="37d7089e-eaa1-4601-8f5a-5803d8985aa6" start_index="0" end="5c57daa9-03fa-43f7-a349-c44b262db45f" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5c57daa9-03fa-43f7-a349-c44b262db45f" start_index="0" end="dea2ce02-d245-43b2-b81f-c5d2d02b4db2" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="74bd9d87-f257-430d-9ed0-b3cbc7467a7a" annotationText="&lt;Нажмите здесь, чтобы изменить заголовок группы&gt;" left="480.351822063413" top="236.69372519046" width="173" height="153" fontSize="14" InitialTop="296.69372519046" InitialHeight="123.554402029913" TextblockHeight="50" backgrouund="#FF71C6A8">
+      <Models ModelGuid="5c57daa9-03fa-43f7-a349-c44b262db45f" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="Фоновый просмотр" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

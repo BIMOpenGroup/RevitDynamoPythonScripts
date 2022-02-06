@@ -1,0 +1,6 @@
+﻿{	
+	"presets" : {		
+		"Wall Detach":{		
+		}
+	}
+}

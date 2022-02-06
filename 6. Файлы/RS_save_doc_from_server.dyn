@@ -1,0 +1,86 @@
+<Workspace Version="1.3.3.4651" X="5670.42917209192" Y="213.218106441674" zoom="0.854814126928625" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="False">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonStringNode guid="2c5b9e0a-c791-4f21-a93a-cbc1f440c83e" type="PythonNodeModels.PythonStringNode" nickname="Python Script From String" x="-5690.76009768388" y="209.27142678266" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="7">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <PortInfo index="3" default="False" />
+      <PortInfo index="4" default="False" />
+      <PortInfo index="5" default="False" />
+      <PortInfo index="6" default="False" />
+    </PythonNodeModels.PythonStringNode>
+    <PythonNodeModels.PythonNode guid="7000e271-7001-48b3-b4b2-fb5d5beab92f" type="PythonNodeModels.PythonNode" nickname="Find file and import it!" x="-6128.69593914017" y="208.717639805953" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <Script>import sys
+sys.path.append('C:\Program Files (x86)\IronPython 2.7\Lib')
+import codecs
+
+try:
+	filePath = IN[0]
+	with codecs.open(filePath, 'rb', "utf-8") as inf:
+		lines = inf.readlines()
+	OUT = ''.join(lines)
+except:
+	OUT = "No file"</Script>
+    </PythonNodeModels.PythonNode>
+    <CoreNodeModels.Input.Filename guid="a1ff69e8-b97d-4050-99f6-ebed0834fbac" type="CoreNodeModels.Input.Filename" nickname="Путь к файлу Python:" x="-6414.57470641684" y="223.724658367942" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <System.String>.\RS_save_doc_from_server.py</System.String>
+      <HintPath>C:\Users\alexb\OneDrive\Dyno\РАБОЧИЕ СКРИПТЫ\Z.Менеджмент\6. Файлы\RS_save_doc_from_server.py</HintPath>
+    </CoreNodeModels.Input.Filename>
+    <Prorubim.DS.Common.ForceChildrensEval guid="9993c67b-81e6-4d24-b76b-21e996182ee9" type="Prorubim.DS.Common.ForceChildrensEval" nickname="ForceChildrensEval" x="-6249.02850013425" y="365.818379907208" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </Prorubim.DS.Common.ForceChildrensEval>
+    <CoreNodeModels.Input.StringInput guid="49615b06-ec1d-43e1-b7de-cd31f7761127" type="CoreNodeModels.Input.StringInput" nickname="Server name:" x="-6301.3298140005" y="-289.054552479181" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>bim.mtrx.net.ru</System.String>
+      <System.String value="bim.mtrx.net.ru" />
+    </CoreNodeModels.Input.StringInput>
+    <CoreNodeModels.Input.StringInput guid="ff310fc8-ac9d-4bee-86f9-790c340e4bc3" type="CoreNodeModels.Input.StringInput" nickname="Project folder name:" x="-6305.67860669612" y="-221.31857145153" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>Ореховый</System.String>
+      <System.String value="Ореховый" />
+    </CoreNodeModels.Input.StringInput>
+    <CoreNodeModels.Input.Directory guid="4c6c5e8e-e8b5-47e6-abf3-2a0193f1602a" type="CoreNodeModels.Input.Directory" nickname="New Path:" x="-6332.97726668686" y="-141.283479558338" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>C:\test\RevitServer_backup</System.String>
+      <HintPath>C:\test\RevitServer_backup</HintPath>
+    </CoreNodeModels.Input.Directory>
+    <CoreNodeModels.Input.BoolSelector guid="a01dd086-98be-4a9c-b6cf-241335ee6a0f" type="CoreNodeModels.Input.BoolSelector" nickname="Копируем папки, или весь сервер:" x="-6398.84100750875" y="-55.1220056479216" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Boolean>True</System.Boolean>
+    </CoreNodeModels.Input.BoolSelector>
+    <CoreNodeModels.Input.StringInput guid="8a70c62f-fae0-421d-a35f-b7c8a3fba11c" type="CoreNodeModels.Input.StringInput" nickname="Foldersе (через запятую):" x="-6342.42413936697" y="22.1353519331103" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>КР</System.String>
+      <System.String value="КР" />
+    </CoreNodeModels.Input.StringInput>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="7000e271-7001-48b3-b4b2-fb5d5beab92f" start_index="0" end="2c5b9e0a-c791-4f21-a93a-cbc1f440c83e" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a1ff69e8-b97d-4050-99f6-ebed0834fbac" start_index="0" end="7000e271-7001-48b3-b4b2-fb5d5beab92f" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9993c67b-81e6-4d24-b76b-21e996182ee9" start_index="0" end="7000e271-7001-48b3-b4b2-fb5d5beab92f" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9993c67b-81e6-4d24-b76b-21e996182ee9" start_index="0" end="2c5b9e0a-c791-4f21-a93a-cbc1f440c83e" end_index="6" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="49615b06-ec1d-43e1-b7de-cd31f7761127" start_index="0" end="2c5b9e0a-c791-4f21-a93a-cbc1f440c83e" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="ff310fc8-ac9d-4bee-86f9-790c340e4bc3" start_index="0" end="2c5b9e0a-c791-4f21-a93a-cbc1f440c83e" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4c6c5e8e-e8b5-47e6-abf3-2a0193f1602a" start_index="0" end="2c5b9e0a-c791-4f21-a93a-cbc1f440c83e" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a01dd086-98be-4a9c-b6cf-241335ee6a0f" start_index="0" end="2c5b9e0a-c791-4f21-a93a-cbc1f440c83e" end_index="4" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="8a70c62f-fae0-421d-a35f-b7c8a3fba11c" start_index="0" end="2c5b9e0a-c791-4f21-a93a-cbc1f440c83e" end_index="5" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="ab810350-fdaf-45d6-8926-245b4c0e4618" annotationText="" left="-6424.57470641684" top="162.717639805953" width="914.81460873296" height="296.100740101255" fontSize="30" InitialTop="208.717639805953" InitialHeight="267.6457926004" TextblockHeight="36" backgrouund="#FFD4B6DB">
+      <Models ModelGuid="a1ff69e8-b97d-4050-99f6-ebed0834fbac" />
+      <Models ModelGuid="2c5b9e0a-c791-4f21-a93a-cbc1f440c83e" />
+      <Models ModelGuid="9993c67b-81e6-4d24-b76b-21e996182ee9" />
+      <Models ModelGuid="7000e271-7001-48b3-b4b2-fb5d5beab92f" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="36e549f0-6924-445d-ac8e-b5b53706c769" annotationText="ЕСЛИ НЕ СРАБАТЫВАЕТ значит ПЕРЕНАЗНАЧЕНО ВНУТРИ СКРИПТА" left="-6408.84100750875" top="-479.054552479181" width="269.62120730438" height="569.189904412291" fontSize="30" InitialTop="-289.054552479181" InitialHeight="485.622504227585" TextblockHeight="180" backgrouund="#FFFF7BAC">
+      <Models ModelGuid="49615b06-ec1d-43e1-b7de-cd31f7761127" />
+      <Models ModelGuid="ff310fc8-ac9d-4bee-86f9-790c340e4bc3" />
+      <Models ModelGuid="4c6c5e8e-e8b5-47e6-abf3-2a0193f1602a" />
+      <Models ModelGuid="a01dd086-98be-4a9c-b6cf-241335ee6a0f" />
+      <Models ModelGuid="8a70c62f-fae0-421d-a35f-b7c8a3fba11c" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="Фоновый просмотр" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,434 @@
+{
+  "Uuid": "3c9d0464-8643-5ffe-96e5-ab1769818209",
+  "IsCustomNode": false,
+  "Description": "",
+  "Name": "Стены.РазрешитьСоединение по типу",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [
+    {
+      "Id": "54187d9f2a9445069b871288144e2b00",
+      "Name": "Разрешить соединение",
+      "Type": "boolean",
+      "Value": "true",
+      "Description": "Выбор между значениями true и false."
+    }
+  ],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\nclr.AddReference('RevitServices')\nclr.AddReference('RevitAPI')\nfrom Autodesk.Revit.DB import *\nimport RevitServices\nfrom RevitServices.Persistence import DocumentManager\nfrom Autodesk.Revit.ApplicationServices import Application\nclr.AddReference('RevitAPIUI')\nfrom Autodesk.Revit.UI.Selection import ISelectionFilter, ObjectType\nclr.AddReference(\"RevitServices\")\nimport RevitServices\nfrom RevitServices.Persistence import DocumentManager\nfrom RevitServices.Transactions import TransactionManager\n\n\nclass CustomISelectionFilterList(ISelectionFilter):\n\tdef __init__(self):\n\t\tpass\n\tdef AllowElement(self, e):\n\t\tif e.Category.Id.IntegerValue == BuiltInCategory.OST_Walls.GetHashCode():\n\t\t\treturn True\n\t\telse:\n\t\t\treturn False\n\tdef AllowReference(self, ref):\n\t\treturn False\n\n#reset = IN[0]\n\ndoc = DocumentManager.Instance.CurrentDBDocument\nuidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\n\n\n#refs = uidoc.Selection.PickObjects(ObjectType.Element,CustomISelectionFilterList(), \"Выбрать элементы.\")\n#elems = [doc.GetElement(re.ElementId) for re in refs ]\n#rezult = []\n\nTransactionManager.Instance.EnsureInTransaction(doc)\nif IN[0]:\n\tfor wall in UnwrapElement(IN[1]):\n\t\tWallUtils.AllowWallJoinAtEnd(wall, 0)\n\t\tWallUtils.AllowWallJoinAtEnd(wall, 1)\n\"\"\"\n\tfor e in elems:\n\t\twallc = e.Location\n\t\tTransactionManager.Instance.EnsureInTransaction(doc)\n\t\tjoin1 = wallc.set_JoinType(0,JoinType.Miter)\n\t\tjoin2 = wallc.set_JoinType(1,JoinType.Miter)\n\t\tTransactionManager.Instance.TransactionTaskDone()\n\t\trezult.append(wallc)\nelse:\n\tfor e in elems:\n\t\twallc = e.Location\n\t\tTransactionManager.Instance.EnsureInTransaction(doc)\n\t\tjoin1 = wallc.set_JoinType(0,JoinType.Abut)\n\t\tjoin2 = wallc.set_JoinType(1,JoinType.Abut)\n\t\tTransactionManager.Instance.TransactionTaskDone()\n\t\trezult.append(wallc)\n\"\"\"\n\n\t\t\nTransactionManager.Instance.TransactionTaskDone()\t\n\"\"\"\nids = uidoc.Selection.GetElementIds()\n\nidd = [str(i) for i in ids]\n\nif isinstance(idd, list) == True:\n\telems = [doc.GetElement(ElementId(int(i))) for i in idd]\nelse:\n\telems = doc.GetElement(ElementId(int(idd)))\n\"\"\"\nOUT = len(IN[1])\n",
+      "VariableInputPorts": true,
+      "Id": "429f798716ee439892608e77d6e9e238",
+      "Inputs": [
+        {
+          "Id": "0aa9e2dd34d447eb98ecb57dfe630d36",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "dbd641073be04f46b54ba2ede3a34a47",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "8eb1fd1728b6426baa61f743dd8c334f",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение встроенного сценария IronPython."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": true,
+      "Id": "54187d9f2a9445069b871288144e2b00",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "a7b55429f22e4f1c954815fc9aa86f54",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выбор между значениями true и false."
+    },
+    {
+      "ConcreteType": "DSRevitNodesUI.WallTypes, DSRevitNodesUI",
+      "SelectedIndex": 103,
+      "SelectedString": "Тип 3 - АР_Наружные_Фасад_ГБ-200.Ут-120.От-10_лоджии_RAL 9003",
+      "NodeType": "ExtensionNode",
+      "Id": "7032862cfbf34f63823fc1ab7deeb476",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "89140006046e4d25b50f2a78ca0eb9d9",
+          "Name": "Wall Type",
+          "Description": "Выбрано Wall Type",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Все типы стен, доступные в документе."
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementsSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "209c3dcd-428c-43a8-b0b9-c131dbb66075-0051baa8",
+        "209c3dcd-428c-43a8-b0b9-c131dbb66075-0051bab5"
+      ],
+      "Id": "7d78709da1124740b090a0b9a48b7039",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "31b55a2e7ab04410a648fbe1bc2cf8f1",
+          "Name": "Elements",
+          "Description": "Выбранные элементы.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "b830d040e8bc4f1e922f1660da22e446",
+      "Inputs": [
+        {
+          "Id": "b1d8eed649974cefa0208d72eede3924",
+          "Name": "",
+          "Description": "Узел для оценки.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "fc91eaf526bc4985ba5c3ed859b1b0a6",
+          "Name": "",
+          "Description": "Просмотр содержимого.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Визуализация входного элемента узла."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\nclr.AddReference('RevitServices')\nclr.AddReference('RevitAPI')\nfrom Autodesk.Revit.DB import *\nimport RevitServices\nfrom RevitServices.Persistence import DocumentManager\nfrom Autodesk.Revit.ApplicationServices import Application\nclr.AddReference('RevitAPIUI')\nfrom Autodesk.Revit.UI.Selection import ISelectionFilter, ObjectType\nclr.AddReference(\"RevitServices\")\nimport RevitServices\nfrom RevitServices.Persistence import DocumentManager\nfrom RevitServices.Transactions import TransactionManager\n\n#reset = IN[0]\n\ndoc = DocumentManager.Instance.CurrentDBDocument\nuidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\ntype_id = UnwrapElement(IN[0]).Id.IntegerValue\n\nall_walls = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Walls).WhereElementIsNotElementType()\n\nfiltred_walls = [wall for wall in all_walls if wall.WallType.Id.IntegerValue == type_id]\n\nOUT = filtred_walls\n",
+      "VariableInputPorts": true,
+      "Id": "000e5a11102a43fa9c7d5dc85d068020",
+      "Inputs": [
+        {
+          "Id": "2b77a0f293554ee784866d9e1e950cf1",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "e7c2b3bd5b05472e9548c47320e5b285",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение встроенного сценария IronPython."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\nclr.AddReference('RevitServices')\nclr.AddReference('RevitAPI')\nfrom Autodesk.Revit.DB import *\nimport RevitServices\nfrom RevitServices.Persistence import DocumentManager\nfrom Autodesk.Revit.ApplicationServices import Application\nclr.AddReference('RevitAPIUI')\nfrom Autodesk.Revit.UI.Selection import ISelectionFilter, ObjectType\nclr.AddReference(\"RevitServices\")\nimport RevitServices\nfrom RevitServices.Persistence import DocumentManager\nfrom RevitServices.Transactions import TransactionManager\n\n#reset = IN[0]\n\ndoc = DocumentManager.Instance.CurrentDBDocument\nuidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\ntype_id = UnwrapElement(IN[0]).Id.IntegerValue\n\nall_walls = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Walls).WhereElementIsNotElementType()\n\nfiltred_walls = [wall for wall in all_walls if wall.WallType.Id.IntegerValue == type_id]\n\nOUT = filtred_walls\n",
+      "VariableInputPorts": true,
+      "Id": "9543fad45d584778a72ab169efa466cf",
+      "Inputs": [
+        {
+          "Id": "b138ec9914504fb4bd5a58ef7b29aa22",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "48561892fa93452e97346a62443d4a26",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение встроенного сценария IronPython."
+    },
+    {
+      "ConcreteType": "DSRevitNodesUI.WallTypes, DSRevitNodesUI",
+      "SelectedIndex": 106,
+      "SelectedString": "Тип 4 - АР_Наружные_Фасад_Ут-120.От-10_по монолиту_RAL 9003",
+      "NodeType": "ExtensionNode",
+      "Id": "75e0204e355e44528fa5f6f416d09d87",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "610234e37fe14879b44469a800a78230",
+          "Name": "Wall Type",
+          "Description": "Выбрано Wall Type",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Все типы стен, доступные в документе."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSVarArgFunction, DynamoCore",
+      "FunctionSignature": "DSCore.List.Join@var[]..[]",
+      "FunctionType": "VariableArgument",
+      "NodeType": "FunctionNode",
+      "Id": "ed2b6bb4e1f14b99939427fb8e2187a3",
+      "Inputs": [
+        {
+          "Id": "fbc809122aab49b19dcd0496530466a3",
+          "Name": "list0",
+          "Description": "Списки для объединения в один.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "6911c7d0f5db4f578fc8411032c92374",
+          "Name": "list1",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "9675c9631c43411087b03d14ae9f5a02",
+          "Name": "list",
+          "Description": "Объединенный список.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Объединение всех имеющихся списков в один.\n\nList.Join (lists: var[]..[]): var[]..[]"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "a7b55429f22e4f1c954815fc9aa86f54",
+      "End": "0aa9e2dd34d447eb98ecb57dfe630d36",
+      "Id": "4d74736b65e04749a52b55ab38cfbb09"
+    },
+    {
+      "Start": "89140006046e4d25b50f2a78ca0eb9d9",
+      "End": "2b77a0f293554ee784866d9e1e950cf1",
+      "Id": "36f41c78397149968a6964ac11ef23d2"
+    },
+    {
+      "Start": "31b55a2e7ab04410a648fbe1bc2cf8f1",
+      "End": "b1d8eed649974cefa0208d72eede3924",
+      "Id": "cbb4f8f410a5443984b055690d80d93e"
+    },
+    {
+      "Start": "e7c2b3bd5b05472e9548c47320e5b285",
+      "End": "6911c7d0f5db4f578fc8411032c92374",
+      "Id": "2b91d09e95354f84912884d3d537f0e9"
+    },
+    {
+      "Start": "48561892fa93452e97346a62443d4a26",
+      "End": "fbc809122aab49b19dcd0496530466a3",
+      "Id": "ba7e579ac4d64ef2b6ed811b0a6d40b2"
+    },
+    {
+      "Start": "610234e37fe14879b44469a800a78230",
+      "End": "b138ec9914504fb4bd5a58ef7b29aa22",
+      "Id": "8dfe1cf72a4a48c09008fd4e6935f48c"
+    },
+    {
+      "Start": "9675c9631c43411087b03d14ae9f5a02",
+      "End": "dbd641073be04f46b54ba2ede3a34a47",
+      "Id": "178ba794ebfc4d13b89cb6749702be3c"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Фоновый просмотр",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python",
+        "Id": "429f798716ee439892608e77d6e9e238",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1704.3053762844697,
+        "Y": -363.75710368454645
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Разрешить соединение",
+        "Id": "54187d9f2a9445069b871288144e2b00",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1351.6529938433364,
+        "Y": -454.61174554493982
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Wall Types",
+        "Id": "7032862cfbf34f63823fc1ab7deeb476",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 499.84045984885165,
+        "Y": -24.1333556399411
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Model Elements",
+        "Id": "7d78709da1124740b090a0b9a48b7039",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 236.41061015279058,
+        "Y": -754.79941456157053
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Watch",
+        "Id": "b830d040e8bc4f1e922f1660da22e446",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 547.24679693003611,
+        "Y": -808.771270615561
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "walls by type collector",
+        "Id": "000e5a11102a43fa9c7d5dc85d068020",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1075.9023839686711,
+        "Y": -25.903950156239347
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "walls by type collector",
+        "Id": "9543fad45d584778a72ab169efa466cf",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1070.3811114144405,
+        "Y": -447.68396971091181
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Wall Types",
+        "Id": "75e0204e355e44528fa5f6f416d09d87",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 494.31918729462245,
+        "Y": -445.91337519461365
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.Join",
+        "Id": "ed2b6bb4e1f14b99939427fb8e2187a3",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1446.3714657467092,
+        "Y": -250.6358426260494
+      }
+    ],
+    "Annotations": [],
+    "X": -435.29431048375864,
+    "Y": 333.32670955018529,
+    "Zoom": 0.58077495019561221
+  }
+}

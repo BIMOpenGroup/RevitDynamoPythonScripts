@@ -1,0 +1,76 @@
+<Workspace Version="1.3.3.4651" X="1233.94386538973" Y="-1538.98470169986" zoom="0.863038262720927" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="0e4af332-b582-406d-8029-a2ceb709d2ab" type="PythonNodeModels.PythonNode" nickname="SelectLinkedElements and CreateParts" x="-1019.36219184608" y="1911.47382045587" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="2">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <Script>import clr
+clr.AddReference("System")
+from System.Collections.Generic import List
+
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import PartUtils, LinkElementId
+
+clr.AddReference("RevitServices")
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+
+link = UnwrapElement(IN[0])
+el_ref = UnwrapElement(IN[1])
+
+LinkDoc = link.GetLinkDocument()
+
+Lel_id = [r1.LinkedElementId for r1 in el_ref]
+eList = List[LinkElementId]()
+[eList.Add(LinkElementId(link.Id,e)) for e in Lel_id if PartUtils.IsValidForCreateParts(doc,LinkElementId(link.Id,e))]
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+PartUtils.CreateParts(doc,eList)
+TransactionManager.Instance.ForceCloseTransaction()
+
+partsid = [PartUtils.GetAssociatedParts(doc, e, True, True) for e in eList]
+parts = [doc.GetElement(i) for id in partsid for i in id]
+
+OUT = parts</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Nodes.DSModelElementSelection guid="76be700b-b47f-4d16-a2ed-b41cf4c1c711" type="Dynamo.Nodes.DSModelElementSelection" nickname="Select Link file " x="-1552.62196673356" y="1911.76945980831" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="true">
+      <instance id="29b2e107-5c48-4935-8834-2718205ff4a4-000317bc" />
+    </Dynamo.Nodes.DSModelElementSelection>
+    <PythonNodeModels.PythonNode guid="b3cf4ad7-18c1-4a94-a165-77c704831da5" type="PythonNodeModels.PythonNode" nickname="get link elem. ref." x="-1290.17808259943" y="2028.46685110507" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+
+clr.AddReference("RevitAPIUI")
+from  Autodesk.Revit.UI import Selection
+
+clr.AddReference("RevitServices")
+from RevitServices.Persistence import DocumentManager
+
+#doc = DocumentManager.Instance.CurrentDBDocument
+uidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+
+sel1 = uidoc.Selection
+ot2 = Selection.ObjectType.LinkedElement
+el_ref = UnwrapElement(sel1.PickObjects(ot2, "Select the linked elements and press Finish."))
+
+
+OUT = el_ref</Script>
+    </PythonNodeModels.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="76be700b-b47f-4d16-a2ed-b41cf4c1c711" start_index="0" end="0e4af332-b582-406d-8029-a2ceb709d2ab" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="76be700b-b47f-4d16-a2ed-b41cf4c1c711" start_index="0" end="b3cf4ad7-18c1-4a94-a165-77c704831da5" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b3cf4ad7-18c1-4a94-a165-77c704831da5" start_index="0" end="0e4af332-b582-406d-8029-a2ceb709d2ab" end_index="1" portType="0" />
+  </Connectors>
+  <Notes>
+    <Dynamo.Graph.Notes.NoteModel guid="af53a185-c71d-4cf5-b15c-d00cdf971d91" text="ВСЁ ОСТАЛЬНОЕ" x="-1276.49909460617" y="1378.31088524629" />
+  </Notes>
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Фоновый просмотр" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

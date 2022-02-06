@@ -1,0 +1,171 @@
+<Workspace Version="1.3.0.875" X="553.507524355652" Y="-347.879652196799" zoom="0.653754614054969" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="False">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Autodesk.Curve" resolvedName="Autodesk.DesignScript.Geometry.Curve" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="SketchPlane" resolvedName="Revit.Elements.SketchPlane" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <PythonNodeModels.PythonNode guid="79f4a6bc-1d43-4dd2-b0c8-cfe6e59f5319" type="PythonNodeModels.PythonNode" nickname="RoomSeparator.FromCurve" x="1458.44098197723" y="698.112637076488" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="3">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.GeometryConversion)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+curves = UnwrapElement(IN[0])
+sketchplane = UnwrapElement(IN[1])
+view = UnwrapElement(IN[2])
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+curvearray = CurveArray()
+for curve in curves:
+	curvearray.Append(curve.ToRevitType())
+doccreation = doc.Create
+separatorarray = doccreation.NewRoomBoundaryLines(sketchplane, curvearray, view)
+TransactionManager.Instance.TransactionTaskDone()
+
+elementlist = list()
+for item in separatorarray:
+	elementlist.append(item)
+OUT = elementlist</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="92ccb7a8-4dec-438a-933f-4f763fa1e800" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Element.Level" x="-626.878500558116" y="1519.0999327124" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true">
+      <PortInfo index="0" default="False" />
+      <ID value="23a94b80-4bd0-436f-a1b1-f77654b4428c" />
+      <Name value="Element.Level" />
+      <Description value="Gets an element's level" />
+      <Inputs>
+        <Input value="element" />
+      </Inputs>
+      <Outputs>
+        <Output value="level" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Prorubim.DS.Common.ForceChildrensEval guid="bf0edd80-3530-4d3f-9575-73862847f3ca" type="Prorubim.DS.Common.ForceChildrensEval" nickname="ForceChildrensEval" x="-2348.01679580466" y="1505.43332113048" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </Prorubim.DS.Common.ForceChildrensEval>
+    <PythonNodeModels.PythonNode guid="8a3871da-1c0a-4421-9627-64b446a42ec2" type="PythonNodeModels.PythonNode" nickname="PyS Get Revit Selection" x="-2084.28999560975" y="1504.56131672243" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('RevitServices')
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from Autodesk.Revit.ApplicationServices import Application
+
+reset = IN[0]
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+ids = uidoc.Selection.GetElementIds()
+
+idd = [str(i) for i in ids]
+
+if isinstance(idd, list) == True:
+	elems = [doc.GetElement(ElementId(int(i))) for i in idd]
+else:
+	elems = doc.GetElement(ElementId(int(idd)))
+
+OUT = elems
+</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="4c187d8f-e98b-468f-bd58-7eca317e4acb" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Level.Plane" x="-57.0418570993224" y="1363.83732053923" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true">
+      <PortInfo index="0" default="False" />
+      <ID value="cbe6db5e-3248-46ff-87e4-b620a1abf252" />
+      <Name value="Level.Plane" />
+      <Description value="Retrieves the plane of a given level" />
+      <Inputs>
+        <Input value="level" />
+      </Inputs>
+      <Outputs>
+        <Output value="plane" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <PythonNodeModels.PythonNode guid="4a910f07-8001-4adf-9cf1-fec961b92a84" type="PythonNodeModels.PythonNode" nickname="Python Script" x="-29.3628781070437" y="1727.66814829529" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>#Copyright(c) 2016, Dimitar Venkov
+# @5devene, dimitar.ven@gmail.com
+
+import clr
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+doc = DocumentManager.Instance.CurrentDBDocument
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+OUT = doc.ActiveView.ToDSType(True)</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="871d72c9-b2cc-48de-b664-65783dae3e5e" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-334.350576541464" y="1714.20979671521" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="refresh:bool = true;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="9cdda1fe-204f-4646-9e1e-f67d87d6db50" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="SketchPlane.ByPlane" x="476.796003815842" y="1423.23080650331" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.SketchPlane.ByPlane@Autodesk.DesignScript.Geometry.Plane">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="f394be67-9527-4eb8-863b-abdf7daeb7bd" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.Geometry" x="-1802.27315129817" y="1069.89060145653" isVisible="false" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.Element.Geometry">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="0130f36d-7b70-41f9-b148-eee30d47359c" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Geometry.Intersect" x="-414.664433684132" y="1068.59643652281" isVisible="true" isUpstreamVisible="true" lacing="Longest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Geometry.Intersect@Autodesk.DesignScript.Geometry.Geometry">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="103fe50f-1ee6-4afb-9488-402abd01d024" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Surface.PerimeterCurves" x="-51.45045824471" y="1061.44318312888" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Surface.PerimeterCurves">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="38e83fd9-9130-4c32-a110-604bd6495fc7" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Plane.ByOriginNormal" x="-774.253500544648" y="1275.04668624562" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Plane.ByOriginNormal@Autodesk.DesignScript.Geometry.Point,Autodesk.DesignScript.Geometry.Vector">
+      <PortInfo index="0" default="True" />
+      <PortInfo index="1" default="True" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="0f6b2bd3-3f7d-4b92-9f1f-99691ae1a97a" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="BoundingBox.ByGeometry" x="-1357.18465704946" y="1270.15050143659" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.BoundingBox.ByGeometry@Autodesk.DesignScript.Geometry.Geometry[]">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="f9fda9ee-554e-42e1-a0c1-f3ddc7e60211" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="BoundingBox.MinPoint" x="-1042.16967430188" y="1273.52789672922" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.BoundingBox.MinPoint">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="0c984d8b-2926-40d0-a412-bf2fb45d5808" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Curve.PullOntoPlane" x="823.730110592151" y="716.415202779403" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Curve.PullOntoPlane@Autodesk.DesignScript.Geometry.Plane">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="92ccb7a8-4dec-438a-933f-4f763fa1e800" start_index="0" end="4c187d8f-e98b-468f-bd58-7eca317e4acb" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="bf0edd80-3530-4d3f-9575-73862847f3ca" start_index="0" end="8a3871da-1c0a-4421-9627-64b446a42ec2" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="8a3871da-1c0a-4421-9627-64b446a42ec2" start_index="0" end="f394be67-9527-4eb8-863b-abdf7daeb7bd" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4c187d8f-e98b-468f-bd58-7eca317e4acb" start_index="0" end="9cdda1fe-204f-4646-9e1e-f67d87d6db50" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4c187d8f-e98b-468f-bd58-7eca317e4acb" start_index="0" end="0c984d8b-2926-40d0-a412-bf2fb45d5808" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4a910f07-8001-4adf-9cf1-fec961b92a84" start_index="0" end="92ccb7a8-4dec-438a-933f-4f763fa1e800" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4a910f07-8001-4adf-9cf1-fec961b92a84" start_index="0" end="79f4a6bc-1d43-4dd2-b0c8-cfe6e59f5319" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="871d72c9-b2cc-48de-b664-65783dae3e5e" start_index="0" end="4a910f07-8001-4adf-9cf1-fec961b92a84" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9cdda1fe-204f-4646-9e1e-f67d87d6db50" start_index="0" end="79f4a6bc-1d43-4dd2-b0c8-cfe6e59f5319" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f394be67-9527-4eb8-863b-abdf7daeb7bd" start_index="0" end="0130f36d-7b70-41f9-b148-eee30d47359c" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f394be67-9527-4eb8-863b-abdf7daeb7bd" start_index="0" end="0f6b2bd3-3f7d-4b92-9f1f-99691ae1a97a" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0130f36d-7b70-41f9-b148-eee30d47359c" start_index="0" end="103fe50f-1ee6-4afb-9488-402abd01d024" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="103fe50f-1ee6-4afb-9488-402abd01d024" start_index="0" end="0c984d8b-2926-40d0-a412-bf2fb45d5808" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="38e83fd9-9130-4c32-a110-604bd6495fc7" start_index="0" end="0130f36d-7b70-41f9-b148-eee30d47359c" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0f6b2bd3-3f7d-4b92-9f1f-99691ae1a97a" start_index="0" end="f9fda9ee-554e-42e1-a0c1-f3ddc7e60211" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f9fda9ee-554e-42e1-a0c1-f3ddc7e60211" start_index="0" end="38e83fd9-9130-4c32-a110-604bd6495fc7" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0c984d8b-2926-40d0-a412-bf2fb45d5808" start_index="0" end="79f4a6bc-1d43-4dd2-b0c8-cfe6e59f5319" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="59bf259c-c14f-4437-9a7f-8bda945286e2" annotationText="Get Revit Selection:" left="-2358.01679580466" top="1474.56131672243" width="436.72680019491" height="123.87200440805" fontSize="14" InitialTop="1504.56131672243" InitialHeight="125.406750628563" TextblockHeight="20" backgrouund="#FF71C6A8">
+      <Models ModelGuid="bf0edd80-3530-4d3f-9575-73862847f3ca" />
+      <Models ModelGuid="8a3871da-1c0a-4421-9627-64b446a42ec2" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="Фоновый просмотр" eyeX="-17821.787109375" eyeY="13839.5029296875" eyeZ="7582.16015625" lookX="6836.78076171875" lookY="-9839.5029296875" lookZ="-13599.7109375" upX="0.157296776771545" upY="0.936672210693359" upZ="-0.312894433736801" />
+  </Cameras>
+</Workspace>

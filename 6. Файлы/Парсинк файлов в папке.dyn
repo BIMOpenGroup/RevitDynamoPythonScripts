@@ -1,0 +1,458 @@
+{
+  "Uuid": "3c9d0464-8643-5ffe-96e5-ab1769818209",
+  "IsCustomNode": false,
+  "Description": "",
+  "Name": "Парсинк файлов в папке",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [
+    {
+      "Id": "0acb44984781475286d6b6eb7c56449c",
+      "Name": "Directory Path",
+      "Type": "string",
+      "Value": "C:\\code\\git\\bimreport\\BimReport.bundle\\Contents\\N2020\\Images",
+      "Description": "Позволяет выбрать папку в системе и получить путь к ней"
+    },
+    {
+      "Id": "5354b390116247e6b1d3173504c6768f",
+      "Name": "folder to",
+      "Type": "string",
+      "Value": "C:\\test",
+      "Description": "Позволяет выбрать папку в системе и получить путь к ней"
+    },
+    {
+      "Id": "03de022300ea42dcaefca40639f3e325",
+      "Name": "Directory Path",
+      "Type": "string",
+      "Value": "C:\\code\\git\\bimreport\\BimReport.bundle\\Contents\\N2021\\Images",
+      "Description": "Позволяет выбрать папку в системе и получить путь к ней"
+    }
+  ],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import sys\r\nsys.path.append('C:\\Program Files (x86)\\IronPython 2.7\\Lib')\r\nimport os\r\nimport glob\r\n\r\nto_folder = IN[0]\r\nto_file = IN[1]\r\n\r\ndir = IN[2]\r\npfix = IN[3]\r\n\r\nnames = os.listdir(dir)\r\n#folder_and_names = glob.glob(\"\\\\*.*\")\r\nfolder_and_names = glob.glob(dir+\"\\\\*.*\")\r\n\r\n#file = open('C:\\\\test\\\\text.txt', 'w')\r\n\r\nfile = open(to_folder+\"\\\\\"+to_file, 'w')\r\n\r\nfor name, f_name in zip(names, folder_and_names):\r\n\tfile.write(\"<File Id='{}' DiskId='1' Source='{}'/>\\n\".format(pfix+name, f_name))\r\n#\tfile.write(name + '\\n') \"Shepherd {} is {} years old.\".format(shepherd, age)\r\n\r\nfile.close()\r\n\r\nOUT = folder_and_names",
+      "Engine": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "0f041a5c198646fcbedb47c73ed6479e",
+      "Inputs": [
+        {
+          "Id": "45711527fd034bca802cfe46e3e43f6a",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "fe3a4f9b62494a478dcdb9ddf26c159a",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "3f030e74037246be96a2ceddbb84100e",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "294836668400433eaa3111418e2ebc62",
+          "Name": "IN[3]",
+          "Description": "Input #3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "9f8969626efe490ea0995f4933932e62",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение встроенного сценария IronPython."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.Directory, CoreNodeModels",
+      "HintPath": "C:\\code\\git\\bimreport\\BimReport.bundle\\Contents\\N2020\\Images",
+      "InputValue": "C:\\code\\git\\bimreport\\BimReport.bundle\\Contents\\N2020\\Images",
+      "NodeType": "ExtensionNode",
+      "Id": "0acb44984781475286d6b6eb7c56449c",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "2951e91b83e54b23b5b4b41d56bf2ea4",
+          "Name": "",
+          "Description": "Directory",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Позволяет выбрать папку в системе и получить путь к ней"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "N21",
+      "Id": "f5bbac384c8641298c59464f8d31412d",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "d8adc17621dc4138b71eb4c6c7073271",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Создание строки."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "setup.txt",
+      "Id": "8ccd4082ad3344758fe949a3fde6cb55",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "8d818953428e40d1a4464c3b3bfb36ae",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Создание строки."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.Directory, CoreNodeModels",
+      "HintPath": "C:\\test",
+      "InputValue": "C:\\test",
+      "NodeType": "ExtensionNode",
+      "Id": "5354b390116247e6b1d3173504c6768f",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f653daa0c10a462dbd4491f533b4ca9a",
+          "Name": "",
+          "Description": "Directory",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Позволяет выбрать папку в системе и получить путь к ней"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.Directory, CoreNodeModels",
+      "HintPath": "C:\\code\\git\\bimreport\\BimReport.bundle\\Contents\\N2021\\Images",
+      "InputValue": "C:\\code\\git\\bimreport\\BimReport.bundle\\Contents\\N2021\\Images",
+      "NodeType": "ExtensionNode",
+      "Id": "03de022300ea42dcaefca40639f3e325",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "5b07f8b661724ca99130d36d3d5bd3e1",
+          "Name": "",
+          "Description": "Directory",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Позволяет выбрать папку в системе и получить путь к ней"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "fix+name;",
+      "Id": "85dcf2f910424e95a637620441050455",
+      "Inputs": [
+        {
+          "Id": "61cf1cd3241b417caa8e4c6bfed84d34",
+          "Name": "fix",
+          "Description": "fix",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "903b9d07bf35491aa5358a80ffb1859a",
+          "Name": "name",
+          "Description": "name",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "321a309cc782441d86c729d3b29d44dd",
+          "Name": "",
+          "Description": "Значение выражения в строке 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import sys\r\nsys.path.append('C:\\Program Files (x86)\\IronPython 2.7\\Lib')\r\nimport os\r\nimport glob\r\n\r\nto_folder = IN[0]\r\nto_file = IN[1]\r\n\r\ndir = IN[2]\r\npfix = IN[3]\r\n\r\nnames = os.listdir(dir)\r\n#folder_and_names = glob.glob(\"\\\\*.*\")\r\nfolder_and_names = glob.glob(dir+\"\\\\*.*\")\r\n\r\n#file = open('C:\\\\test\\\\text.txt', 'w')\r\n\r\nfile = open(to_folder+\"\\\\\"+to_file, 'w')\r\n\r\nfor name, f_name in zip(names, folder_and_names):\r\n\tfile.write(\"<File Id='{}' DiskId='1' Source='{}'/>\\n\".format(pfix+name, f_name))\r\n#\tfile.write(name + '\\n') \"Shepherd {} is {} years old.\".format(shepherd, age)\r\n\r\nfile.close()\r\n\r\nOUT = folder_and_names",
+      "Engine": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "f9c368dd0ce64f9ea7ac75f136252f48",
+      "Inputs": [
+        {
+          "Id": "6e518f20f103425684f597853175025d",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "bf621a2f86f2455da722a358f803596a",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "1548aafe36ef42bf96a4ce738c6fd6ad",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "cd3ce70cda4641b8b3e12d37e323f151",
+          "Name": "IN[3]",
+          "Description": "Input #3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "d0422afca97b4fce858802164f15368c",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение встроенного сценария IronPython."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "d8adc17621dc4138b71eb4c6c7073271",
+      "End": "294836668400433eaa3111418e2ebc62",
+      "Id": "6b3da8200011402d942b7f69db5ad003"
+    },
+    {
+      "Start": "d8adc17621dc4138b71eb4c6c7073271",
+      "End": "61cf1cd3241b417caa8e4c6bfed84d34",
+      "Id": "10a1fb4a2dda4a4bab69c0749ac22274"
+    },
+    {
+      "Start": "d8adc17621dc4138b71eb4c6c7073271",
+      "End": "cd3ce70cda4641b8b3e12d37e323f151",
+      "Id": "f49380b08b5f447e80ea53b74db47694"
+    },
+    {
+      "Start": "8d818953428e40d1a4464c3b3bfb36ae",
+      "End": "903b9d07bf35491aa5358a80ffb1859a",
+      "Id": "10bc6809b1e7477db68bf0cddf57cb5e"
+    },
+    {
+      "Start": "f653daa0c10a462dbd4491f533b4ca9a",
+      "End": "45711527fd034bca802cfe46e3e43f6a",
+      "Id": "639f7802e56e41a1af5731c6bd0c334c"
+    },
+    {
+      "Start": "f653daa0c10a462dbd4491f533b4ca9a",
+      "End": "6e518f20f103425684f597853175025d",
+      "Id": "72c4e7d635d144c696f93f68900d8357"
+    },
+    {
+      "Start": "5b07f8b661724ca99130d36d3d5bd3e1",
+      "End": "3f030e74037246be96a2ceddbb84100e",
+      "Id": "fb2fac38363645a7a0984b1bd29ff47f"
+    },
+    {
+      "Start": "5b07f8b661724ca99130d36d3d5bd3e1",
+      "End": "1548aafe36ef42bf96a4ce738c6fd6ad",
+      "Id": "dd8312fc97d947ef8689fd8900b69c12"
+    },
+    {
+      "Start": "321a309cc782441d86c729d3b29d44dd",
+      "End": "fe3a4f9b62494a478dcdb9ddf26c159a",
+      "Id": "b53dbade07b849659cbef372580cd88d"
+    },
+    {
+      "Start": "321a309cc782441d86c729d3b29d44dd",
+      "End": "bf621a2f86f2455da722a358f803596a",
+      "Id": "4e7c829f42af4cc287dd220aa4da672d"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.7.0.9206",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Фоновый просмотр",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "0f041a5c198646fcbedb47c73ed6479e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Парсер локальной папки",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": -2330.2341388585523,
+        "Y": -1585.0920939836506
+      },
+      {
+        "Id": "0acb44984781475286d6b6eb7c56449c",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Name": "Directory Path",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": -3153.1794801430169,
+        "Y": -1508.7647434719854
+      },
+      {
+        "Id": "f5bbac384c8641298c59464f8d31412d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Name_prifix",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": -3097.9301059994586,
+        "Y": -1289.180827061881
+      },
+      {
+        "Id": "8ccd4082ad3344758fe949a3fde6cb55",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "file name",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": -3092.7120567196339,
+        "Y": -1223.1697323033034
+      },
+      {
+        "Id": "5354b390116247e6b1d3173504c6768f",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Name": "folder to",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": -2740.924980994489,
+        "Y": -1716.5251954737776
+      },
+      {
+        "Id": "03de022300ea42dcaefca40639f3e325",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Name": "Directory Path",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": -3155.3097213400119,
+        "Y": -1412.9993935857178
+      },
+      {
+        "Id": "85dcf2f910424e95a637620441050455",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Code Block",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": -2815.5389029502294,
+        "Y": -1606.8165081935663
+      },
+      {
+        "Id": "f9c368dd0ce64f9ea7ac75f136252f48",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Парсер локальной папки",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": -2322.8734209199147,
+        "Y": -1291.4989643252129
+      }
+    ],
+    "Annotations": [],
+    "X": 547.69739256818536,
+    "Y": 650.606016208953,
+    "Zoom": 0.084193663404126123
+  }
+}

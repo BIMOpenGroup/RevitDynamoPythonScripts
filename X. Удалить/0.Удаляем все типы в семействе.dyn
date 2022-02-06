@@ -1,0 +1,45 @@
+<Workspace Version="1.3.3.4111" X="1493.58081573426" Y="-1037.83816088829" zoom="0.641044277252933" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="ed0c1638-78e0-4d3a-9b50-4b1c67a219e6" type="PythonNodeModels.PythonNode" nickname="Python Script" x="-1987.63535074425" y="2336.92775218132" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import FamilyManager
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+if doc.IsFamilyDocument:
+	for ftype in doc.FamilyManager.Types:
+		try:
+			doc.FamilyManager.DeleteCurrentType()
+		except:
+			pass
+	out = "Типы семейств удалены"
+else:
+	out = "Необходимо запустить внутри редактора семейств"
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = out</Script>
+    </PythonNodeModels.PythonNode>
+  </Elements>
+  <Connectors />
+  <Notes />
+  <Annotations>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="142be3f3-84f0-4f2d-8822-5d95a0bc4125" annotationText="" left="-1997.63535074425" top="2290.92775218132" width="144" height="139" fontSize="30" InitialTop="2336.92775218132" InitialHeight="123" TextblockHeight="36" backgrouund="#FFC1D676">
+      <Models ModelGuid="ed0c1638-78e0-4d3a-9b50-4b1c67a219e6" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="Фоновый просмотр" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,663 @@
+{
+  "Uuid": "3c9d0464-8643-5ffe-96e5-ab1769818209",
+  "IsCustomNode": false,
+  "Description": "",
+  "Name": "D2_Navisworks_True_BatchUtility",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [
+    {
+      "Id": "8f25a30b2d864094a238f8f49a82a4e1",
+      "Name": "Выполнить",
+      "Type": "boolean",
+      "Value": "true",
+      "Description": "Выбор между значениями true и false."
+    },
+    {
+      "Id": "a36332a3d54e4c209cc86ebc9d2603f4",
+      "Name": "Directory Path",
+      "Type": "string",
+      "Value": "C:\\Users\\a.babinov\\Pictures\\ЖК Река\\СВОДНИК_2019.12.18",
+      "Description": "Позволяет выбрать папку в системе и получить путь к ней"
+    },
+    {
+      "Id": "0cbec4ad846544e0a3200bc313880b7a",
+      "Name": "Directory Path to nwc Export",
+      "Type": "string",
+      "Value": "C:\\test",
+      "Description": "Позволяет выбрать папку в системе и получить путь к ней"
+    }
+  ],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": true,
+      "Id": "8f25a30b2d864094a238f8f49a82a4e1",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "ba99e63177d4475ead6ea7b9a56e2b34",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выбор между значениями true и false."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# -*- coding: utf-8 -*- \n#-----------------------Импоорт библиотек----------------------\nimport clr\nimport sys \nsys.path.append(\"C:\\Program Files (x86)\\IronPython 2.7\\Lib\")\nimport os\n\nimport System\nfrom System import Guid\nfrom System import DateTime\nfrom System.IO import StreamReader\nfrom System.Net import WebRequest\nclr.AddReference('System.Web.Extensions')\nfrom System.Web.Script.Serialization import JavaScriptSerializer \n\nclr.AddReference('RevitAPI')\nimport Autodesk\nfrom Autodesk.Revit.DB import ModelPathUtils\n\n\nclr.AddReference(\"RevitServices\")\nimport RevitServices\nfrom RevitServices.Persistence import DocumentManager\n\n#-----------------------ФУНКЦИИ----------------------\n\ndef rsnrequest(p_f_n):\n\trequest = WebRequest.Create(\"http://\"+revit_server_name+\"/RevitServerAdminRESTService\"+version+\"/AdminRESTService.svc/|\"+p_f_n+\"|/contents\")\t\t\n\trequest.Method = \"GET\"\n\trequest.Headers.Add(\"User-Name\", os.environ.get('USERNAME'))\n\trequest.Headers.Add(\"User-Machine-Name\", os.getenv('COMPUTERNAME', 'defaultValue'))\n\trequest.Headers.Add(\"Operation-GUID\", Guid.NewGuid().ToString())\n\n\trsp = request.GetResponse()\n\tstream_reader = StreamReader(rsp.GetResponseStream())\n\n\tjsonData = stream_reader.ReadToEnd()\n\n\tjson = JavaScriptSerializer().DeserializeObject(jsonData)\n\treturn (json)\n\ndef folderpars(folderslist):\n\tfor fldr in folderslist:\n\t\tpath = \"rsn://\"+revit_server_name+\"/\"+project_folder_name+\"/\"+fldr+\"/\"\n\t\tjson = rsnrequest(project_folder_name+\"|\"+fldr)\t\n\t\tmodel_data_list = json[\"Models\"]\n\t\tmodels_list = [m[\"Name\"] for m in model_data_list]\n\t\tfor model in models_list:\n\t\t\t#mpatch = ModelPathUtils.ConvertUserVisiblePathToModelPath(path+model)\n\t\t\tpaths.append(path+model)\n\treturn paths\t\n\n#-----------------------АПИ ПАРАМЕТРЫ----------------------\n\napp = DocumentManager.Instance.CurrentUIApplication.Application\nversion = app.VersionNumber\n\n#-----------------------РАБОЧИЕ ПАРАМЕТРЫ----------------------\n\nrevit_server_name = IN[0] #Server name: \""\nfolder_path = IN[1] #Project folder name: \"Павлова 38\"\n\npaths = []\n\nout = None\n\n#-----------------------НАЧАЛО СКРИПТА----------------------\nif \"/\" in folder_path:\n\tcorect_folder = folder_path.replace(\"/\", \"|\")\t\nelse:\n\tcorect_folder = folder_path\n\n\n#path = \"rsn://\"+revit_server_name+\"/\"+project_folder_name\nif \"|\" in corect_folder:\n\tproject_folder_name = corect_folder.split(\"|\")[0]\n\tout = folderpars([corect_folder.split(\"|\")[1]])\nelse:\n\tjson = rsnrequest(corect_folder)\n\tfolder_data_list = json[\"Folders\"]\n\tfind_folders_list = [m[\"Name\"] for m in folder_data_list]\n\tout = folderpars(find_folders_list)\n\nOUT = out",
+      "VariableInputPorts": true,
+      "Id": "4a08f9a5c02e4227ac8065574c824d9a",
+      "Inputs": [
+        {
+          "Id": "96f1c72bd2e84195ba264bde306f3f33",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a300b669e8174fe6b3e81699f5042018",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e31dec4faa714cf0a965af600309d391",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "555d48a8e65946dcaa71b3f19ee50aba",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение встроенного сценария IronPython."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"revit1.bim\";",
+      "Id": "0212f65ad0294536adc2c86d0ba08ae3",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "47f7ab70204f458eadeb77495252d53d",
+          "Name": "",
+          "Description": "Значение выражения в строке 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"Папка проекта/АР\";",
+      "Id": "9d19d6f95a42466cbaf5ebbf20d38a10",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "e7ae14838c284a26a917afad651896ab",
+          "Name": "",
+          "Description": "Значение выражения в строке 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"Папка проекта\";",
+      "Id": "2441fb729e25490b923204505f6f9954",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "7817f446881944368e4d149ebf6010f2",
+          "Name": "",
+          "Description": "Значение выражения в строке 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "[x[5]];",
+      "Id": "b18ed487c78e471ebcd694427c458504",
+      "Inputs": [
+        {
+          "Id": "8322931ccfb4478f8cca2c5a7665302d",
+          "Name": "x",
+          "Description": "x",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "ed1d4be79aad4d599a617999b528b52f",
+          "Name": "",
+          "Description": "Значение выражения в строке 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import sys\r\nsys.path.append('C:\\Program Files (x86)\\IronPython 2.7\\Lib')\r\nimport os\r\nimport glob\r\n\r\ndir = IN[0]\r\n\r\nnames = os.listdir(dir)\r\nnames2 = glob.glob(dir+\"\\\\*.rvt\")\r\n\r\nOUT = names2",
+      "VariableInputPorts": true,
+      "Id": "68def9caaf7c46239ab5e2da2b316262",
+      "Inputs": [
+        {
+          "Id": "a3eb190d4df8413db6c370bc523e9174",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "e4291a1b87024c9d923f7d08b8fd921e",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение встроенного сценария IronPython."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.Directory, CoreNodeModels",
+      "HintPath": "C:\\Users\\a.babinov\\Pictures\\ЖК Река\\СВОДНИК_2019.12.18",
+      "InputValue": "C:\\Users\\a.babinov\\Pictures\\ЖК Река\\СВОДНИК_2019.12.18",
+      "NodeType": "ExtensionNode",
+      "Id": "a36332a3d54e4c209cc86ebc9d2603f4",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "4e4180e4dee048d28fb7f9074c5cfe35",
+          "Name": "",
+          "Description": "Directory",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Позволяет выбрать папку в системе и получить путь к ней"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.Directory, CoreNodeModels",
+      "HintPath": "C:\\test",
+      "InputValue": "C:\\test",
+      "NodeType": "ExtensionNode",
+      "Id": "0cbec4ad846544e0a3200bc313880b7a",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "18248d756c174b969f7c7684d4c3b64b",
+          "Name": "",
+          "Description": "Directory",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Позволяет выбрать папку в системе и получить путь к ней"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# -*- coding: utf-8 -*-\nif IN[0]:\n\timport clr\n\tclr.AddReference('RevitServices')\n\timport RevitServices\n\tfrom RevitServices.Persistence import DocumentManager\n\t#from RevitServices.Transactions import TransactionManager\n\n\tclr.AddReference('RevitAPI')\n\timport Autodesk.Revit.DB\n\tfrom Autodesk.Revit.DB import NavisworksExportScope, View3D, FilteredElementCollector, Document, ModelPathUtils, OpenOptions, NavisworksExportOptions, NavisworksCoordinates, DetachFromCentralOption\n\n\timport System\n\tfrom System import TimeSpan\n\n\tclass TimeCounter:\n\t\tdef __init__(self):\n\t\t\tself.time = System.Diagnostics.Stopwatch.StartNew()\n\t\t\tself.time.Start()\n\t\tdef stop(self):\n\t\t\tself.time.Stop()\n\t\t\treturn self.time.Elapsed\n\n\tuiapp = DocumentManager.Instance.CurrentUIApplication\n\tapp = uiapp.Application\n\tdoc = DocumentManager.Instance.CurrentDBDocument\n\n\tfile_list = IN[1]\n\tfoldere_to_export = IN[2]\n\topt = OpenOptions()\n\topt.DetachFromCentralOption = DetachFromCentralOption.DetachAndPreserveWorksets\n\topt.AllowOpeningLocalByWrongUser = True\n\t#views3d = [v for v in FilteredElementCollector(doc).OfClass(View3D) if not v.IsTemplate]\n\t#view_3d_navisworks = [view for view in views3d if \"navisworks\" in view.Name]\n\n\tdef re_file(file_str): # type: str\n\t\tmpath = ModelPathUtils.ConvertUserVisiblePathToModelPath(file_str)\n\t\tdoc = app.OpenDocumentFile(mpath,opt)\n\t\tnw_ex_opt = NavisworksExportOptions()\n\t\t\n\t\tviews3d = [v for v in FilteredElementCollector(doc).OfClass(View3D) if not v.IsTemplate]\n\t\tview_3d_navisworks = [view for view in views3d if \"navisworks\" in view.Name.lower()]\n\t\tif view_3d_navisworks:\n\t\t\tnw_ex_opt.ExportScope = NavisworksExportScope.View\n\t\t\tnw_ex_opt.ViewId = view_3d_navisworks[0].Id\n\t\tnw_ex_opt.ExportRoomGeometry = False\n\t\tnw_ex_opt.Coordinates = NavisworksCoordinates.Shared\n\t\tnw_ex_opt.ExportLinks = False\n\t\tnw_ex_opt.ExportParts = True\n\t\tdoc.Export(foldere_to_export, doc.Title, nw_ex_opt)\n\t\tdoc.Close(False)\n\t\t#return view_3d_navisworks\n\n\ttest = []\n\tall_time_dic = {}\n\n\tfor file_str in file_list:\n\t\ttime = TimeCounter()\n\t\ttest.append(re_file(file_str)) # важна только эта строчка\n\t\tt = time.stop()\n\t\tall_time_dic[file_str] = t\n\n\tall_time_by_file = []\n\tall_time_by_file.append(\"File time\")\n\tfor file, time in all_time_dic.items():\n\t\tif 'full_time_count' not in locals():\n\t\t\tfull_time_count = time\n\t\t\tall_time_by_file.append((file, (time.Minutes, time.Seconds, time.Milliseconds)))\n\t\telse:\n\t\t\tfull_time_count += time\n\t\t\tall_time_by_file.append((file, (time.Minutes, time.Seconds, time.Milliseconds)))\n\n\tfull_time = ((\"Minutes\", \"Seconds\", \"Milliseconds\"), \"Full time:\", (full_time_count.Minutes, full_time_count.Seconds, full_time_count.Milliseconds))\n\n\tOUT = full_time, all_time_by_file\nelse:\n\tOUT = 'not run'",
+      "VariableInputPorts": true,
+      "Id": "157aed28513d4f3386df7eaf1c4c4683",
+      "Inputs": [
+        {
+          "Id": "27763cded0564536aac83ffa88baa6ce",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "8783235bf0c2481399279653dd5fa2ae",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "40e27139b26a4106b3e23569d4954474",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "51301f6414904f82a261081f539e060e",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение встроенного сценария IronPython."
+    },
+    {
+      "ConcreteType": "Prorubim.DS.Common.ForceChildsEval, ProrubimDSCommonKitUI",
+      "NodeType": "ExtensionNode",
+      "Id": "4670df4670cd42faaa8e25319133163c",
+      "Inputs": [
+        {
+          "Id": "797a748e4a7749aa860bfd7aa826084d",
+          "Name": "passObject",
+          "Description": "Pass object",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "17bb7f5651254e6faa3598bb9348b075",
+          "Name": "passObject",
+          "Description": "Pass object",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Force child nodes execution on next workspace running iteration"
+    },
+    {
+      "ConcreteType": "Prorubim.DS.Common.ForceChildsEval, ProrubimDSCommonKitUI",
+      "NodeType": "ExtensionNode",
+      "Id": "0f7ccb86ad2243e8949a6128175595d8",
+      "Inputs": [
+        {
+          "Id": "7719334ecc23491bbf8cfc87e3bb10d6",
+          "Name": "passObject",
+          "Description": "Pass object",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "23f7ae38cc614448886b6ebb0100efe2",
+          "Name": "passObject",
+          "Description": "Pass object",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Force child nodes execution on next workspace running iteration"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "ba99e63177d4475ead6ea7b9a56e2b34",
+      "End": "27763cded0564536aac83ffa88baa6ce",
+      "Id": "dc7a782a2d4c494f87249981ca345b9a"
+    },
+    {
+      "Start": "47f7ab70204f458eadeb77495252d53d",
+      "End": "96f1c72bd2e84195ba264bde306f3f33",
+      "Id": "013c09739e48400ca54ff5e8ebd32eef"
+    },
+    {
+      "Start": "e7ae14838c284a26a917afad651896ab",
+      "End": "a300b669e8174fe6b3e81699f5042018",
+      "Id": "1f2503e6f0cf4027a9f840800315f03a"
+    },
+    {
+      "Start": "e4291a1b87024c9d923f7d08b8fd921e",
+      "End": "8783235bf0c2481399279653dd5fa2ae",
+      "Id": "a03cafb08b494579aa20fd708bd44677"
+    },
+    {
+      "Start": "4e4180e4dee048d28fb7f9074c5cfe35",
+      "End": "797a748e4a7749aa860bfd7aa826084d",
+      "Id": "5549706ead8e4a3c8f4f6e5e8d5d0f97"
+    },
+    {
+      "Start": "18248d756c174b969f7c7684d4c3b64b",
+      "End": "40e27139b26a4106b3e23569d4954474",
+      "Id": "a1bf99eacff44c43b63964e6ab396045"
+    },
+    {
+      "Start": "17bb7f5651254e6faa3598bb9348b075",
+      "End": "a3eb190d4df8413db6c370bc523e9174",
+      "Id": "1f61dffbc40442f2b63a447ef4c0a67d"
+    },
+    {
+      "Start": "23f7ae38cc614448886b6ebb0100efe2",
+      "End": "e31dec4faa714cf0a965af600309d391",
+      "Id": "ab8a7b5596ab48df8f4d2a48b08370f5"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Prorubim Core Kit 2.x",
+      "Version": "0.5.0",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "4670df4670cd42faaa8e25319133163c",
+        "0f7ccb86ad2243e8949a6128175595d8"
+      ]
+    }
+  ],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Фоновый просмотр",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Выполнить",
+        "Id": "8f25a30b2d864094a238f8f49a82a4e1",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -3159.94638675816,
+        "Y": -1630.28327602997
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Парсер ревитсервера",
+        "Id": "4a08f9a5c02e4227ac8065574c824d9a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": true,
+        "X": -3130.34940006375,
+        "Y": -885.421278865979
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Адрес ревит сервера",
+        "Id": "0212f65ad0294536adc2c86d0ba08ae3",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -3769.86099605749,
+        "Y": -872.089939962616
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Папка на сервере:",
+        "Id": "9d19d6f95a42466cbaf5ebbf20d38a10",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -3762.85783051655,
+        "Y": -738.14661486729
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "2441fb729e25490b923204505f6f9954",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -3758.22606238177,
+        "Y": -646.112513813529
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Если надо выбрать один файл из папки, запустить, найти имя в \"Парсер ревитсервера\" указать полученый индекс:",
+        "Id": "b18ed487c78e471ebcd694427c458504",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -3763.85885953832,
+        "Y": -420.176028983155
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Парсер локальной папки",
+        "Id": "68def9caaf7c46239ab5e2da2b316262",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -3167.57472840598,
+        "Y": -1474.74047787539
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Directory Path",
+        "Id": "a36332a3d54e4c209cc86ebc9d2603f4",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -3612.13069561259,
+        "Y": -1474.69584219969
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Directory Path to nwc Export",
+        "Id": "0cbec4ad846544e0a3200bc313880b7a",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -3140.8422150048682,
+        "Y": -1100.5646045639769
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Создание nwc",
+        "Id": "157aed28513d4f3386df7eaf1c4c4683",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -2650.7142813109,
+        "Y": -1632.6782874927
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "ForceChildsEval",
+        "Id": "4670df4670cd42faaa8e25319133163c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -3472.39181033938,
+        "Y": -1341.1755734981241
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "ForceChildsEval",
+        "Id": "0f7ccb86ad2243e8949a6128175595d8",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -4033.851471628614,
+        "Y": -525.91315447646434
+      }
+    ],
+    "Annotations": [
+      {
+        "Id": "3a98ee88662344cea677e7212b5fd5ea",
+        "Title": "Парсер ревитсервера",
+        "Nodes": [
+          "4a08f9a5c02e4227ac8065574c824d9a",
+          "0212f65ad0294536adc2c86d0ba08ae3",
+          "9d19d6f95a42466cbaf5ebbf20d38a10",
+          "2441fb729e25490b923204505f6f9954",
+          "b18ed487c78e471ebcd694427c458504"
+        ],
+        "Left": -3779.86099605749,
+        "Top": -931.90127886597907,
+        "Width": 812.15159599373976,
+        "Height": 604.48524988282406,
+        "FontSize": 30.0,
+        "InitialTop": -885.421278865979,
+        "InitialHeight": 461.351159161607,
+        "TextblockHeight": 36.48,
+        "Background": "#FFFF7BAC"
+      },
+      {
+        "Id": "13824e3f273e4704929cf16d6b4f0cd7",
+        "Title": "Парсер локальной папки",
+        "Nodes": [
+          "68def9caaf7c46239ab5e2da2b316262",
+          "a36332a3d54e4c209cc86ebc9d2603f4"
+        ],
+        "Left": -3622.13069561259,
+        "Top": -1521.22047787539,
+        "Width": 640.2359672066101,
+        "Height": 140.24463567569998,
+        "FontSize": 30.0,
+        "InitialTop": -1474.74047787539,
+        "InitialHeight": 143.72212497255,
+        "TextblockHeight": 36.48,
+        "Background": "#FFFF7BAC"
+      },
+      {
+        "Id": "8847d2b1e57c4115ba4aca7449873900",
+        "Title": "",
+        "Nodes": [
+          "0cbec4ad846544e0a3200bc313880b7a"
+        ],
+        "Left": -3150.8422150048682,
+        "Top": -1147.0446045639769,
+        "Width": 210.07999999999998,
+        "Height": 140.20000000000002,
+        "FontSize": 30.0,
+        "InitialTop": -1100.5646045639769,
+        "InitialHeight": 123.72,
+        "TextblockHeight": 36.48,
+        "Background": "#FFFF7BAC"
+      },
+      {
+        "Id": "0fb711d24e3e48ed9aa2a013db80eaaa",
+        "Title": "",
+        "Nodes": [
+          "157aed28513d4f3386df7eaf1c4c4683"
+        ],
+        "Left": -2660.7142813109,
+        "Top": -1679.1582874927,
+        "Width": 143.83999999999997,
+        "Height": 191.08,
+        "FontSize": 30.0,
+        "InitialTop": -1632.6782874927,
+        "InitialHeight": 174.6,
+        "TextblockHeight": 36.48,
+        "Background": "#FF48B9FF"
+      },
+      {
+        "Id": "b0649882b6d040ccb29630da2716a8ae",
+        "Title": "",
+        "Nodes": [
+          "8f25a30b2d864094a238f8f49a82a4e1"
+        ],
+        "Left": -3169.94638675816,
+        "Top": -1676.76327602997,
+        "Width": 155.35999999999999,
+        "Height": 114.28000000000002,
+        "FontSize": 30.0,
+        "InitialTop": -1630.28327602997,
+        "InitialHeight": 97.8,
+        "TextblockHeight": 36.48,
+        "Background": "#FFFF7BAC"
+      }
+    ],
+    "X": 2626.8000652077681,
+    "Y": 1224.5089898577176,
+    "Zoom": 0.76231034916963236
+  }
+}

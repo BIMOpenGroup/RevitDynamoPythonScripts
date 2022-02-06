@@ -1,0 +1,101 @@
+<Workspace Version="1.3.3.4111" X="180.73800516278" Y="-329.595923283979" zoom="0.974528076197066" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <CoreNodeModels.Input.Directory guid="6458c47e-bffa-4e0f-9190-abdac8bd1d34" type="CoreNodeModels.Input.Directory" nickname="Directory Path" x="18.329946770643" y="566.612505002665" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>C:\test\SP</System.String>
+      <HintPath>C:\test\SP</HintPath>
+    </CoreNodeModels.Input.Directory>
+    <PythonNodeModels.PythonNode guid="78aa752a-ec16-495c-9aac-a205455c8982" type="PythonNodeModels.PythonNode" nickname="Python Script" x="269.44881060318" y="564.122200247532" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="3">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <Script>
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+# Import geometry conversion extension methods
+clr.ImportExtensions(Revit.GeometryConversion)
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+from System.Collections.Generic import *
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+uidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+collector = Autodesk.Revit.DB.FilteredElementCollector(doc)
+linkInstances = collector.OfClass(ImportInstance).WhereElementIsNotElementType()
+
+reset = IN[0]
+folderpath = IN[1]
+prifix = IN[2]
+reloadedlinks = []
+reloadednames = []
+linkedlist = []
+importlist = []
+count = 0
+testnames = []
+
+for item in linkInstances:
+	if item.IsLinked and item.LookupParameter("Имя").AsString() not in testnames:
+		if prifix != "":
+			name = item.LookupParameter("Имя").AsString()
+			if prifix in name:
+				testnames.append(item.LookupParameter("Имя").AsString())
+				linkedlist.append(item)
+			else:
+				pass
+		else:
+			linkedlist.append(item)
+	else:
+		importlist.append(item)
+		
+		
+for i in linkedlist:
+	name = i.LookupParameter("Имя").AsString()
+	path = folderpath + "\\" + name
+	CADLinkType = doc.GetElement(i.GetTypeId())
+	
+	TransactionManager.Instance.EnsureInTransaction(doc)
+	try:
+		CADLinkType.LoadFrom(path)
+		count = count+1
+	except:
+		pass
+	TransactionManager.Instance.TransactionTaskDone()
+	reloadedlinks.append(CADLinkType)
+	reloadednames.append(name)
+
+OUT= "Обновлено ссылок="+str(count),reloadednames,reloadedlinks</Script>
+    </PythonNodeModels.PythonNode>
+    <Prorubim.DS.Common.ForceChildrensEval guid="921bc579-ac9c-4785-a375-aa10630dc30b" type="Prorubim.DS.Common.ForceChildrensEval" nickname="ForceChildrensEval" x="-75.4308282638567" y="481.364628050882" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </Prorubim.DS.Common.ForceChildrensEval>
+    <CoreNodeModels.Input.StringInput guid="65bc6b1a-cdd1-4683-9b52-5386204e6d66" type="CoreNodeModels.Input.StringInput" nickname="file name contains text:" x="-39.7081307370507" y="658.654757562798" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>Стадия П</System.String>
+      <System.String value="Стадия П" />
+    </CoreNodeModels.Input.StringInput>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="6458c47e-bffa-4e0f-9190-abdac8bd1d34" start_index="0" end="78aa752a-ec16-495c-9aac-a205455c8982" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="921bc579-ac9c-4785-a375-aa10630dc30b" start_index="0" end="78aa752a-ec16-495c-9aac-a205455c8982" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="65bc6b1a-cdd1-4683-9b52-5386204e6d66" start_index="0" end="78aa752a-ec16-495c-9aac-a205455c8982" end_index="2" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Фоновый просмотр" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

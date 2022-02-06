@@ -1,0 +1,137 @@
+<Workspace Version="1.3.0.875" X="-963.59418977861" Y="-226.391996686454" zoom="0.647259620222499" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="3a22bc33-bc6d-409e-bf20-970ea4019960" type="PythonNodeModels.PythonNode" nickname="PyS Get Revit Selection" x="1527.2083454859" y="816.925818339942" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('RevitServices')
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from Autodesk.Revit.ApplicationServices import Application
+
+reset = IN[0]
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+ids = uidoc.Selection.GetElementIds()
+
+idd = [str(i) for i in ids]
+
+if isinstance(idd, list) == True:
+	elems = [doc.GetElement(ElementId(int(i))) for i in idd]
+else:
+	elems = doc.GetElement(ElementId(int(idd)))
+
+OUT = elems
+</Script>
+    </PythonNodeModels.PythonNode>
+    <Prorubim.DS.Common.ForceChildrensEval guid="c1489433-e55c-4e51-ae15-7bd9b4fe47bf" type="Prorubim.DS.Common.ForceChildrensEval" nickname="ForceChildrensEval" x="1398.31722863366" y="692.976843703844" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </Prorubim.DS.Common.ForceChildrensEval>
+    <PythonNodeModels.PythonNode guid="74f77555-bab6-4180-90f1-c89c87984bb6" type="PythonNodeModels.PythonNode" nickname="Python Script" x="2235.96408327222" y="556.075337719289" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="3">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <Script>if IN[0]:
+	import clr
+	clr.AddReference('ProtoGeometry')
+	from Autodesk.DesignScript.Geometry import *
+	clr.AddReference("RevitServices")
+	import RevitServices
+	from RevitServices.Persistence import DocumentManager
+	from RevitServices.Transactions import TransactionManager
+	clr.AddReference("RevitAPI")
+	import Autodesk
+	from Autodesk.Revit.DB import *
+	doc = DocumentManager.Instance.CurrentDBDocument
+	from System.Collections.Generic import *
+	clr.AddReference("RevitNodes")
+	import Revit
+	clr.ImportExtensions(Revit.Elements)
+	
+	reset = IN[2]
+	grids = UnwrapElement(IN[1])
+	view = doc.ActiveView
+	
+	TransactionManager.Instance.EnsureInTransaction(doc)
+	
+	for grid in grids:
+	
+		if grid.IsBubbleVisibleInView(DatumEnds.End1,view):
+			grid.HideBubbleInView(DatumEnds.End1,view)
+		else:
+			grid.ShowBubbleInView(DatumEnds.End1,view)
+			
+	TransactionManager.Instance.TransactionTaskDone()
+	
+	OUT = grid
+else:
+	pass</Script>
+    </PythonNodeModels.PythonNode>
+    <CoreNodeModels.Input.BoolSelector guid="07919ebf-3401-47e8-8c7c-f3b3de32bb4f" type="CoreNodeModels.Input.BoolSelector" nickname="End1 / End0" x="1623.48820297779" y="572.839913969135" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Boolean>False</System.Boolean>
+    </CoreNodeModels.Input.BoolSelector>
+    <PythonNodeModels.PythonNode guid="8c2ee552-ebbb-44fa-ad5b-14c945eb4767" type="PythonNodeModels.PythonNode" nickname="Python Script" x="2235.50843143737" y="801.418743859604" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="3">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <Script>if not IN[0]:
+	import clr
+	clr.AddReference('ProtoGeometry')
+	from Autodesk.DesignScript.Geometry import *
+	clr.AddReference("RevitServices")
+	import RevitServices
+	from RevitServices.Persistence import DocumentManager
+	from RevitServices.Transactions import TransactionManager
+	clr.AddReference("RevitAPI")
+	import Autodesk
+	from Autodesk.Revit.DB import *
+	doc = DocumentManager.Instance.CurrentDBDocument
+	from System.Collections.Generic import *
+	clr.AddReference("RevitNodes")
+	import Revit
+	clr.ImportExtensions(Revit.Elements)
+	
+	reset = IN[2]
+	grids = UnwrapElement(IN[1])
+	view = doc.ActiveView
+	
+	TransactionManager.Instance.EnsureInTransaction(doc)
+	
+	for grid in grids:
+	
+		if grid.IsBubbleVisibleInView(DatumEnds.End0,view):
+			grid.HideBubbleInView(DatumEnds.End0,view)
+		else:
+			grid.ShowBubbleInView(DatumEnds.End0,view)
+			
+	TransactionManager.Instance.TransactionTaskDone()
+	
+	OUT = grid
+else:
+	pass</Script>
+    </PythonNodeModels.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="3a22bc33-bc6d-409e-bf20-970ea4019960" start_index="0" end="74f77555-bab6-4180-90f1-c89c87984bb6" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="3a22bc33-bc6d-409e-bf20-970ea4019960" start_index="0" end="8c2ee552-ebbb-44fa-ad5b-14c945eb4767" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c1489433-e55c-4e51-ae15-7bd9b4fe47bf" start_index="0" end="3a22bc33-bc6d-409e-bf20-970ea4019960" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c1489433-e55c-4e51-ae15-7bd9b4fe47bf" start_index="0" end="74f77555-bab6-4180-90f1-c89c87984bb6" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c1489433-e55c-4e51-ae15-7bd9b4fe47bf" start_index="0" end="8c2ee552-ebbb-44fa-ad5b-14c945eb4767" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="07919ebf-3401-47e8-8c7c-f3b3de32bb4f" start_index="0" end="74f77555-bab6-4180-90f1-c89c87984bb6" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="07919ebf-3401-47e8-8c7c-f3b3de32bb4f" start_index="0" end="8c2ee552-ebbb-44fa-ad5b-14c945eb4767" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="e4a7a5e0-27e3-49da-ba35-a235dddf6ca7" annotationText="Get Revit Selection:" left="1388.31722863366" top="662.976843703844" width="301.891116852242" height="246.948974636098" fontSize="14" InitialTop="692.976843703844" InitialHeight="258.43721870751" TextblockHeight="20" backgrouund="#FF71C6A8">
+      <Models ModelGuid="c1489433-e55c-4e51-ae15-7bd9b4fe47bf" />
+      <Models ModelGuid="3a22bc33-bc6d-409e-bf20-970ea4019960" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

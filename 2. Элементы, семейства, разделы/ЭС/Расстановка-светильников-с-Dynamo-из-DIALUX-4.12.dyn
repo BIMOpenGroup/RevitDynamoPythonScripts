@@ -1,0 +1,181 @@
+<Workspace Version="1.3.0.875" X="-313.047613517086" Y="144.13007470321" zoom="0.69463805140692" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="False">
+  <NamespaceResolutionMap />
+  <Elements>
+    <CoreNodeModels.Input.Filename guid="7f348ff8-a151-4ecb-b39d-43f8bba6bb11" type="CoreNodeModels.Input.Filename" nickname="Выберите STF из DIALUX 4.12" x="428.776533449252" y="402.626721355141" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>..\..\Desktop\%D0%9F%D1%80%D0%BE%D0%B5%D0%BA%D1%8211.stf</System.String>
+      <HintPath>C:\Users\Александр\Desktop\Проект11.stf</HintPath>
+    </CoreNodeModels.Input.Filename>
+    <PythonNodeModels.PythonNode guid="02e15e6f-284d-4588-b610-ddc3a545f044" type="PythonNodeModels.PythonNode" nickname="PyS Светильники в помещения" x="973.264118231811" y="533.311285287" isVisible="false" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="4">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <PortInfo index="3" default="False" />
+      <Script>import clr
+
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#--------------Входные данные
+reset = IN[0]
+STFD = IN[1]
+rooms = UnwrapElement(IN[2])
+movedown = IN[3]
+list1=[]
+idlist = []
+outlist=[]
+roomlist=[]
+l3=[]
+test=[]
+test1=[]
+test2=[]
+test3=[]
+#Открытие IFC файла
+Dstf = open(STFD)
+Dlines = Dstf.readlines()
+#Отделение шапки
+Dlines1 = []
+k=0
+for Dline in Dlines:
+	Dline=Dline.replace('\n','')
+	if "ENDSEC;" in Dline:
+		k=0
+	if "[PROJECT]" in Dline:
+		k=1		
+	if k==1:
+		Dlines1.append(Dline)
+#Разделить строки на группы строк по помещениям
+Dl1 = []
+Dl2 = []		
+for Dline in Dlines1:
+	if "[ROOM." in Dline:
+		Dl2.append(Dl1)
+		Dl1=[]
+	else:
+		Dl1.append(Dline)
+#Работа со строками относящимися к каждому помещению отдельно
+list25=[]
+list24=[]
+for room in rooms:
+	Rnumber = room.Number
+	Rname = room.LookupParameter('Имя').AsString()
+	#list24=[]
+	for DRoom in Dl2:
+		Dnumber=''
+		Dname=''
+		for Dline in DRoom:
+			if 'Name=' in Dline:
+				Dnumber = Dline[5:Dline.find(' ')].replace(' ','')
+				Dname = Dline[Dline.find(' ')+1:]
+		if Dnumber == Rnumber.replace('.','') and Dname == Rname:
+			list23=[]
+			Zroom = room.Location.Point.Z*304.8			
+			for Dline in DRoom:		
+				if 'Lum' in Dline and 'Nr' not in Dline:
+					a = Dline[3:Dline.find('=')]
+					if a.find('.Pos')&lt;0 and a.find('.Rot')&lt;0:
+						name=Dline[Dline.find('=')+1:]
+						if list23.Count&gt;1:
+							list24.append(list23)
+							list23=[]
+						list23.append(name)	
+					if a.find('.Pos')&gt;0:
+						pt = Dline[Dline.find('=')+1:]
+						X = float(pt[:pt.find(' ')])*1000
+						pt = pt[pt.find(' ')+1:]
+						Y = float(pt[:pt.find(' ')])*1000
+						Z = float(pt[pt.find(' ')+1:])*1000+Zroom-movedown
+						list23.append(X)
+						list23.append(Y)
+						list23.append(Z)
+					if a.find('.Rot')&gt;0:
+						pt = Dline[Dline.find('=')+1:]
+						angle = float(pt[pt.rfind(' ')+1:])-10
+						list23.append(angle)
+			if list23.Count&gt;1:
+				list24.append(list23)
+			#if list24.Count&gt;0:
+				#list25.append(list24)					
+#Закрытие IFC файла
+Dstf.close()
+#Вывод результата
+OUT = list24</Script>
+    </PythonNodeModels.PythonNode>
+    <CoreNodeModels.Input.BoolSelector guid="cae4a812-f656-4ec5-ad1e-69fa71e977df" type="CoreNodeModels.Input.BoolSelector" nickname="Boolean" x="714.05631363252" y="334.597085467977" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Boolean>False</System.Boolean>
+    </CoreNodeModels.Input.BoolSelector>
+    <DSRevitNodesUI.FamilyTypes guid="65964dab-3d9b-4951-ad32-423d93f917f6" type="DSRevitNodesUI.FamilyTypes" nickname="Family Types" x="660.752065341513" y="245.064443637283" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" index="-1" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="a421e807-32a1-4aeb-b55a-60e0e16299ff" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="FamilyInstance.ByCoordinates" x="1622.64635845151" y="267.36327524712" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.FamilyInstance.ByCoordinates@Revit.Elements.FamilyType,double,double,double">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="True" />
+      <PortInfo index="2" default="True" />
+      <PortInfo index="3" default="True" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="08cd9d53-43a1-4bbb-9c51-156ce4400d4c" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="FamilyInstance.SetRotation" x="1939.72910701471" y="368.23768365292" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.FamilyInstance.SetRotation@double">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="fdb4fe55-98d3-45dd-8443-4ec28701635e" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1473.15909089308" y="345.771161612209" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="a[1];&#xA;a[2];&#xA;a[3];&#xA;a[4];&#xA;a[0];" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="a04997a5-fd90-49fc-a1fc-63b950c86474" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.SetParameterByName" x="2256.30513930869" y="451.041449525764" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Element.SetParameterByName@string,var">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <CoreNodeModels.Input.StringInput guid="5796cefc-aef1-430e-8464-dd1c0f5709bf" type="CoreNodeModels.Input.StringInput" nickname="String" x="782.458762960282" y="484.734314245174" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>Марка</System.String>
+      <System.String value="Марка" />
+    </CoreNodeModels.Input.StringInput>
+    <DSRevitNodesUI.Categories guid="81c69bc6-aec4-4e38-9265-c07276a3d484" type="DSRevitNodesUI.Categories" nickname="Categories" x="495.694943927365" y="563.255135665122" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" index="429:Rooms" />
+    <DSRevitNodesUI.ElementsOfCategory guid="2df5ede0-0249-4678-bb27-4804cc1f02d8" type="DSRevitNodesUI.ElementsOfCategory" nickname="All Elements of Category" x="678.732599367604" y="562.578836223635" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </DSRevitNodesUI.ElementsOfCategory>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="fa9956e6-1d0e-4a5d-beac-6afeda87db1a" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.Transpose" x="1235.42612677824" y="531.943303837954" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.Transpose@var[]..[]">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <CoreNodeModels.Input.DoubleInput guid="96e3ab26-f1ba-4a2c-afcb-5cff535ba86a" type="CoreNodeModels.Input.DoubleInput" nickname="Дополнительно переместить светильники вниз на мм" x="482.353602398117" y="654.89501300584" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Double value="0" />
+    </CoreNodeModels.Input.DoubleInput>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="7f348ff8-a151-4ecb-b39d-43f8bba6bb11" start_index="0" end="02e15e6f-284d-4588-b610-ddc3a545f044" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="02e15e6f-284d-4588-b610-ddc3a545f044" start_index="0" end="fa9956e6-1d0e-4a5d-beac-6afeda87db1a" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="cae4a812-f656-4ec5-ad1e-69fa71e977df" start_index="0" end="02e15e6f-284d-4588-b610-ddc3a545f044" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="65964dab-3d9b-4951-ad32-423d93f917f6" start_index="0" end="a421e807-32a1-4aeb-b55a-60e0e16299ff" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a421e807-32a1-4aeb-b55a-60e0e16299ff" start_index="0" end="08cd9d53-43a1-4bbb-9c51-156ce4400d4c" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="08cd9d53-43a1-4bbb-9c51-156ce4400d4c" start_index="0" end="a04997a5-fd90-49fc-a1fc-63b950c86474" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="fdb4fe55-98d3-45dd-8443-4ec28701635e" start_index="0" end="a421e807-32a1-4aeb-b55a-60e0e16299ff" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="fdb4fe55-98d3-45dd-8443-4ec28701635e" start_index="1" end="a421e807-32a1-4aeb-b55a-60e0e16299ff" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="fdb4fe55-98d3-45dd-8443-4ec28701635e" start_index="2" end="a421e807-32a1-4aeb-b55a-60e0e16299ff" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="fdb4fe55-98d3-45dd-8443-4ec28701635e" start_index="3" end="08cd9d53-43a1-4bbb-9c51-156ce4400d4c" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="fdb4fe55-98d3-45dd-8443-4ec28701635e" start_index="4" end="a04997a5-fd90-49fc-a1fc-63b950c86474" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5796cefc-aef1-430e-8464-dd1c0f5709bf" start_index="0" end="a04997a5-fd90-49fc-a1fc-63b950c86474" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="81c69bc6-aec4-4e38-9265-c07276a3d484" start_index="0" end="2df5ede0-0249-4678-bb27-4804cc1f02d8" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="2df5ede0-0249-4678-bb27-4804cc1f02d8" start_index="0" end="02e15e6f-284d-4588-b610-ddc3a545f044" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="fa9956e6-1d0e-4a5d-beac-6afeda87db1a" start_index="0" end="fdb4fe55-98d3-45dd-8443-4ec28701635e" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="96e3ab26-f1ba-4a2c-afcb-5cff535ba86a" start_index="0" end="02e15e6f-284d-4588-b610-ddc3a545f044" end_index="3" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="1a0692c6-625d-4d36-bdcf-41353f68b3ca" annotationText="&lt;Нажмите здесь, чтобы изменить заголовок группы&gt;" left="1463.15909089308" top="237.36327524712" width="1073.14604841561" height="358.678174278644" fontSize="14" InitialTop="267.36327524712" InitialHeight="333.842079477745" TextblockHeight="20" backgrouund="#FFB5B5B5">
+      <Models ModelGuid="a421e807-32a1-4aeb-b55a-60e0e16299ff" />
+      <Models ModelGuid="08cd9d53-43a1-4bbb-9c51-156ce4400d4c" />
+      <Models ModelGuid="fdb4fe55-98d3-45dd-8443-4ec28701635e" />
+      <Models ModelGuid="a04997a5-fd90-49fc-a1fc-63b950c86474" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="65a25fff-b5ef-4880-81ba-698381851acb" annotationText="&lt;Нажмите здесь, чтобы изменить заголовок группы&gt;" left="963.264118231811" top="489.311285287" width="237" height="215" fontSize="14" InitialTop="533.311285287" InitialHeight="149" TextblockHeight="34" backgrouund="#FFFFAA45">
+      <Models ModelGuid="02e15e6f-284d-4588-b610-ddc3a545f044" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="3e944c91-c407-4130-8476-ee84db39ff72" annotationText="&lt;Нажмите здесь, чтобы изменить заголовок группы&gt;" left="418.776533449252" top="215.064443637283" width="442.68222951103" height="337.669870607892" fontSize="14" InitialTop="245.064443637283" InitialHeight="349.529689451277" TextblockHeight="20" backgrouund="#FFC1D676">
+      <Models ModelGuid="7f348ff8-a151-4ecb-b39d-43f8bba6bb11" />
+      <Models ModelGuid="cae4a812-f656-4ec5-ad1e-69fa71e977df" />
+      <Models ModelGuid="65964dab-3d9b-4951-ad32-423d93f917f6" />
+      <Models ModelGuid="5796cefc-aef1-430e-8464-dd1c0f5709bf" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="Фоновый просмотр" eyeX="-46.865364074707" eyeY="39.8539009094238" eyeZ="-49.5855369567871" lookX="35.8972663879395" lookY="-27.8864669799805" lookZ="40.133918762207" upX="0.172547087073326" upY="0.965925812721252" upZ="0.192911371588707" />
+  </Cameras>
+</Workspace>

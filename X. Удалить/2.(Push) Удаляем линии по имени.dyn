@@ -1,0 +1,60 @@
+<Workspace Version="1.3.3.4111" X="-829.966611563825" Y="-246.826683492146" zoom="0.865162877745469" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Prorubim.DS.Common.ForceChildrensEval guid="3f8863ea-3c3e-4c9d-ab8a-5761d4d92294" type="Prorubim.DS.Common.ForceChildrensEval" nickname="ForceChildrensEval" x="1160.50592420739" y="453.291565255132" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </Prorubim.DS.Common.ForceChildrensEval>
+    <PythonNodeModels.PythonNode guid="9072d3cb-449e-4035-a872-b7155bb379f7" type="PythonNodeModels.PythonNode" nickname="Python Script" x="1542.62692324266" y="502.374977639934" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="2">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+import Autodesk
+from Autodesk.Revit.DB import FilteredElementCollector
+clr.AddReference('RevitServices')
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+LPE = Autodesk.Revit.DB.LinePatternElement
+FEC = FilteredElementCollector(doc).OfClass(clr.GetPythonType(LPE))
+string = UnwrapElement(IN[1])
+list = []
+list_of_del_line_names = []
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+for i in FEC:
+	if string in i.Name:
+		list.append(i.Id)
+		list_of_del_line_names.append(i.Name)
+		
+for item in list:
+	doc.Delete(item)
+
+TransactionManager.Instance.TransactionTaskDone()
+OUT = list_of_del_line_names</Script>
+    </PythonNodeModels.PythonNode>
+    <CoreNodeModels.Input.StringInput guid="4eeb4f58-4ba8-4023-ad48-ebe9b0269ff5" type="CoreNodeModels.Input.StringInput" nickname="Содержится в имени типа линий:" x="1140.75732459761" y="618.819724039059" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>Штрих</System.String>
+      <System.String value="Штрих" />
+    </CoreNodeModels.Input.StringInput>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="3f8863ea-3c3e-4c9d-ab8a-5761d4d92294" start_index="0" end="9072d3cb-449e-4035-a872-b7155bb379f7" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4eeb4f58-4ba8-4023-ad48-ebe9b0269ff5" start_index="0" end="9072d3cb-449e-4035-a872-b7155bb379f7" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="cb2f5532-d9fb-434d-8200-33bd2aa366e6" annotationText="" left="1130.75732459761" top="588.819724039059" width="252" height="98" fontSize="14" InitialTop="618.819724039059" InitialHeight="98" TextblockHeight="20" backgrouund="#FFFF7BAC">
+      <Models ModelGuid="4eeb4f58-4ba8-4023-ad48-ebe9b0269ff5" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="1ca2feb1-e0eb-4898-a662-25584415b3d1" annotationText="" left="1532.62692324266" top="456.374977639934" width="144" height="165" fontSize="30" InitialTop="502.374977639934" InitialHeight="149" TextblockHeight="36" backgrouund="#FF48B9FF">
+      <Models ModelGuid="9072d3cb-449e-4035-a872-b7155bb379f7" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="Фоновый просмотр" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

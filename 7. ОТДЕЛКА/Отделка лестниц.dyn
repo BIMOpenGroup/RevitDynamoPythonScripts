@@ -1,0 +1,991 @@
+<Workspace Version="1.3.4.6666" X="463.525484086794" Y="-164.210536337617" zoom="0.105990153432899" ScaleFactor="100" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Prorubim.DS.Common.ForceChildrensEval guid="bba1a70f-95f1-4980-b092-378e0feda8d9" type="Prorubim.DS.Common.ForceChildrensEval" nickname="ForceChildrensEval" x="-894.206500657535" y="483.117483558438" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="true" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </Prorubim.DS.Common.ForceChildrensEval>
+    <PythonNodeModels.PythonNode guid="b4908b48-2703-4603-ac93-54cdb8b5dd54" type="PythonNodeModels.PythonNode" nickname="PyS Get Revit Selection" x="-652.386576390285" y="482.283898208448" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('RevitServices')
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from Autodesk.Revit.ApplicationServices import Application
+
+reset = IN[0]
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+ids = uidoc.Selection.GetElementIds()
+
+idd = [str(i) for i in ids]
+
+if isinstance(idd, list) == True:
+	elems = [doc.GetElement(ElementId(int(i))) for i in idd]
+else:
+	elems = doc.GetElement(ElementId(int(idd)))
+
+OUT = elems
+</Script>
+    </PythonNodeModels.PythonNode>
+    <CoreNodeModels.Input.BoolSelector guid="2c97c427-31bc-436c-a0d7-27941021c8c4" type="CoreNodeModels.Input.BoolSelector" nickname="Boolean" x="-342.651637328545" y="508.086449053398" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="true" isPinned="false">
+      <System.Boolean>True</System.Boolean>
+    </CoreNodeModels.Input.BoolSelector>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="dc2958df-3814-4809-8620-374334a07a57" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-329.411643733625" y="627.274252728298" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="1;&#xA;2;" ShouldFocus="false" />
+    <PythonNodeModels.PythonNode guid="ea1b4fca-de77-42ac-832e-19366dc5a968" type="PythonNodeModels.PythonNode" nickname="if" x="-72.6516373285451" y="532.086449053398" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="3">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <Script>import clr
+boolean = IN[0]
+true = UnwrapElement(IN[1])
+false = UnwrapElement(IN[2])
+
+if boolean:
+	out = true
+else:
+	out = false
+
+#Назначьте вывод переменной OUT.
+OUT = out</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="aae0731d-9bad-436f-a981-9d99466bef92" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.Parameters" x="192.795369999803" y="508.086449053398" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Element.Parameters">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="265e9907-ec28-493a-9060-7588b1d64808" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.Geometry" x="193.566472750188" y="713.132542538017" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Element.Geometry">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="432744e9-50a9-46f3-8a83-f5020c25a98d" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.SetParameterByName" x="552.483206796655" y="735.322783048708" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Element.SetParameterByName@string,var">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="e0d73957-486f-4119-a8cf-a548f587f289" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.GetParameterValueByName" x="549.509763940316" y="481.862640591268" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Element.GetParameterValueByName@string">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <PythonNodeModels.PythonNode guid="17c4a554-18ec-424a-bcdd-26f4a049b563" type="PythonNodeModels.PythonNode" nickname="Parameters name from language" x="-711.031430801975" y="729.872196854978" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="true" isPinned="true" inputcount="0">
+      <Script>import clr
+clr.AddReference('RevitServices')
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+lng = app.Language
+rus = ["Тип","Имя семейства","Имя типа"]
+enu = ["Type","Family name","Type name"]
+out = []
+if str(lng) == "Russian":
+	out = rus
+else:
+	out = enu
+#English_USA
+#Russian
+OUT = out</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="02eb1bd7-dd69-4059-8528-266a7eef1268" type="PythonNodeModels.PythonNode" nickname="Group.Members" x="-911.466915761855" y="727.914937475688" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="true" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+groups = UnwrapElement(IN[0])
+elementlist = list()
+for item in groups:
+	try:
+		memberlist = list()
+		for member in item.GetMemberIds():
+			memberlist.append(item.Document.GetElement(member))
+		elementlist.append(memberlist)
+	except:
+		elementlist.append(list())
+OUT = elementlist</Script>
+    </PythonNodeModels.PythonNode>
+    <DSRevitNodesUI.Categories guid="2a947783-ddf2-46a9-8c3e-0acc61568b99" type="DSRevitNodesUI.Categories" nickname="Categories" x="-894.158454076865" y="304.166329264851" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="true" isPinned="false" index="-1" />
+    <DSRevitNodesUI.ElementsOfCategory guid="15bee929-1441-4307-b702-fc33091334de" type="DSRevitNodesUI.ElementsOfCategory" nickname="All Elements of Category" x="-671.000551017515" y="311.909604580549" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </DSRevitNodesUI.ElementsOfCategory>
+    <CoreNodeModels.Input.Filename guid="820b7baa-535c-4682-9e9b-9e102f98f84f" type="CoreNodeModels.Input.Filename" nickname="Путь к файлу Python:" x="83.0200398744207" y="1641.71621791623" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <System.String>..\РАБОЧИЕ СКРИПТЫ\7. ОТДЕЛКА\7.Отделка помещений__геометрия из__Лестниц_geom_area.py</System.String>
+      <HintPath>C:\Users\babinovan\OneDrive\Dyno\РАБОЧИЕ СКРИПТЫ\7. ОТДЕЛКА\7.Отделка помещений__геометрия из__Лестниц_geom_area.py</HintPath>
+    </CoreNodeModels.Input.Filename>
+    <PythonNodeModels.PythonStringNode guid="9f9ed816-bf31-43ec-abfc-233f94033505" type="PythonNodeModels.PythonStringNode" nickname="Python Script From String" x="888.995202591678" y="1891.8025976653" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="true" isPinned="true" inputcount="6">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <PortInfo index="3" default="False" />
+      <PortInfo index="4" default="False" />
+      <PortInfo index="5" default="False" />
+    </PythonNodeModels.PythonStringNode>
+    <Prorubim.DS.Common.ForceChildrensEval guid="071ccd33-fb70-46bc-bdb8-69fbe9af4bf4" type="Prorubim.DS.Common.ForceChildrensEval" nickname="ForceChildrensEval" x="82.7651152388031" y="1746.29506911832" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </Prorubim.DS.Common.ForceChildrensEval>
+    <PythonNodeModels.PythonNode guid="52b66a17-c020-4483-9070-ea174dbcbe3c" type="PythonNodeModels.PythonNode" nickname="Regenerate()" x="-378.556641059835" y="1070.75360264114" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="true" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+
+#The inputs to this node will be stored as a list in the IN variable.
+list = IN[0]
+
+
+if list:
+	doc.Regenerate()
+	out = "Regeneration complete"
+else:
+	out = "fail"
+OUT = out</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="a2f8b6c1-ba4a-4784-8b16-14cc32a5466b" type="PythonNodeModels.PythonNode" nickname="Object.Members" x="-161.561186853285" y="890.494655343217" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="true" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+
+items = IN[0]
+elementlist = list()
+
+try:
+	clr.AddReference('RevitAPI')
+	from Autodesk.Revit.DB import *
+	for item in items:
+		elementlist.append(dir(UnwrapElement(item)))
+except:
+	for item in items:
+		elementlist.append(dir(item))
+OUT = elementlist</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="11246209-9800-498d-a8d7-320bd7880456" type="PythonNodeModels.PythonNode" nickname="FilteredElementCollector" x="-199.611305434918" y="1068.29414671132" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="true" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>if IN[1]:
+	import clr
+	
+	# Import DocumentManager and TransactionManager
+	clr.AddReference("RevitServices")
+	import RevitServices
+	from RevitServices.Persistence import DocumentManager
+	
+	
+	# Import RevitAPI
+	clr.AddReference("RevitAPI")
+	import Autodesk
+	from Autodesk.Revit.DB import *
+	
+	doc = DocumentManager.Instance.CurrentDBDocument
+	uiapp = DocumentManager.Instance.CurrentUIApplication
+	app = uiapp.Application
+	
+	from System.Collections.Generic import *
+	
+	
+	#The inputs to this node will be stored as a list in the IN variable.
+	dataEnteringNode = IN
+	collector = FilteredElementCollector(doc)
+	elements = collector.OfCategory(BuiltInCategory.OST_Views).ToElements()
+	
+	OUT = sheetInstances
+else:
+	OUT = "скрипт не выполнен"</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="096b4c75-14b4-4d28-b5e7-e2e2285317df" type="PythonNodeModels.PythonNode" nickname="Find file and import it!" x="83.1486046925114" y="1848.14972209209" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import sys
+sys.path.append('C:\Program Files (x86)\IronPython 2.7\Lib')
+import codecs
+
+try:
+	filePath = IN[0]
+	with codecs.open(filePath, 'rb', "utf-8") as inf:
+		lines = inf.readlines()
+	OUT = ''.join(lines)
+except:
+	OUT = "No file"</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="0bcb67da-5347-4917-a07f-fa12f1616099" type="PythonNodeModels.PythonNode" nickname="Shablon Python Shablon" x="-401.39729265057" y="876.889876928323" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="true" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script># -*- coding: utf-8 -*- 
+#-----------------------Импоорт библиотек----------------------
+import clr
+clr.AddReference('RevitAPI')
+import Autodesk
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes") 
+import Revit
+from Revit.Elements import *
+
+clr.ImportExtensions(Revit.Elements) #ToDSType не работает без
+clr.ImportExtensions(Revit.GeometryConversion) #ToXyz не работает без
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+#-----------------------ИМПОРТ БИБЛИОТЕК----------------------
+"""-"""
+#-----------------------ФУНКЦИИ----------------------
+
+def __x__(x):
+	x="x"
+	return x
+	
+#-----------------------ФУНКЦИИ----------------------
+"""-"""
+#-----------------------АПИ ПАРАМЕТРЫ----------------------
+
+doc = DocumentManager.Instance.CurrentDBDocument
+#link_doc = UnwrapElement(IN[1])
+#uiapp = DocumentManager.Instance.CurrentUIApplication
+#app = uiapp.Application
+#version = app.VersionNumber
+#options = Autodesk.Revit.DB.SpatialElementBoundaryOptions()
+calculator = SpatialElementGeometryCalculator(doc)
+
+#-----------------------АПИ ПАРАМЕТРЫ----------------------
+"""-"""
+#-----------------------РАБОЧИЕ ПАРАМЕТРЫ----------------------
+
+rooms = UnwrapElement(IN[0])
+
+#-----------------------РАБОЧИЕ ПАРАМЕТРЫ----------------------	
+"""-"""
+#-----------------------ТЕСТОВЫЕ ПАРАМЕТРЫ----------------------
+
+test = []
+
+#-----------------------ТЕСТОВЫЕ ПАРАМЕТРЫ----------------------
+"""-"""
+#-----------------------НАЧАЛО СКРИПТА----------------------
+
+x = 0
+if rooms == None:
+	rooms = [0,0]
+
+for room in rooms:
+	x=__x__(x)+__x__(x)
+#TransactionManager.Instance.EnsureInTransaction(doc)
+#TransactionManager.Instance.TransactionTaskDone()
+#-----------------------КОНЕЦ СКРИПТА----------------------
+
+OUT = x
+</Script>
+    </PythonNodeModels.PythonNode>
+    <CoreNodeModels.Input.BoolSelector guid="fbc92d03-6621-464e-990c-95ea42f1e284" type="CoreNodeModels.Input.BoolSelector" nickname="Переместить к основанию лестницы" x="23.1024447897028" y="2331.29921099939" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Boolean>True</System.Boolean>
+    </CoreNodeModels.Input.BoolSelector>
+    <Dynamo.Nodes.DSModelElementSelection guid="bbc4d02a-dea3-4274-8934-968614da4123" type="Dynamo.Nodes.DSModelElementSelection" nickname="Select Model Element" x="13.053334616039" y="2402.99074491989" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="2e0b8e54-e963-49db-ad80-380a8687f532" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="264.446257037112" y="2408.14715793508" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" CodeText="{x};" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="ad7dfbe7-c42e-4fb6-b0c0-efc8cfabf9f8" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1434.26761531824" y="7280.91139147114" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;___Лестницы_Торец лестницы  на стене&quot;;&#xA;&quot;___Лестницы_Отделка ступенек&quot;;&#xA;&quot;___Лестницы_Отделка ступенек(подступенок)&quot;;&#xA;&quot;___Лестницы_Покраска маршей и площадок&quot;;&#xA;&quot;Кирпич, обычный&quot;;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="ee40e77a-1f39-44ad-91d3-63600020ee80" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Material.ByName" x="2131.04858369295" y="7193.20880371244" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.Material.ByName@string">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Nodes.SelectFaces guid="f8eab902-7536-46d6-bc6e-3c4815459727" type="Dynamo.Nodes.SelectFaces" nickname="Select Faces" x="-806.365175975546" y="6976.33541709838" isVisible="false" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="true" isPinned="true">
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:26:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:39:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:48:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:61:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:86:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:99:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:124:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:137:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:162:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:175:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:200:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:213:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:238:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:251:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:276:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:289:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:314:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:327:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:352:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:365:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:390:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:403:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:428:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:441:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:55:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:58:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:60:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:62:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:63:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:68:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:76:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:80:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:136:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:139:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:141:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:143:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:144:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:149:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:157:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:161:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:176:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:179:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:181:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:183:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:184:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:189:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:197:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:201:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:216:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:219:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:221:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:223:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:224:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:229:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:237:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:241:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:256:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:259:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:261:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:263:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:264:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:269:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:277:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:281:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:296:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:299:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:301:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:303:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:304:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:309:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:317:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:321:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:336:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:339:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:341:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:343:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:344:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:349:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:357:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:361:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:376:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:379:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:381:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:383:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:384:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:389:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:397:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:401:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:416:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:419:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:421:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:423:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:424:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:429:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:437:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:441:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:456:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:459:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:461:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:463:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:464:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:469:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:477:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:481:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:496:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:499:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:501:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:503:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:504:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:509:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:517:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:521:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:536:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:539:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:541:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:543:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:549:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044a5d:10000000:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:557:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:26:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:39:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:48:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:61:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:86:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:99:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:124:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:137:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:162:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:175:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:200:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:213:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:238:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:251:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:276:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:289:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:314:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:327:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:352:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:365:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:390:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:403:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:428:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:441:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:538:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:721:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:55:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:58:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:60:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:62:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:63:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:68:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:76:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:80:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:136:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:139:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:141:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:143:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:144:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:149:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:157:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:161:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:176:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:179:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:181:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:183:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:184:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:189:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:197:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:201:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:216:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:219:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:221:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:223:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:224:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:229:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:237:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:241:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:256:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:259:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:261:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:263:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:264:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:269:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:277:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:281:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:296:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:299:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:301:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:303:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:304:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:309:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:317:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:321:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:336:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:339:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:341:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:343:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:344:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:349:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:357:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:361:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:376:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:379:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:381:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:383:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:384:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:389:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:397:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:401:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:416:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:419:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:421:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:423:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:424:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:429:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:437:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:441:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:456:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:459:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:461:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:463:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:464:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:469:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:477:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:481:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:496:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:499:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:501:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:503:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:504:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:509:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:517:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:521:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:536:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:539:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:541:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:543:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:549:SURFACE" />
+      <instance id="cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aea:281323:INSTANCE:cd5a67f2-5a59-4f67-8d80-d4c9460956e5-00044aeb:557:SURFACE" />
+    </Dynamo.Nodes.SelectFaces>
+    <Prorubim.DS.Common.ForceChildrensEval guid="0029713b-ed8e-406c-9974-bf55f627ac75" type="Prorubim.DS.Common.ForceChildrensEval" nickname="ForceChildrensEval" x="2122.86435661091" y="6745.82689709755" isVisible="false" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true">
+      <PortInfo index="0" default="False" />
+    </Prorubim.DS.Common.ForceChildrensEval>
+    <PythonNodeModels.PythonNode guid="b14367f9-89a9-48be-bfc3-933471296310" type="PythonNodeModels.PythonNode" nickname="Shablon Python Shablon" x="2671.25858862406" y="7151.8390281278" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="3">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <Script># -*- coding: utf-8 -*- 
+#-----------------------Импоорт библиотек----------------------
+import clr
+clr.AddReference('RevitAPI')
+import Autodesk
+from Autodesk.Revit.DB import *
+
+#clr.AddReference("RevitNodes") 
+#import Revit
+#from Revit.Elements import *
+
+#clr.ImportExtensions(Revit.Elements) #ToDSType не работает без
+#clr.ImportExtensions(Revit.GeometryConversion) #ToXyz не работает без
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+#clr.AddReference('ProtoGeometry')
+#from Autodesk.DesignScript.Geometry import *
+
+fails = 0
+
+def PaintFace0(surf, mat):
+    elemRef = surf.Tags.LookupTag("RevitFaceReference")
+    elem = doc.GetElement(elemRef)
+    face = elem.GetGeometryObjectFromReference(elemRef)
+    if not doc.IsPainted(elem.Id, face):
+		try:
+			return doc.Paint(elem.Id, face, mat.Id)
+		except:
+			fails =+ 1
+
+def PaintFace(surf, mat):
+	elemRef = surf.Tags.LookupTag("RevitFaceReference")
+	elem = doc.GetElement(elemRef)
+	face = elem.GetGeometryObjectFromReference(elemRef)
+	try:
+		return doc.Paint(elem.Id, face, mat.Id)
+	except:
+		fails =+ 1
+
+def RemovePaintFromFace(surf, mat):
+    elemRef = surf.Tags.LookupTag("RevitFaceReference")
+    elem = doc.GetElement(elemRef)
+    face = elem.GetGeometryObjectFromReference(elemRef)
+    if doc.IsPainted(elem.Id, face):
+		try:
+			return doc.RemovePaint(elem.Id, face)
+		except:
+			fails =+ 1
+
+doc = DocumentManager.Instance.CurrentDBDocument
+faces = UnwrapElement(IN[0])
+mat = UnwrapElement(IN[1])
+
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+if IN[2]:
+	new = [PaintFace(f,mat) for f in faces if f != None]
+	work = "Painted"
+else:
+	new = [RemovePaintFromFace(f,mat) for f in faces if f != None]
+	work = "UnPainted"
+TransactionManager.Instance.TransactionTaskDone()	
+
+OUT = 'Faces {0} = {1}, fails = {2}'.format(work,str(len(new)),str(fails))</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="15cc8095-7720-4edd-b69a-c333045b6dbc" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Flatten" x="-189.481879978845" y="6988.29415822476" isVisible="false" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="BuiltIn" function="Flatten@var[]..[]">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Prorubim.DS.Common.ForceChildrensEval guid="5a25200c-4abc-4214-aa1b-3981e80a34ae" type="Prorubim.DS.Common.ForceChildrensEval" nickname="ForceChildrensEval" x="1894.74491271213" y="7193.38831196046" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </Prorubim.DS.Common.ForceChildrensEval>
+    <CoreNodeModels.Input.BoolSelector guid="8f236f86-5a5f-47fc-b767-c1986f9dd710" type="CoreNodeModels.Input.BoolSelector" nickname="Покрасить /// Убрать краску" x="1656.0282114655" y="7500.19346164417" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Boolean>False</System.Boolean>
+    </CoreNodeModels.Input.BoolSelector>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="b7ca16ba-f2c9-4c51-a05a-2828848dc909" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Surface.Area" x="882.406979946639" y="7688.58673520218" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Surface.Area">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <CoreNodeModels.DynamoConvert guid="c8ea48e0-4555-4835-bbc2-896660085eca" type="CoreNodeModels.DynamoConvert" nickname="Convert Between Units" x="1139.89584172071" y="7690.13712341236" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" conversionMetric="Area" conversionFrom="SquareMillimeter" conversionTo="SquareMeter">
+      <PortInfo index="0" default="True" />
+    </CoreNodeModels.DynamoConvert>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="144a70a8-555a-4310-b9f9-5ac191dd534a" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Math.Sum" x="1663.87069669277" y="7691.87125836008" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="DSCoreNodes.dll" function="DSCore.Math.Sum@double[]">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="fea48e6f-b2f2-4858-b781-d7809243abdd" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Surface.PointAtParameter" x="282.353164995822" y="7435.40038199241" isVisible="false" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Surface.PointAtParameter@double,double">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="True" />
+      <PortInfo index="2" default="True" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="9f62c0e7-472f-4913-a843-d6263b37d456" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-34.4468928370816" y="7491.69798400822" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="0.5;" ShouldFocus="false" />
+    <PythonNodeModels.PythonNode guid="0c9c46bd-26a6-48d0-b5da-1e5e23219186" type="PythonNodeModels.PythonNode" nickname="Python Script" x="622.657500364626" y="6998.89863515021" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="2">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+surfs = IN[0]
+points = IN[1]
+dict = {}
+out = []
+
+for p,s in zip(points,surfs):
+	dict[p] = s
+
+for s in dict.values():
+	if len(s.PerimeterCurves()) &gt;2:
+		out.append(s)
+
+OUT = out</Script>
+    </PythonNodeModels.PythonNode>
+    <DSRevitNodesUI.Categories guid="7a6fbf85-67d2-4a7f-9755-d0f2fcb27267" type="DSRevitNodesUI.Categories" nickname="Categories" x="-2315.47110800709" y="5759.82347661021" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" index="187:Stairs" />
+    <DSRevitNodesUI.ElementsOfCategory guid="4020fdad-a650-457e-9948-76d420cbb5ea" type="DSRevitNodesUI.ElementsOfCategory" nickname="All Elements of Category" x="-2092.31320494774" y="5758.05730096466" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true">
+      <PortInfo index="0" default="False" />
+    </DSRevitNodesUI.ElementsOfCategory>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="7bdb81c7-b684-4c45-8a0a-fe2344a2ca91" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Object.Type" x="-1352.74235633293" y="5989.9820950208" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="DSCoreNodes.dll" function="DSCore.Object.Type@var">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="d731ce20-09c9-4b7e-8d52-768e9c253e09" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-1105.21267689545" y="5992.46500415959" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" CodeText="x == &quot;Revit.Elements.FamilyInstance&quot;;&#xA;y == &quot;Лестницы&quot;;" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="6c48804c-d265-48af-a9e7-dc91db681ba8" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.FilterByBoolMask" x="-565.507583970172" y="5744.84282705375" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="a9510e28-aabc-4a0a-b087-0727361cb4ff" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1368.97558185369" y="5112.91585585893" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" CodeText="x;" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <PythonNodeModels.PythonStringNode guid="29722bb3-62e2-4c3f-bdee-b81547288db5" type="PythonNodeModels.PythonStringNode" nickname="Python Script From String" x="1638.64288110273" y="5494.2200115272" isVisible="false" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="3">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+    </PythonNodeModels.PythonStringNode>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="08408bb0-6381-4637-9e4b-42a01f6f0b80" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Math.Sum" x="2914.95652837391" y="5754.30133016031" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="DSCoreNodes.dll" function="DSCore.Math.Sum@double[]">
+      <PortInfo index="0" default="False" useLevels="True" level="3" shouldKeepListStructure="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <CoreNodeModels.DynamoConvert guid="b145c5de-126c-4801-9523-137da042e7ce" type="CoreNodeModels.DynamoConvert" nickname="Convert Between Units" x="2396.8409112107" y="5754.67707897227" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" conversionMetric="Area" conversionFrom="SquareFoot" conversionTo="SquareMeter">
+      <PortInfo index="0" default="True" />
+    </CoreNodeModels.DynamoConvert>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="6bf1b86a-4714-4d38-9d92-119d5855560a" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2056.34289734505" y="5486.47091462642" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" CodeText="mats[0];&#xA;areas[1];" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <CoreNodeModels.Watch guid="8f98c8ef-38df-4e81-b40c-29abb5a3ade9" type="CoreNodeModels.Watch" nickname="Watch" x="2848.895994262" y="5213.93387020241" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.Watch>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="a756988a-7636-4847-8dda-572da4f180e6" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.SetParameterByName" x="3781.46801431551" y="5125.22989561146" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.Element.SetParameterByName@string,var">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="64ee729e-d80d-44bc-9a79-c4077bdba0fa" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1930.43591978691" y="5923.33326126745" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" CodeText="test[2];" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="a0596f93-37d6-4d34-8689-0a681cfd6d61" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.UniqueItems" x="1925.89351223196" y="6295.12803917467" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="DSCoreNodes.dll" function="DSCore.List.UniqueItems@var[]..[]">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <DSRevitNodesUI.ElementsOfCategory guid="72887e65-37b9-4ba8-8104-205758f94c8d" type="DSRevitNodesUI.ElementsOfCategory" nickname="All Elements of Category" x="-1775.47489846445" y="4387.02829819477" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true">
+      <PortInfo index="0" default="False" />
+    </DSRevitNodesUI.ElementsOfCategory>
+    <DSRevitNodesUI.Categories guid="465a53a4-764f-48cf-a767-84af8a78aad0" type="DSRevitNodesUI.Categories" nickname="Categories" x="-1998.6328015238" y="4388.79447384032" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" index="329:Materials" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="f7ef82ac-92d6-4e43-97ce-2b96d3cb2391" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Material.Name" x="-1487.80348271659" y="4387.9448702736" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Material.Name">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="8a6d42b7-d182-4ce3-8ecd-4a87166ee648" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="String.Contains" x="-1173.77593241792" y="4589.05451732093" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.String.Contains@string,string,bool">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="True" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="b64c9fd7-5cff-453c-862f-ba681f6d457f" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-1469.00378623447" y="4747.90867909304" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;___Лестницы_&quot;;&#xA;0;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="a5f9a278-4aa6-41d8-bbeb-36372898f8c6" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.FilterByBoolMask" x="-676.027946116746" y="4393.98841233614" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="e90821f4-5ccc-4e5e-b646-625248e695ee" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.AddItemToEnd" x="-234.939024241909" y="4287.21457101812" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="DSCoreNodes.dll" function="DSCore.List.AddItemToEnd@var[]..[],var[]..[]">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="221e36cf-03d9-4cb7-95b1-4a5c378df482" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-723.918296210323" y="4232.29172263955" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="x+&quot;без отделки&quot;;" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <PythonNodeModels.PythonNode guid="96c9788c-ccb3-4232-bdab-063eb4bd8949" type="PythonNodeModels.PythonNode" nickname="Null clear" x="158.34857982284" y="6985.02110402844" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>surfs = IN[0]
+
+OUT = [s for s in surfs if s != None]</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Nodes.DSModelElementsSelection guid="ac2f5823-1809-4e35-addc-ac6144799af8" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="-1791.8809192777" y="5574.78688612601" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="768061ad-0f45-4e2a-aa2d-a30521bc1a92" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.GetCategory" x="-1374.4998839923" y="6435.69264594161" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.Element.GetCategory">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <CoreNodeModels.FromObject guid="4a296f4b-4686-452d-b748-9de2b425aa15" type="CoreNodeModels.FromObject" nickname="String from Object" x="-1099.61148137936" y="6429.34638377636" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.FromObject>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="bba1a70f-95f1-4980-b092-378e0feda8d9" start_index="0" end="b4908b48-2703-4603-ac93-54cdb8b5dd54" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="2c97c427-31bc-436c-a0d7-27941021c8c4" start_index="0" end="ea1b4fca-de77-42ac-832e-19366dc5a968" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="dc2958df-3814-4809-8620-374334a07a57" start_index="0" end="ea1b4fca-de77-42ac-832e-19366dc5a968" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="dc2958df-3814-4809-8620-374334a07a57" start_index="1" end="ea1b4fca-de77-42ac-832e-19366dc5a968" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="2a947783-ddf2-46a9-8c3e-0acc61568b99" start_index="0" end="15bee929-1441-4307-b702-fc33091334de" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="820b7baa-535c-4682-9e9b-9e102f98f84f" start_index="0" end="071ccd33-fb70-46bc-bdb8-69fbe9af4bf4" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="071ccd33-fb70-46bc-bdb8-69fbe9af4bf4" start_index="0" end="096b4c75-14b4-4d28-b5e7-e2e2285317df" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="096b4c75-14b4-4d28-b5e7-e2e2285317df" start_index="0" end="9f9ed816-bf31-43ec-abfc-233f94033505" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="096b4c75-14b4-4d28-b5e7-e2e2285317df" start_index="0" end="29722bb3-62e2-4c3f-bdee-b81547288db5" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="fbc92d03-6621-464e-990c-95ea42f1e284" start_index="0" end="9f9ed816-bf31-43ec-abfc-233f94033505" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="bbc4d02a-dea3-4274-8934-968614da4123" start_index="0" end="2e0b8e54-e963-49db-ad80-380a8687f532" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="2e0b8e54-e963-49db-ad80-380a8687f532" start_index="0" end="9f9ed816-bf31-43ec-abfc-233f94033505" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="ad7dfbe7-c42e-4fb6-b0c0-efc8cfabf9f8" start_index="4" end="5a25200c-4abc-4214-aa1b-3981e80a34ae" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="ee40e77a-1f39-44ad-91d3-63600020ee80" start_index="0" end="b14367f9-89a9-48be-bfc3-933471296310" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f8eab902-7536-46d6-bc6e-3c4815459727" start_index="0" end="15cc8095-7720-4edd-b69a-c333045b6dbc" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0029713b-ed8e-406c-9974-bf55f627ac75" start_index="0" end="b14367f9-89a9-48be-bfc3-933471296310" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="15cc8095-7720-4edd-b69a-c333045b6dbc" start_index="0" end="96c9788c-ccb3-4232-bdab-063eb4bd8949" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5a25200c-4abc-4214-aa1b-3981e80a34ae" start_index="0" end="ee40e77a-1f39-44ad-91d3-63600020ee80" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="8f236f86-5a5f-47fc-b767-c1986f9dd710" start_index="0" end="b14367f9-89a9-48be-bfc3-933471296310" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b7ca16ba-f2c9-4c51-a05a-2828848dc909" start_index="0" end="c8ea48e0-4555-4835-bbc2-896660085eca" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c8ea48e0-4555-4835-bbc2-896660085eca" start_index="0" end="144a70a8-555a-4310-b9f9-5ac191dd534a" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="fea48e6f-b2f2-4858-b781-d7809243abdd" start_index="0" end="0c9c46bd-26a6-48d0-b5da-1e5e23219186" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9f62c0e7-472f-4913-a843-d6263b37d456" start_index="0" end="fea48e6f-b2f2-4858-b781-d7809243abdd" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9f62c0e7-472f-4913-a843-d6263b37d456" start_index="0" end="fea48e6f-b2f2-4858-b781-d7809243abdd" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0c9c46bd-26a6-48d0-b5da-1e5e23219186" start_index="0" end="b7ca16ba-f2c9-4c51-a05a-2828848dc909" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0c9c46bd-26a6-48d0-b5da-1e5e23219186" start_index="0" end="0029713b-ed8e-406c-9974-bf55f627ac75" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="7a6fbf85-67d2-4a7f-9755-d0f2fcb27267" start_index="0" end="4020fdad-a650-457e-9948-76d420cbb5ea" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4020fdad-a650-457e-9948-76d420cbb5ea" start_index="0" end="7bdb81c7-b684-4c45-8a0a-fe2344a2ca91" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4020fdad-a650-457e-9948-76d420cbb5ea" start_index="0" end="6c48804c-d265-48af-a9e7-dc91db681ba8" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4020fdad-a650-457e-9948-76d420cbb5ea" start_index="0" end="768061ad-0f45-4e2a-aa2d-a30521bc1a92" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="7bdb81c7-b684-4c45-8a0a-fe2344a2ca91" start_index="0" end="d731ce20-09c9-4b7e-8d52-768e9c253e09" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d731ce20-09c9-4b7e-8d52-768e9c253e09" start_index="1" end="6c48804c-d265-48af-a9e7-dc91db681ba8" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="6c48804c-d265-48af-a9e7-dc91db681ba8" start_index="0" end="a9510e28-aabc-4a0a-b087-0727361cb4ff" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a9510e28-aabc-4a0a-b087-0727361cb4ff" start_index="0" end="29722bb3-62e2-4c3f-bdee-b81547288db5" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a9510e28-aabc-4a0a-b087-0727361cb4ff" start_index="0" end="a756988a-7636-4847-8dda-572da4f180e6" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="29722bb3-62e2-4c3f-bdee-b81547288db5" start_index="0" end="6bf1b86a-4714-4d38-9d92-119d5855560a" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="29722bb3-62e2-4c3f-bdee-b81547288db5" start_index="0" end="6bf1b86a-4714-4d38-9d92-119d5855560a" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="29722bb3-62e2-4c3f-bdee-b81547288db5" start_index="0" end="64ee729e-d80d-44bc-9a79-c4077bdba0fa" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="08408bb0-6381-4637-9e4b-42a01f6f0b80" start_index="0" end="a756988a-7636-4847-8dda-572da4f180e6" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b145c5de-126c-4801-9523-137da042e7ce" start_index="0" end="08408bb0-6381-4637-9e4b-42a01f6f0b80" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="6bf1b86a-4714-4d38-9d92-119d5855560a" start_index="0" end="8f98c8ef-38df-4e81-b40c-29abb5a3ade9" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="6bf1b86a-4714-4d38-9d92-119d5855560a" start_index="1" end="b145c5de-126c-4801-9523-137da042e7ce" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="8f98c8ef-38df-4e81-b40c-29abb5a3ade9" start_index="0" end="a756988a-7636-4847-8dda-572da4f180e6" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="64ee729e-d80d-44bc-9a79-c4077bdba0fa" start_index="0" end="a0596f93-37d6-4d34-8689-0a681cfd6d61" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="72887e65-37b9-4ba8-8104-205758f94c8d" start_index="0" end="f7ef82ac-92d6-4e43-97ce-2b96d3cb2391" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="465a53a4-764f-48cf-a767-84af8a78aad0" start_index="0" end="72887e65-37b9-4ba8-8104-205758f94c8d" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f7ef82ac-92d6-4e43-97ce-2b96d3cb2391" start_index="0" end="8a6d42b7-d182-4ce3-8ecd-4a87166ee648" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f7ef82ac-92d6-4e43-97ce-2b96d3cb2391" start_index="0" end="a5f9a278-4aa6-41d8-bbeb-36372898f8c6" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="8a6d42b7-d182-4ce3-8ecd-4a87166ee648" start_index="0" end="a5f9a278-4aa6-41d8-bbeb-36372898f8c6" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b64c9fd7-5cff-453c-862f-ba681f6d457f" start_index="0" end="8a6d42b7-d182-4ce3-8ecd-4a87166ee648" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b64c9fd7-5cff-453c-862f-ba681f6d457f" start_index="0" end="221e36cf-03d9-4cb7-95b1-4a5c378df482" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a5f9a278-4aa6-41d8-bbeb-36372898f8c6" start_index="0" end="e90821f4-5ccc-4e5e-b646-625248e695ee" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e90821f4-5ccc-4e5e-b646-625248e695ee" start_index="0" end="29722bb3-62e2-4c3f-bdee-b81547288db5" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="221e36cf-03d9-4cb7-95b1-4a5c378df482" start_index="0" end="e90821f4-5ccc-4e5e-b646-625248e695ee" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="96c9788c-ccb3-4232-bdab-063eb4bd8949" start_index="0" end="fea48e6f-b2f2-4858-b781-d7809243abdd" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="96c9788c-ccb3-4232-bdab-063eb4bd8949" start_index="0" end="0c9c46bd-26a6-48d0-b5da-1e5e23219186" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="768061ad-0f45-4e2a-aa2d-a30521bc1a92" start_index="0" end="4a296f4b-4686-452d-b748-9de2b425aa15" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4a296f4b-4686-452d-b748-9de2b425aa15" start_index="0" end="d731ce20-09c9-4b7e-8d52-768e9c253e09" end_index="1" portType="0" />
+  </Connectors>
+  <Notes>
+    <Dynamo.Graph.Notes.NoteModel guid="d3b3207b-338a-43bd-b447-3d648ac0fa1c" text="GUIDELINES" x="-1075.82265540282" y="-1089.16240493965" />
+    <Dynamo.Graph.Notes.NoteModel guid="c886096d-44bf-4a3f-8651-c32fe0f1407d" text="ПЕРЕМЕННЫЕ ЗНАЧЕНИЯ" x="-517.848423251285" y="-838.76275825522" />
+    <Dynamo.Graph.Notes.NoteModel guid="d637e3bb-eaa8-4305-bd1f-0ee92f7883f7" text="ЭЛЕМЕНТЫ УПРАВЛЕНИЯ" x="-738.829039821905" y="-837.648344082547" />
+    <Dynamo.Graph.Notes.NoteModel guid="77f16b5f-e9a0-42a2-af8b-bc3b030ed9f5" text="ПОЛУЧАЕМ ДАННЫЕ ИЗ РЕВИТ и других источников" x="-1057.40185949379" y="-828.882906804914" />
+    <Dynamo.Graph.Notes.NoteModel guid="3980e84c-e909-4ec5-88ed-20e8e9f4454a" text="ПРОВЕРОЧНЫЕ НОДЫ" x="-259.674886977625" y="-837.052401572798" />
+    <Dynamo.Graph.Notes.NoteModel guid="e355d37c-b44a-4eff-b72a-b0c803c8b02a" text="ПРОВЕРОЧНЫЕ НОДЫ" x="-39.6060394563351" y="-838.166815745471" />
+    <Dynamo.Graph.Notes.NoteModel guid="f00735ff-f04b-4456-9f68-e4ab4a695e2e" text="ИСПОЛНИТЕЛЬНЫЕ НОДЫ " x="-269.958177195595" y="-535.698972614023" />
+    <Dynamo.Graph.Notes.NoteModel guid="11274077-6835-42ad-bcb7-62d458517541" text="КОНСОЛИДАЦИЯ И СЛОЖНЫЕ ОБРАБОТКИ" x="233.662843240912" y="-352.89950317669" />
+    <Dynamo.Graph.Notes.NoteModel guid="6112e108-06c0-4bd2-93b6-d057a2abbb72" text="КОНСОЛИДАЦИЯ И СЛОЖНЫЕ ОБРАБОТКИ" x="-282.894572530345" y="-353.64418998952" />
+    <Dynamo.Graph.Notes.NoteModel guid="ad0db5c6-0f3f-4caa-b7f4-713f7d25f211" text="ПЕРЕДАЁМ ИНФОРМАЦИЮ В РЕВИТ" x="224.84870577029" y="-827.435725948235" />
+    <Dynamo.Graph.Notes.NoteModel guid="7ae62b2e-a04e-466d-bc97-afbed648e79e" text="ИСПОЛНИТЕЛЬНЫЕ НОДЫ" x="346.680171348324" y="-536.813386786696" />
+    <Dynamo.Graph.Notes.NoteModel guid="06e43bf0-1a2a-4362-8b60-17043be95f29" text="ВСЁ ОСТАЛЬНОЕ" x="478.497751659097" y="69.6388391752207" />
+    <Dynamo.Graph.Notes.NoteModel guid="7ae7817b-dbe7-4028-a640-bea38347f94a" text="ЗАПАСНЫЕ" x="-271.672202907045" y="176.388809465606" />
+    <Dynamo.Graph.Notes.NoteModel guid="912c279c-57f7-4f23-9a4a-2d7fcb21b369" text="ПЕРЕДАЁМ ИНФОРМАЦИЮ ЕЩЁ КУДА-ТО" x="625.585271982176" y="-827.259721066531" />
+    <Dynamo.Graph.Notes.NoteModel guid="a2f22945-6dba-4a2e-be45-e5830a76b609" text="ДОПОЛНИТЕЛЬНЫЕ. Градации серово по важности, темнее - важнее" x="127.127069467851" y="185.271851811489" />
+    <Dynamo.Graph.Notes.NoteModel guid="cddbf719-e71b-473a-a7b1-dfe4afffc7b1" text="GUIDELINES" x="853.033407217079" y="-1090.70635539696" />
+    <Dynamo.Graph.Notes.NoteModel guid="9c90d2af-44b1-4626-a2d2-e03d0ee7ee2e" text="УСЛОЖНЕННЫЕ КОНСТРУКЦИИ" x="274.745092341741" y="-139.550023870323" />
+    <Dynamo.Graph.Notes.NoteModel guid="e9560184-15fd-4fc5-99c0-9365c074e5b9" text="УСЛОЖНЕНЫЕ КОНСТРУКЦИИ" x="-291.194830104365" y="-142.743730133886" />
+    <Dynamo.Graph.Notes.NoteModel guid="b5953027-efd3-416d-88df-204de7272b37" text="Python" x="-709.706100390385" y="-228.008686275626" />
+    <Dynamo.Graph.Notes.NoteModel guid="474b31e1-08b0-481b-8acf-7a8d6848f71c" text="ЭЛЕМЕНТЫ УПРАВЛЕНИЯ" x="-738.622394346235" y="-544.936283763988" />
+    <Dynamo.Graph.Notes.NoteModel guid="76e5fdb5-6042-47cf-bfbe-8ec142ecdfde" text="Python" x="-488.725483819765" y="-229.123100448299" />
+    <Dynamo.Graph.Notes.NoteModel guid="24e90278-ea24-4e3e-84ea-5fce9fc3bfab" text="ПЕРЕМЕННЫЕ ЗНАЧЕНИЯ" x="-517.641777775615" y="-546.050697936661" />
+    <Dynamo.Graph.Notes.NoteModel guid="72e887b1-86ba-4c10-9cc2-a3dbaecedeea" text="Py - files" x="-777.027760775135" y="7.30082257532968" />
+    <Dynamo.Graph.Notes.NoteModel guid="5e1b33ff-c98d-4fb8-9dda-30b809abd3ea" text="Py - files" x="-480.357327105305" y="5.14956159307894" />
+  </Notes>
+  <Annotations>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="3b0ace82-fdd7-4fcf-837a-438df9fc63e3" annotationText="ЭЛЕМЕНТЫ УПРАВЛЕНИЯ" left="-748.829039821905" top="-963.76275825522" width="401.98061657062" height="170.114414172673" fontSize="48" InitialTop="-838.76275825522" InitialHeight="141.114414172673" TextblockHeight="115" backgrouund="#FFFF7BAC">
+      <Models ModelGuid="c886096d-44bf-4a3f-8651-c32fe0f1407d" />
+      <Models ModelGuid="d637e3bb-eaa8-4305-bd1f-0ee92f7883f7" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="564a7a7e-8fe4-4174-95d9-ff530a173b70" annotationText="ПОЛУЧАЕМ ДАННЫЕ" left="-1067.40185949379" top="-924.882906804914" width="264" height="155" fontSize="36" InitialTop="-828.882906804914" InitialHeight="140" TextblockHeight="86" backgrouund="#FFB9F9E1">
+      <Models ModelGuid="77f16b5f-e9a0-42a2-af8b-bc3b030ed9f5" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="912466a2-1cc6-4132-8986-cddb97d66392" annotationText="ПРОВЕРОЧНЫЕ НОДЫ" left="-269.674886977625" top="-963.166815745471" width="384.06884752129" height="170.114414172673" fontSize="48" InitialTop="-838.166815745471" InitialHeight="141.114414172673" TextblockHeight="115" backgrouund="#FF71C6A8">
+      <Models ModelGuid="e355d37c-b44a-4eff-b72a-b0c803c8b02a" />
+      <Models ModelGuid="3980e84c-e909-4ec5-88ed-20e8e9f4454a" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="4f1063a3-ccd8-4d31-a954-ee9fa9ced877" annotationText="КЛЮЧЕВЫЕ МОМЕНТЫ РАБОТЫ 1" left="-292.894572530345" top="-421.64418998952" width="801.557415771257" height="112.74468681283" fontSize="48" InitialTop="-353.64418998952" InitialHeight="140.74468681283" TextblockHeight="58" backgrouund="#FFFFAA45">
+      <Models ModelGuid="11274077-6835-42ad-bcb7-62d458517541" />
+      <Models ModelGuid="6112e108-06c0-4bd2-93b6-d057a2abbb72" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="df7842da-c44f-4361-98ce-c2409fb8ed56" annotationText="ИСПОЛНИТЕЛЬНЫЕ НОДЫ (фильтрование, подбор, списки и т.д.)" left="-279.958177195595" top="-719.813386786696" width="806.638348543919" height="228.114414172673" fontSize="48" InitialTop="-536.813386786696" InitialHeight="141.114414172674" TextblockHeight="173" backgrouund="#FFC1D676">
+      <Models ModelGuid="7ae62b2e-a04e-466d-bc97-afbed648e79e" />
+      <Models ModelGuid="f00735ff-f04b-4456-9f68-e4ab4a695e2e" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="9c29ca1d-1145-4939-8923-76f16e7e38ca" annotationText="ПЕРЕДАЁМ ИНФОРМАЦИЮ" left="214.84870577029" top="-895.435725948235" width="675.736566211886" height="112.176004881704" fontSize="48" InitialTop="-827.435725948235" InitialHeight="140.176004881704" TextblockHeight="58" backgrouund="#FF48B9FF">
+      <Models ModelGuid="912c279c-57f7-4f23-9a4a-2d7fcb21b369" />
+      <Models ModelGuid="ad0db5c6-0f3f-4caa-b7f4-713f7d25f211" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="b006d9ea-965f-43c7-a118-63bac2b4d7f2" annotationText="ЗАПАСНЫЕ ВАРИАНТЫ, ДОПОЛНИТЕЛЬНЫЕ ОПЦИИ" left="-281.672202907045" top="51.388809465606" width="668.799272374896" height="192.883042345883" fontSize="48" InitialTop="176.388809465606" InitialHeight="148.883042345883" TextblockHeight="115" backgrouund="#FFD8D8D8">
+      <Models ModelGuid="a2f22945-6dba-4a2e-be45-e5830a76b609" />
+      <Models ModelGuid="7ae7817b-dbe7-4028-a640-bea38347f94a" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="d4a1768f-ddc7-45b3-9035-5663e7c90d0c" annotationText="ПРИМЕЧАНИЯ ПО ЦВЕТОВОЙ ГРУППИРОВКЕ" left="-1085.82265540282" top="-1215.70635539696" width="2032.8560626199" height="170.54395045731" fontSize="96" InitialTop="-1090.70635539696" InitialHeight="141.543950457314" TextblockHeight="115" backgrouund="#FFFFAA45">
+      <Models ModelGuid="d3b3207b-338a-43bd-b447-3d648ac0fa1c" />
+      <Models ModelGuid="cddbf719-e71b-473a-a7b1-dfe4afffc7b1" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="4384c039-97d4-4eaa-9467-4f15d68dc170" annotationText="КЛЮЧЕВЫЕ МОМЕНТЫ РАБОТЫ 2" left="-301.194830104365" top="-210.743730133886" width="783.939922446106" height="115.193706263563" fontSize="48" InitialTop="-142.743730133886" InitialHeight="143.193706263564" TextblockHeight="58" backgrouund="#FFFFC999">
+      <Models ModelGuid="9c90d2af-44b1-4626-a2d2-e03d0ee7ee2e" />
+      <Models ModelGuid="e9560184-15fd-4fc5-99c0-9365c074e5b9" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="11f549d1-44e1-467b-9756-97eb87d527d2" annotationText="Python ноды" left="-719.706100390385" top="-297.123100448299" width="297.98061657062" height="113.114414172673" fontSize="48" InitialTop="-229.123100448299" InitialHeight="141.114414172673" TextblockHeight="58" backgrouund="#FFBB87C6">
+      <Models ModelGuid="76e5fdb5-6042-47cf-bfbe-8ec142ecdfde" />
+      <Models ModelGuid="b5953027-efd3-416d-88df-204de7272b37" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="872bd26b-9e13-4bcd-96e9-412e3f8fb85e" annotationText="ЭЛЕМЕНТЫ УПРАВЛЕНИЯ&#xD;&#xA;2 УРОВЕНЬ" left="-748.622394346235" top="-729.050697936661" width="401.98061657062" height="228.114414172673" fontSize="48" InitialTop="-546.050697936661" InitialHeight="141.114414172673" TextblockHeight="173" backgrouund="#FFFFB8D8">
+      <Models ModelGuid="24e90278-ea24-4e3e-84ea-5fce9fc3bfab" />
+      <Models ModelGuid="474b31e1-08b0-481b-8acf-7a8d6848f71c" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="07684d8e-0e46-4cae-a434-3007fb6eb0d7" annotationText="Get Revit Selection:" left="-904.206500657535" top="452.283898208448" width="414.81992426725" height="123.83358534999" fontSize="14" InitialTop="482.283898208448" InitialHeight="123.83358534999" TextblockHeight="20" backgrouund="#FFB9F9E1">
+      <Models ModelGuid="bba1a70f-95f1-4980-b092-378e0feda8d9" />
+      <Models ModelGuid="b4908b48-2703-4603-ac93-54cdb8b5dd54" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="1ad8d67d-705a-4b12-8abb-849216ff7b43" annotationText="" left="-352.651637328545" top="462.086449053398" width="414" height="268.1878036749" fontSize="30" InitialTop="508.086449053398" InitialHeight="252.1878036749" TextblockHeight="36" backgrouund="#FFFF7BAC">
+      <Models ModelGuid="2c97c427-31bc-436c-a0d7-27941021c8c4" />
+      <Models ModelGuid="dc2958df-3814-4809-8620-374334a07a57" />
+      <Models ModelGuid="ea1b4fca-de77-42ac-832e-19366dc5a968" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="9e29eb89-b97b-4e2d-bcd0-c311f449e548" annotationText="" left="182.795369999803" top="462.086449053398" width="262" height="139" fontSize="30" InitialTop="508.086449053398" InitialHeight="123" TextblockHeight="36" backgrouund="#FF71C6A8">
+      <Models ModelGuid="aae0731d-9bad-436f-a981-9d99466bef92" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="da8550d7-011f-4cb1-9a64-22e5c84851c8" annotationText="" left="542.483206796655" top="689.322783048708" width="290" height="191" fontSize="30" InitialTop="735.322783048708" InitialHeight="175" TextblockHeight="36" backgrouund="#FF48B9FF">
+      <Models ModelGuid="432744e9-50a9-46f3-8a83-f5020c25a98d" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="06b45746-bfc2-439b-bd8a-3b820fc4d512" annotationText="" left="539.509763940316" top="435.862640591268" width="283" height="165" fontSize="30" InitialTop="481.862640591268" InitialHeight="149" TextblockHeight="36" backgrouund="#FFB9F9E1">
+      <Models ModelGuid="e0d73957-486f-4119-a8cf-a548f587f289" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="ac97ae24-cb58-4be0-8600-ffaafdf87e8c" annotationText="" left="183.566472750188" top="667.132542538017" width="217" height="139" fontSize="30" InitialTop="713.132542538017" InitialHeight="123" TextblockHeight="36" backgrouund="#FFC1D676">
+      <Models ModelGuid="265e9907-ec28-493a-9060-7588b1d64808" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="f1d774ea-af6e-4c12-ac03-4942156b428a" annotationText="Parameters name from language" left="-721.031430801975" top="647.872196854978" width="237" height="175" fontSize="30" InitialTop="729.872196854978" InitialHeight="123" TextblockHeight="72" backgrouund="#FFFFAA45">
+      <Models ModelGuid="17c4a554-18ec-424a-bcdd-26f4a049b563" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="2e9bf172-8e39-42ad-917b-d2c3dd51db81" annotationText="элементы внутри групп" left="-921.466915761855" top="609.914937475688" width="144" height="211" fontSize="30" InitialTop="727.914937475688" InitialHeight="123" TextblockHeight="108" backgrouund="#FFFFAA45">
+      <Models ModelGuid="02eb1bd7-dd69-4059-8528-266a7eef1268" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="1b167e4f-c90a-4d26-b209-450138d7c8ab" annotationText="Запуск питона из внешнего файла" left="-787.027760775135" top="-119.850438406921" width="381.67043366983" height="171.151260982251" fontSize="48" InitialTop="5.14956159307894" InitialHeight="142.151260982251" TextblockHeight="115" backgrouund="#FFD4B6DB">
+      <Models ModelGuid="5e1b33ff-c98d-4fb8-9dda-30b809abd3ea" />
+      <Models ModelGuid="72e887b1-86ba-4c10-9cc2-a3dbaecedeea" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="c0449818-6d24-415c-8a1e-bb92709cb0f3" annotationText="&lt;Нажмите здесь, чтобы изменить заголовок группы&gt;" left="-904.158454076865" top="222.166329264851" width="417.15790305935" height="182.743275315698" fontSize="30" InitialTop="304.166329264851" InitialHeight="130.743275315698" TextblockHeight="72" backgrouund="#FFB9F9E1">
+      <Models ModelGuid="2a947783-ddf2-46a9-8c3e-0acc61568b99" />
+      <Models ModelGuid="15bee929-1441-4307-b702-fc33091334de" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="aea204e0-b089-44c7-a87d-6d1dd3e13949" annotationText="" left="72.7651152388031" top="1595.71621791623" width="997.230087352875" height="519.08637974907" fontSize="30" InitialTop="1641.71621791623" InitialHeight="267.6457926004" TextblockHeight="36" backgrouund="#FFD4B6DB">
+      <Models ModelGuid="820b7baa-535c-4682-9e9b-9e102f98f84f" />
+      <Models ModelGuid="9f9ed816-bf31-43ec-abfc-233f94033505" />
+      <Models ModelGuid="071ccd33-fb70-46bc-bdb8-69fbe9af4bf4" />
+      <Models ModelGuid="096b4c75-14b4-4d28-b5e7-e2e2285317df" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="c7671a5f-6e3a-4537-bdf0-a0ebd9d9ce56" annotationText="" left="-388.556641059835" top="1024.75360264114" width="144" height="139" fontSize="30" InitialTop="1070.75360264114" InitialHeight="123" TextblockHeight="36" backgrouund="#FFBB87C6">
+      <Models ModelGuid="52b66a17-c020-4483-9070-ea174dbcbe3c" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="4dd386ac-d05f-4644-9553-8467885de23d" annotationText="" left="-171.561186853285" top="844.494655343217" width="144" height="139" fontSize="30" InitialTop="890.494655343217" InitialHeight="123" TextblockHeight="36" backgrouund="#FFBB87C6">
+      <Models ModelGuid="a2f8b6c1-ba4a-4784-8b16-14cc32a5466b" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="4a944ca3-c45f-4ec3-8613-eef79d5b1b4c" annotationText="" left="-209.611305434918" top="1022.29414671132" width="186" height="139" fontSize="30" InitialTop="1068.29414671132" InitialHeight="123" TextblockHeight="36" backgrouund="#FFBB87C6">
+      <Models ModelGuid="11246209-9800-498d-a8d7-320bd7880456" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="b8fdba4f-0dac-41d1-ba56-59611178c033" annotationText="" left="-411.39729265057" top="830.889876928323" width="183" height="139" fontSize="30" InitialTop="876.889876928323" InitialHeight="123" TextblockHeight="36" backgrouund="#FFBB87C6">
+      <Models ModelGuid="0bcb67da-5347-4917-a07f-fa12f1616099" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="8fb287d9-da6b-4c30-b0d2-7793f3fa1ea5" annotationText="" left="13.1024447897028" top="2285.29921099939" width="273" height="114" fontSize="30" InitialTop="2331.29921099939" InitialHeight="98" TextblockHeight="36" backgrouund="#FFFF7BAC">
+      <Models ModelGuid="fbc92d03-6621-464e-990c-95ea42f1e284" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="834d92b0-961d-468a-a1d9-f26a2a02c4c4" annotationText="&lt;Нажмите здесь, чтобы изменить заголовок группы&gt;" left="-2325.47110800709" top="5676.05730096466" width="417.15790305935" height="176.76617564555" fontSize="30" InitialTop="5758.05730096466" InitialHeight="130.743275315698" TextblockHeight="72" backgrouund="#FFB9F9E1">
+      <Models ModelGuid="7a6fbf85-67d2-4a7f-9755-d0f2fcb27267" />
+      <Models ModelGuid="4020fdad-a650-457e-9948-76d420cbb5ea" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="bfd4f352-7caa-4cd6-aea9-113ac2b37520" annotationText="" left="-816.365175975546" top="6699.82689709755" width="3660.62376459961" height="884.871086910671" fontSize="30" InitialTop="6745.82689709755" InitialHeight="231" TextblockHeight="36" backgrouund="#FF848484">
+      <Models ModelGuid="f8eab902-7536-46d6-bc6e-3c4815459727" />
+      <Models ModelGuid="15cc8095-7720-4edd-b69a-c333045b6dbc" />
+      <Models ModelGuid="0c9c46bd-26a6-48d0-b5da-1e5e23219186" />
+      <Models ModelGuid="fea48e6f-b2f2-4858-b781-d7809243abdd" />
+      <Models ModelGuid="9f62c0e7-472f-4913-a843-d6263b37d456" />
+      <Models ModelGuid="ad7dfbe7-c42e-4fb6-b0c0-efc8cfabf9f8" />
+      <Models ModelGuid="8f236f86-5a5f-47fc-b767-c1986f9dd710" />
+      <Models ModelGuid="5a25200c-4abc-4214-aa1b-3981e80a34ae" />
+      <Models ModelGuid="0029713b-ed8e-406c-9974-bf55f627ac75" />
+      <Models ModelGuid="ee40e77a-1f39-44ad-91d3-63600020ee80" />
+      <Models ModelGuid="b14367f9-89a9-48be-bfc3-933471296310" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="cdf7b711-e632-4157-9d2f-73d16a4f7ee6" annotationText="&lt;Нажмите здесь, чтобы изменить заголовок группы&gt;" left="872.406979946639" top="7642.58673520218" width="985.463716746131" height="166.55038821018" fontSize="30" InitialTop="7688.58673520218" InitialHeight="150.550388210187" TextblockHeight="36" backgrouund="#FF71C6A8">
+      <Models ModelGuid="b7ca16ba-f2c9-4c51-a05a-2828848dc909" />
+      <Models ModelGuid="c8ea48e0-4555-4835-bbc2-896660085eca" />
+      <Models ModelGuid="144a70a8-555a-4310-b9f9-5ac191dd534a" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="fea2d402-d1a9-4276-9a24-2db1ac488e81" annotationText="" left="1424.26761531824" top="7234.91139147114" width="437.76059614726" height="333.282070173031" fontSize="30" InitialTop="7280.91139147114" InitialHeight="151" TextblockHeight="36" backgrouund="#FFFF7BAC">
+      <Models ModelGuid="ad7dfbe7-c42e-4fb6-b0c0-efc8cfabf9f8" />
+      <Models ModelGuid="8f236f86-5a5f-47fc-b767-c1986f9dd710" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="47a509f6-24fe-4328-a116-3249e5af27b8" annotationText="" left="2661.25858862406" top="7105.8390281278" width="183" height="191" fontSize="30" InitialTop="7151.8390281278" InitialHeight="175" TextblockHeight="36" backgrouund="#FF48B9FF">
+      <Models ModelGuid="b14367f9-89a9-48be-bfc3-933471296310" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="908e0be0-8a44-4dff-b49c-2bf44537ad4d" annotationText="" left="612.657500364626" top="6952.89863515021" width="144" height="165" fontSize="30" InitialTop="6998.89863515021" InitialHeight="149" TextblockHeight="36" backgrouund="#FFFFAA45">
+      <Models ModelGuid="0c9c46bd-26a6-48d0-b5da-1e5e23219186" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="a3f098b1-8ab1-4ed1-9f46-7ded0eccc60f" annotationText="" left="-816.365175975546" top="6930.33541709838" width="299" height="247" fontSize="30" InitialTop="6976.33541709838" InitialHeight="171" TextblockHeight="36" backgrouund="#FFFF7BAC">
+      <Models ModelGuid="f8eab902-7536-46d6-bc6e-3c4815459727" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="e999c005-350d-425d-9188-e4d676794c96" annotationText="" left="3771.46801431551" top="5079.22989561146" width="290" height="191" fontSize="30" InitialTop="5125.22989561146" InitialHeight="175" TextblockHeight="36" backgrouund="#FF48B9FF">
+      <Models ModelGuid="a756988a-7636-4847-8dda-572da4f180e6" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="1b303813-216e-4a6a-9e2b-b720dbafc15b" annotationText="&lt;Нажмите здесь, чтобы изменить заголовок группы&gt;" left="-2008.6328015238" top="4186.29172263955" width="1972.69377728189" height="664.616956453489" fontSize="30" InitialTop="4232.29172263955" InitialHeight="648.616956453493" TextblockHeight="36" backgrouund="#FFB5B5B5">
+      <Models ModelGuid="72887e65-37b9-4ba8-8104-205758f94c8d" />
+      <Models ModelGuid="465a53a4-764f-48cf-a767-84af8a78aad0" />
+      <Models ModelGuid="f7ef82ac-92d6-4e43-97ce-2b96d3cb2391" />
+      <Models ModelGuid="8a6d42b7-d182-4ce3-8ecd-4a87166ee648" />
+      <Models ModelGuid="b64c9fd7-5cff-453c-862f-ba681f6d457f" />
+      <Models ModelGuid="a5f9a278-4aa6-41d8-bbeb-36372898f8c6" />
+      <Models ModelGuid="e90821f4-5ccc-4e5e-b646-625248e695ee" />
+      <Models ModelGuid="221e36cf-03d9-4cb7-95b1-4a5c378df482" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="Фоновый просмотр" eyeX="-128.318969726563" eyeY="63.2992362976074" eyeZ="-77.6801910400391" lookX="128.318969726563" lookY="-63.2992362976074" lookZ="77.6801910400391" upX="0.155895248055458" upY="0.983254909515381" upZ="0.0943739712238312" />
+  </Cameras>
+</Workspace>

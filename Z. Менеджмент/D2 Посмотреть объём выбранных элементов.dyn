@@ -1,0 +1,471 @@
+{
+  "Uuid": "38a3fb8f-fe21-49e5-a98a-8a24041ee02a",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "Посмотреть объём выбранных элементов",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [
+    {
+      "Id": "2029c00f3f004322b99976257bde49e8",
+      "Name": "Сумма выбранных элементов",
+      "Type": "unknown",
+      "InitialValue": "",
+      "Description": "Визуализация входного элемента узла."
+    }
+  ],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementsSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "722c8962-d55a-43ba-a472-82eca7e29058-01162837",
+        "4c13cdef-51bc-4a48-a1dd-8d41b1081060-011baa06",
+        "7d4d8bcd-a2bb-42be-a7c4-a9e8aeef0c1c-0126be82",
+        "7d4d8bcd-a2bb-42be-a7c4-a9e8aeef0c1c-0126bf4e",
+        "f01c29f0-1561-4515-9117-e947dd348bd6-0127e0a4",
+        "f01c29f0-1561-4515-9117-e947dd348bd6-0127e0d7",
+        "f01c29f0-1561-4515-9117-e947dd348bd6-0127e0ef"
+      ],
+      "Id": "a1383b8ecb224175bfa571cc7e450ffd",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "9da5ca6b35c44a5d9d592044687a93d1",
+          "Name": "Elements",
+          "Description": "Выбранные элементы.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Elements.Element.GetParameterValueByName@string",
+      "Id": "ef6b869f68ca47149dc2e487bfd3159a",
+      "Inputs": [
+        {
+          "Id": "886929b617ed428e8ad6f4260eb2b1ee",
+          "Name": "element",
+          "Description": "Revit.Elements.Element",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "3624d06997f14a299a7b8d28630be22e",
+          "Name": "parameterName",
+          "Description": "Имя параметра, значение которого требуется получить.\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f8e812d167a646399e33c0bf970a7258",
+          "Name": "var[]..[]",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Получение значения одного из параметров элемента.\n\nElement.GetParameterValueByName (parameterName: string): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"Объем\";",
+      "Id": "93512de99b9640a8a2dc495c2890dec2",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "aa0f897acb4349fd8767c34a9808d9b3",
+          "Name": "",
+          "Description": "Значение выражения в строке 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.Math.Sum@double[]",
+      "Id": "2805652a6e854bbd94bca2b92961be67",
+      "Inputs": [
+        {
+          "Id": "849255d09a3044558c6712e2dc8af57a",
+          "Name": "values",
+          "Description": "Числа для сложения\n\ndouble[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "8665aa3772a844768619faf2fa7793c3",
+          "Name": "sum",
+          "Description": "Сумма значений",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Найти сумму последовательности чисел\n\nMath.Sum (values: double[]): double"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.String.Length@string",
+      "Id": "5cfba50fcb8343899e683a895fedc76b",
+      "Inputs": [
+        {
+          "Id": "3d7d29ad1537460390d25f8cbacb04ef",
+          "Name": "str",
+          "Description": "Строка, длину которой требуется найти.\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f62818a113784ebc94a309292932cad4",
+          "Name": "length",
+          "Description": "Количество символов в строке.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Получение числа символов, содержащихся в данной строке.\n\nString.Length (str: string): int"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.FromObject, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "bdb0be207f3044c1977a55f36f226dfe",
+      "Inputs": [
+        {
+          "Id": "638cbdd90373483a977ab1bea58252a9",
+          "Name": "obj",
+          "Description": "Объект индексации",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c51d1428174a492e9160e57d14e9ac5e",
+          "Name": "str",
+          "Description": "Результат математических вычислений",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Преобразование объекта в строчное представление."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "x>0;",
+      "Id": "2a378fb90b1b4bf2b17a08661206c04c",
+      "Inputs": [
+        {
+          "Id": "4adcc41f8de14ec7b7503ec9a261f1ef",
+          "Name": "x",
+          "Description": "x",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "10e6343418e241e68d7edec69c86614a",
+          "Name": "",
+          "Description": "Значение выражения в строке 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.FilterByBoolMask@var[]..[],var[]..[]",
+      "Id": "2d1bb65cd8aa4a2aba6477c572100778",
+      "Inputs": [
+        {
+          "Id": "32a6910e05db4273acfa4381d8acc02a",
+          "Name": "list",
+          "Description": "Список, который требуется отфильтровать.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ea0b5556aa884d0a90f02fe8ebda9687",
+          "Name": "mask",
+          "Description": "Список логических операций, представляющих маску.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "2d334662d33f4cc78cb505d112c9cda0",
+          "Name": "in",
+          "Description": "Элементы, индекс маски которых имеет значение «истина».",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "c6b03f99b4f5429d8ecd9c1e9bccc7e8",
+          "Name": "out",
+          "Description": "Элементы, индекс маски которых имеет значение «ложь».",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Фильтрация последовательности путем поиска соответствующих индексов в отдельном списке логических операций.\n\nList.FilterByBoolMask (list: var[]..[], mask: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "2029c00f3f004322b99976257bde49e8",
+      "Inputs": [
+        {
+          "Id": "8655c5dca96d41b7b8f59468cd47b089",
+          "Name": "",
+          "Description": "Узел для оценки.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f2308188edaf4256bd5033b4c6431381",
+          "Name": "",
+          "Description": "Просмотр содержимого.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Визуализация входного элемента узла."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "9da5ca6b35c44a5d9d592044687a93d1",
+      "End": "886929b617ed428e8ad6f4260eb2b1ee",
+      "Id": "b154bd30aa2149feb666877272310af6"
+    },
+    {
+      "Start": "f8e812d167a646399e33c0bf970a7258",
+      "End": "638cbdd90373483a977ab1bea58252a9",
+      "Id": "ee207626c8a24543a1003915930da83d"
+    },
+    {
+      "Start": "f8e812d167a646399e33c0bf970a7258",
+      "End": "32a6910e05db4273acfa4381d8acc02a",
+      "Id": "dff963b8f50f4d0b9c38c1ad74fca5e9"
+    },
+    {
+      "Start": "aa0f897acb4349fd8767c34a9808d9b3",
+      "End": "3624d06997f14a299a7b8d28630be22e",
+      "Id": "9f0e17ad9be4414ab5391e151c8a71d8"
+    },
+    {
+      "Start": "8665aa3772a844768619faf2fa7793c3",
+      "End": "8655c5dca96d41b7b8f59468cd47b089",
+      "Id": "2c2fdf8799f7498db56b7bc20f9d256a"
+    },
+    {
+      "Start": "f62818a113784ebc94a309292932cad4",
+      "End": "4adcc41f8de14ec7b7503ec9a261f1ef",
+      "Id": "62857c9fc4d44ceb834cb19323084c10"
+    },
+    {
+      "Start": "c51d1428174a492e9160e57d14e9ac5e",
+      "End": "3d7d29ad1537460390d25f8cbacb04ef",
+      "Id": "9c275339426442c898b3509071cfb1a4"
+    },
+    {
+      "Start": "10e6343418e241e68d7edec69c86614a",
+      "End": "ea0b5556aa884d0a90f02fe8ebda9687",
+      "Id": "0051c2f052994ffdb1379f730809c185"
+    },
+    {
+      "Start": "2d334662d33f4cc78cb505d112c9cda0",
+      "End": "849255d09a3044558c6712e2dc8af57a",
+      "Id": "49e36510f9784e40a68300407ce510e9"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Фоновый просмотр",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "a1383b8ecb224175bfa571cc7e450ffd",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Name": "Выбрать элементы",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 739.0079762902642,
+        "Y": 1380.7668995388879
+      },
+      {
+        "Id": "ef6b869f68ca47149dc2e487bfd3159a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Element.GetParameterValueByName",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1328.2809693065105,
+        "Y": 1383.6178913319425
+      },
+      {
+        "Id": "93512de99b9640a8a2dc495c2890dec2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Code Block",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1119.955323021074,
+        "Y": 1484.1183117282897
+      },
+      {
+        "Id": "2805652a6e854bbd94bca2b92961be67",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Math.Sum",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 2526.0377006426438,
+        "Y": 1377.4209800938677
+      },
+      {
+        "Id": "5cfba50fcb8343899e683a895fedc76b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "String.Length",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1893.3537416517547,
+        "Y": 1746.392035392576
+      },
+      {
+        "Id": "bdb0be207f3044c1977a55f36f226dfe",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "String from Object",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1703.7033145557687,
+        "Y": 1746.3920353925764
+      },
+      {
+        "Id": "2a378fb90b1b4bf2b17a08661206c04c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Code Block",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 2065.436252549187,
+        "Y": 1578.0062504395148
+      },
+      {
+        "Id": "2d1bb65cd8aa4a2aba6477c572100778",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "List.FilterByBoolMask",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 2268.5328058900336,
+        "Y": 1377.3546301307001
+      },
+      {
+        "Id": "2029c00f3f004322b99976257bde49e8",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": true,
+        "Name": "Сумма выбранных элементов",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 2826.0918953255909,
+        "Y": 1378.7753825687562
+      }
+    ],
+    "Annotations": [],
+    "X": -59.062390925093965,
+    "Y": -160.22586025800439,
+    "Zoom": 0.27182242429359893
+  }
+}

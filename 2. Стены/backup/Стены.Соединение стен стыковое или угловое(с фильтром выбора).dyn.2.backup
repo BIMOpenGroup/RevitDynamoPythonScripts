@@ -1,0 +1,86 @@
+<Workspace Version="1.3.4.6666" X="-277.348278751647" Y="201.494871055695" zoom="0.848014556389337" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="429f7987-16ee-4398-9260-8e77d6e9e238" type="PythonNodeModels.PythonNode" nickname="PyS Get Revit Selection" x="831.04590328855" y="74.235450480527" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('RevitServices')
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from Autodesk.Revit.ApplicationServices import Application
+clr.AddReference('RevitAPIUI')
+from Autodesk.Revit.UI.Selection import ISelectionFilter, ObjectType
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+
+class CustomISelectionFilterList(ISelectionFilter):
+	def __init__(self):
+		pass
+	def AllowElement(self, e):
+		if e.Category.Id.IntegerValue == BuiltInCategory.OST_Walls.GetHashCode():
+			return True
+		else:
+			return False
+	def AllowReference(self, ref):
+		return False
+
+#reset = IN[0]
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+
+
+refs = uidoc.Selection.PickObjects(ObjectType.Element,CustomISelectionFilterList(), "Выбрать элементы.")
+elems = [doc.GetElement(re.ElementId) for re in refs ]
+rezult = []
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+if IN[0]:
+	for e in elems:
+		wallc = e.Location
+		TransactionManager.Instance.EnsureInTransaction(doc)
+		join1 = wallc.set_JoinType(0,JoinType.Miter)
+		join2 = wallc.set_JoinType(1,JoinType.Miter)
+		TransactionManager.Instance.TransactionTaskDone()
+		rezult.append(wallc)
+else:
+	for e in elems:
+		wallc = e.Location
+		TransactionManager.Instance.EnsureInTransaction(doc)
+		join1 = wallc.set_JoinType(0,JoinType.Abut)
+		join2 = wallc.set_JoinType(1,JoinType.Abut)
+		TransactionManager.Instance.TransactionTaskDone()
+		rezult.append(wallc)
+TransactionManager.Instance.TransactionTaskDone()	
+"""
+ids = uidoc.Selection.GetElementIds()
+
+idd = [str(i) for i in ids]
+
+if isinstance(idd, list) == True:
+	elems = [doc.GetElement(ElementId(int(i))) for i in idd]
+else:
+	elems = doc.GetElement(ElementId(int(idd)))
+"""
+OUT = elems
+</Script>
+    </PythonNodeModels.PythonNode>
+    <CoreNodeModels.Input.BoolSelector guid="54187d9f-2a94-4506-9b87-1288144e2b00" type="CoreNodeModels.Input.BoolSelector" nickname="Treu - Miter(Углом), False - Abut(Стыковое)" x="466.196975643156" y="78.8269521937192" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Boolean>True</System.Boolean>
+    </CoreNodeModels.Input.BoolSelector>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="54187d9f-2a94-4506-9b87-1288144e2b00" start_index="0" end="429f7987-16ee-4398-9260-8e77d6e9e238" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Фоновый просмотр" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

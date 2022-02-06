@@ -1,0 +1,161 @@
+<Workspace Version="1.3.4.6666" X="72.7930100332258" Y="-296.556679642422" zoom="0.597774878946928" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <CoreNodeModels.Input.BoolSelector guid="0287cdc2-7730-4812-a5d3-b81fc6b3fcfe" type="CoreNodeModels.Input.BoolSelector" nickname="Treu - AllowJoin, False - DisallowJoin" x="9.94876460130536" y="614.586676053598" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Boolean>True</System.Boolean>
+    </CoreNodeModels.Input.BoolSelector>
+    <PythonNodeModels.PythonNode guid="91a3a070-48b3-4848-ace7-26d338819ceb" type="PythonNodeModels.PythonNode" nickname="PyS Get Revit Selection" x="664.153540500494" y="610.396917402857" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('RevitServices')
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from Autodesk.Revit.ApplicationServices import Application
+clr.AddReference('RevitAPIUI')
+from Autodesk.Revit.UI.Selection import ISelectionFilter, ObjectType
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+
+class CustomISelectionFilterList(ISelectionFilter):
+	def __init__(self):
+		pass
+	def AllowElement(self, e):
+		if e.Category.Id.IntegerValue == BuiltInCategory.OST_Walls.GetHashCode():
+			return True
+		else:
+			return False
+	def AllowReference(self, ref):
+		return False
+
+#reset = IN[0]
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+
+
+refs = uidoc.Selection.PickObjects(ObjectType.Element,CustomISelectionFilterList(), "Выбрать элементы.")
+elems = [doc.GetElement(re.ElementId) for re in refs ]
+	
+TransactionManager.Instance.EnsureInTransaction(doc)
+if IN[0]:
+	for e in elems:
+		WallUtils.AllowWallJoinAtEnd(e, 0)
+		WallUtils.AllowWallJoinAtEnd(e, 1)
+else:
+	for e in elems:
+		WallUtils.DisallowWallJoinAtEnd(e, 0)
+		WallUtils.DisallowWallJoinAtEnd(e, 1)
+TransactionManager.Instance.TransactionTaskDone()	
+"""
+ids = uidoc.Selection.GetElementIds()
+
+idd = [str(i) for i in ids]
+
+if isinstance(idd, list) == True:
+	elems = [doc.GetElement(ElementId(int(i))) for i in idd]
+else:
+	elems = doc.GetElement(ElementId(int(idd)))
+"""
+OUT = elems
+</Script>
+    </PythonNodeModels.PythonNode>
+    <Prorubim.DS.Common.ForceChildrensEval guid="98a0039a-61f9-4d4d-8a72-4abf4e9aedfd" type="Prorubim.DS.Common.ForceChildrensEval" nickname="ForceChildrensEval" x="360.654310179681" y="614.547677424984" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </Prorubim.DS.Common.ForceChildrensEval>
+    <PythonNodeModels.PythonNode guid="26dfa8af-5a3a-496f-8598-f18cd42d2805" type="PythonNodeModels.PythonNode" nickname="PyS Get Revit Selection" x="948.036785221765" y="822.767137072929" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="2">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <Script>import clr
+clr.AddReference('RevitServices')
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from Autodesk.Revit.ApplicationServices import Application
+clr.AddReference('RevitAPIUI')
+from Autodesk.Revit.UI.Selection import ISelectionFilter, ObjectType
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+
+class CustomISelectionFilterList(ISelectionFilter):
+	def __init__(self):
+		pass
+	def AllowElement(self, e):
+		if e.Category.Id.IntegerValue == BuiltInCategory.OST_Walls.GetHashCode():
+			return True
+		else:
+			return False
+	def AllowReference(self, ref):
+		return False
+
+#reset = IN[0]
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+
+
+#refs = uidoc.Selection.PickObjects(ObjectType.Element,CustomISelectionFilterList(), "Выбрать элементы.")
+#elems = [doc.GetElement(re.ElementId) for re in refs ]
+elems = UnwrapElement(IN[1])
+rezult = []
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+if IN[0]:
+	for e in elems:
+		wallc = e.Location
+		TransactionManager.Instance.EnsureInTransaction(doc)
+		join1 = wallc.set_JoinType(0,JoinType.Miter)
+		join2 = wallc.set_JoinType(1,JoinType.Miter)
+		TransactionManager.Instance.TransactionTaskDone()
+		rezult.append(wallc)
+else:
+	for e in elems:
+		wallc = e.Location
+		TransactionManager.Instance.EnsureInTransaction(doc)
+		join1 = wallc.set_JoinType(0,JoinType.Abut)
+		join2 = wallc.set_JoinType(1,JoinType.Abut)
+		TransactionManager.Instance.TransactionTaskDone()
+		rezult.append(wallc)
+TransactionManager.Instance.TransactionTaskDone()	
+"""
+ids = uidoc.Selection.GetElementIds()
+
+idd = [str(i) for i in ids]
+
+if isinstance(idd, list) == True:
+	elems = [doc.GetElement(ElementId(int(i))) for i in idd]
+else:
+	elems = doc.GetElement(ElementId(int(idd)))
+"""
+OUT = elems
+</Script>
+    </PythonNodeModels.PythonNode>
+    <CoreNodeModels.Input.BoolSelector guid="9dd83552-c9e0-4410-89c1-e2b16fefdc79" type="CoreNodeModels.Input.BoolSelector" nickname="Treu - Miter(Углом), False - Abut(Стыковое)" x="-9.72291514576574" y="820.49135139314" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Boolean>True</System.Boolean>
+    </CoreNodeModels.Input.BoolSelector>
+    <Prorubim.DS.Common.ForceChildrensEval guid="69fb1cf9-93f7-4939-8e8a-b8760447c4f0" type="Prorubim.DS.Common.ForceChildrensEval" nickname="ForceChildrensEval" x="361.40169287054" y="819.334634043799" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </Prorubim.DS.Common.ForceChildrensEval>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="0287cdc2-7730-4812-a5d3-b81fc6b3fcfe" start_index="0" end="98a0039a-61f9-4d4d-8a72-4abf4e9aedfd" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="91a3a070-48b3-4848-ace7-26d338819ceb" start_index="0" end="26dfa8af-5a3a-496f-8598-f18cd42d2805" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="98a0039a-61f9-4d4d-8a72-4abf4e9aedfd" start_index="0" end="91a3a070-48b3-4848-ace7-26d338819ceb" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9dd83552-c9e0-4410-89c1-e2b16fefdc79" start_index="0" end="69fb1cf9-93f7-4939-8e8a-b8760447c4f0" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="69fb1cf9-93f7-4939-8e8a-b8760447c4f0" start_index="0" end="26dfa8af-5a3a-496f-8598-f18cd42d2805" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Фоновый просмотр" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

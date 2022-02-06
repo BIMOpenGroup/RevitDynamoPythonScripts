@@ -1,0 +1,62 @@
+<Workspace Version="1.3.1.1736" X="-372.219824186253" Y="-345.237310062173" zoom="0.726212427826032" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="False">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="f8492ae9-f34b-4839-a254-763d5bb9565f" type="PythonNodeModels.PythonNode" nickname="Удалить не использованное" x="1236.68225481815" y="736.878105648732" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="2">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <Script>if IN[0] == True:
+	import clr
+	clr.AddReference('RevitAPI')
+	from Autodesk.Revit.DB import*
+	clr.AddReference('RevitServices')
+	from RevitServices.Persistence import DocumentManager
+	from RevitServices.Transactions import TransactionManager
+	
+	doc = DocumentManager.Instance.CurrentDBDocument
+	
+	views = FilteredElementCollector(doc).OfClass(View)
+	appliedtemplates = [v.ViewTemplateId for v in views]
+	templates = [v.Id for v in views if v.IsTemplate == True]
+	
+	toDelete = []
+	for t in templates:
+		if t not in appliedtemplates:
+			toDelete.append(t)
+	
+	TransactionManager.Instance.EnsureInTransaction(doc)
+	for e in toDelete:
+		doc.Delete(e)
+	TransactionManager.Instance.TransactionTaskDone()
+	
+	OUT = '%d Template(s) deleted' %(len(toDelete))
+else:
+	pass</Script>
+    </PythonNodeModels.PythonNode>
+    <CoreNodeModels.Watch guid="049b17c3-b513-4717-b202-5f8923f30e02" type="CoreNodeModels.Watch" nickname="Количество удалённых шаблонов" x="1504.90779359365" y="734.974810264362" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.Watch>
+    <CoreNodeModels.Input.BoolSelector guid="293dafd3-d58c-44dc-a01f-2a400ca9c518" type="CoreNodeModels.Input.BoolSelector" nickname="Точно хочешь удалить ВСЕ неиспользуемые шаблоны?" x="670.023841941405" y="739.690207527687" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Boolean>False</System.Boolean>
+    </CoreNodeModels.Input.BoolSelector>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="f8492ae9-f34b-4839-a254-763d5bb9565f" start_index="0" end="049b17c3-b513-4717-b202-5f8923f30e02" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="293dafd3-d58c-44dc-a01f-2a400ca9c518" start_index="0" end="f8492ae9-f34b-4839-a254-763d5bb9565f" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="006019bc-69c7-4c9c-8a4a-3c4a3c3546a1" annotationText="" left="1226.68225481815" top="690.878105648732" width="217" height="165" fontSize="30" InitialTop="736.878105648732" InitialHeight="313.411829926409" TextblockHeight="36" backgrouund="#FFA4E1FF">
+      <Models ModelGuid="f8492ae9-f34b-4839-a254-763d5bb9565f" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="1dae5020-ef24-4d62-8ffc-e85f212e81c8" annotationText="" left="1494.90779359365" top="688.974810264362" width="254" height="140" fontSize="30" InitialTop="734.974810264362" InitialHeight="124" TextblockHeight="36" backgrouund="#FF71C6A8">
+      <Models ModelGuid="049b17c3-b513-4717-b202-5f8923f30e02" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="bcc732db-2131-4615-9206-26b2bfbc0245" annotationText="" left="660.023841941405" top="693.690207527687" width="396" height="114" fontSize="30" InitialTop="739.690207527687" InitialHeight="841.772411894368" TextblockHeight="36" backgrouund="#FFFFB8D8">
+      <Models ModelGuid="293dafd3-d58c-44dc-a01f-2a400ca9c518" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="Фоновый просмотр" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,100 @@
+<Workspace Version="1.3.4.6666" X="124.968059021012" Y="293.031849087808" zoom="0.905437512159064" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="False">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="121c613f-912e-4e76-9ab8-2e31ce60ecdc" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.GetParameterValueByName" x="771.76" y="246.64" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.Element.GetParameterValueByName@string">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="ecad5b81-0b23-4ea0-82af-a7251c04d6a9" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="454" y="468" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;Объем&quot;;" ShouldFocus="false" />
+    <CoreNodeModels.FromObject guid="b935f648-4243-408e-aa20-4944ac4fb553" type="CoreNodeModels.FromObject" nickname="String from Object" x="1123.71677877819" y="465.849401970389" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.FromObject>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="71203ea4-2a25-4b7d-b403-f72eeaace2e7" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="String.Length" x="1283.58154342195" y="465.849401970389" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.String.Length@string">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="9d97374a-8100-48ad-838a-62d0ead64239" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1495.20956925827" y="471.835857015193" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="x&gt;0;" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="fc3a18af-2106-49d8-a9cb-c295f28069dc" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.FilterByBoolMask" x="1653.48760467796" y="253.474313173565" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="f9608e97-6a6e-47de-a1cb-20a32845effd" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Math.Sum" x="1919.26302307776" y="255.241375658467" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="DSCoreNodes.dll" function="DSCore.Math.Sum@double[]">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <CoreNodeModels.Watch guid="1333a87e-3ca7-4697-9694-16d96a446779" type="CoreNodeModels.Watch" nickname="Объём выбранных элементов" x="2203.0250454549" y="255.956083318907" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.Watch>
+    <PythonNodeModels.PythonNode guid="d6502aaa-0e1a-46f9-8d37-294b305f693a" type="PythonNodeModels.PythonNode" nickname="Выбрать элементы модели (методом API)" x="301.480841380738" y="-91.1152325768561" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script># -*- coding: utf-8 -*-
+# region Подключение библиотек
+import sys
+sys.path.append("C:\\Program Files (x86)\\IronPython 2.7\\Lib")
+
+import clr
+clr.AddReference("RevitAPIUI")
+from Autodesk.Revit.UI import Selection
+from Autodesk.Revit.UI.Selection import ISelectionFilter
+
+clr.AddReference("RevitServices")
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *  # Options, PartUtils, LinkElementId, 
+
+
+# region Общие классы функции и параметры
+class CustomIDuplicateTypeNamesHandler(IDuplicateTypeNamesHandler):
+	def OnDuplicateTypeNamesFound(self, duplicate_type_names_handler_args):
+		return DuplicateTypeAction.UseDestinationTypes
+
+
+class TimeCounter:
+	def __init__(self):
+		self.time = System.Diagnostics.Stopwatch.StartNew()
+		self.time.Start()
+	def stop(self):
+		self.time.Stop()
+		return self.time.Elapsed
+
+
+class CustomISelectionFilterList(ISelectionFilter):
+	def AllowElement(self, e):
+			return True
+	def AllowReference(self, ref, point):
+			return True
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+			
+sel1 = uidoc.Selection
+elements_referenses = sel1.PickObjects(Selection.ObjectType.Element, CustomISelectionFilterList(), "Select elements and press Finish.")
+
+OUT = [doc.GetElement(ref.ElementId) for ref in elements_referenses]</Script>
+    </PythonNodeModels.PythonNode>
+    <CoreNodeModels.Input.BoolSelector guid="a53e813f-2b20-47a0-bd7b-475736008c03" type="CoreNodeModels.Input.BoolSelector" nickname="Перезапуск" x="58.1919054536032" y="-92.0432503347839" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <System.Boolean>True</System.Boolean>
+    </CoreNodeModels.Input.BoolSelector>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="121c613f-912e-4e76-9ab8-2e31ce60ecdc" start_index="0" end="b935f648-4243-408e-aa20-4944ac4fb553" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="121c613f-912e-4e76-9ab8-2e31ce60ecdc" start_index="0" end="fc3a18af-2106-49d8-a9cb-c295f28069dc" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="ecad5b81-0b23-4ea0-82af-a7251c04d6a9" start_index="0" end="121c613f-912e-4e76-9ab8-2e31ce60ecdc" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b935f648-4243-408e-aa20-4944ac4fb553" start_index="0" end="71203ea4-2a25-4b7d-b403-f72eeaace2e7" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="71203ea4-2a25-4b7d-b403-f72eeaace2e7" start_index="0" end="9d97374a-8100-48ad-838a-62d0ead64239" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9d97374a-8100-48ad-838a-62d0ead64239" start_index="0" end="fc3a18af-2106-49d8-a9cb-c295f28069dc" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="fc3a18af-2106-49d8-a9cb-c295f28069dc" start_index="0" end="f9608e97-6a6e-47de-a1cb-20a32845effd" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f9608e97-6a6e-47de-a1cb-20a32845effd" start_index="0" end="1333a87e-3ca7-4697-9694-16d96a446779" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d6502aaa-0e1a-46f9-8d37-294b305f693a" start_index="0" end="121c613f-912e-4e76-9ab8-2e31ce60ecdc" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a53e813f-2b20-47a0-bd7b-475736008c03" start_index="0" end="d6502aaa-0e1a-46f9-8d37-294b305f693a" end_index="0" portType="0" />
+  </Connectors>
+  <Notes>
+    <Dynamo.Graph.Notes.NoteModel guid="aa80c5cb-6493-4943-9d5e-47b6b1070cd3" text="Выбрать элементы модели (методом API)" x="314.191870709269" y="-168.271618798645" />
+  </Notes>
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Фоновый просмотр" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

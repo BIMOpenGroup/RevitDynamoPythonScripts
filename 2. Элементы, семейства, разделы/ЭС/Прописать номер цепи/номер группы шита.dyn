@@ -1,0 +1,68 @@
+<Workspace Version="1.3.0.875" X="-87.411200247237" Y="295.916374591464" zoom="0.750165337985562" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <CoreNodeModels.Input.BoolSelector guid="048dd4bf-99e8-4e36-8609-642692eccee7" type="CoreNodeModels.Input.BoolSelector" nickname="Boolean" x="207.141398133144" y="87.312922758273" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Boolean>True</System.Boolean>
+    </CoreNodeModels.Input.BoolSelector>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="14263132-08db-47fc-a3c5-b082653de338" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Element.ElectricalCircuit" x="867.670514055981" y="227.975666804566" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <ID value="745fbe65-7a15-4db4-89d4-b7c3f9b39530" />
+      <Name value="Element.ElectricalCircuit" />
+      <Description value="Returns the electrical circuit of the element" />
+      <Inputs>
+        <Input value="Element" />
+      </Inputs>
+      <Outputs>
+        <Output value="Circuit" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <CoreNodeModels.Input.StringInput guid="6194e2c3-d50a-4c2a-8998-4f6e8a5474c6" type="CoreNodeModels.Input.StringInput" nickname="String" x="969.548254174405" y="382.002862246718" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>Номер цепи</System.String>
+      <System.String value="Номер цепи" />
+    </CoreNodeModels.Input.StringInput>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="837f65c3-d9b7-4f6f-9492-da186fcf4a6d" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.SetParameterByName" x="1343.86376778499" y="36.1121684878472" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Element.SetParameterByName@string,var">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <CoreNodeModels.Input.StringInput guid="8ad96359-a6c2-44c1-9cbe-71c5345e8111" type="CoreNodeModels.Input.StringInput" nickname="String" x="1091.94701174803" y="134.027423526754" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>Марка</System.String>
+      <System.String value="Марка" />
+    </CoreNodeModels.Input.StringInput>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="a4363322-d330-4f3e-bfe5-d9e0125afcd6" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.GetParameterValueByName" x="1498.56850752587" y="430.175687190739" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Element.GetParameterValueByName@string">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="1ad34170-b7a9-4ff2-a5f6-d8bbc95d4637" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Springs.Collector.CurrentSelection" x="382.754909834025" y="-23.4405790666474" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="True" />
+      <ID value="f153d48d-85dd-4a7e-8ba2-91b08d81e5e7" />
+      <Name value="Springs.Collector.CurrentSelection" />
+      <Description value="Gets the currently selected elements. Connect a boolean switch to refresh the selection." />
+      <Inputs>
+        <Input value="refresh" />
+      </Inputs>
+      <Outputs>
+        <Output value="element(s)" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Prorubim.DS.Common.ForceChildrensEval guid="caf3c2c7-33cc-4bb7-9dae-5e1cc18481cf" type="Prorubim.DS.Common.ForceChildrensEval" nickname="ForceChildrensEval" x="263.145900446494" y="-271.173075041035" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </Prorubim.DS.Common.ForceChildrensEval>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="048dd4bf-99e8-4e36-8609-642692eccee7" start_index="0" end="caf3c2c7-33cc-4bb7-9dae-5e1cc18481cf" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="14263132-08db-47fc-a3c5-b082653de338" start_index="0" end="a4363322-d330-4f3e-bfe5-d9e0125afcd6" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="6194e2c3-d50a-4c2a-8998-4f6e8a5474c6" start_index="0" end="a4363322-d330-4f3e-bfe5-d9e0125afcd6" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="8ad96359-a6c2-44c1-9cbe-71c5345e8111" start_index="0" end="837f65c3-d9b7-4f6f-9492-da186fcf4a6d" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a4363322-d330-4f3e-bfe5-d9e0125afcd6" start_index="0" end="837f65c3-d9b7-4f6f-9492-da186fcf4a6d" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="1ad34170-b7a9-4ff2-a5f6-d8bbc95d4637" start_index="0" end="837f65c3-d9b7-4f6f-9492-da186fcf4a6d" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="1ad34170-b7a9-4ff2-a5f6-d8bbc95d4637" start_index="0" end="14263132-08db-47fc-a3c5-b082653de338" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="caf3c2c7-33cc-4bb7-9dae-5e1cc18481cf" start_index="0" end="1ad34170-b7a9-4ff2-a5f6-d8bbc95d4637" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Фоновый просмотр" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,80 @@
+<Workspace Version="1.3.1.1736" X="-1844.62649252863" Y="511.7038057672" zoom="0.726543965281875" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSRevitNodesUI.Categories guid="569c634d-1cac-4645-9c72-8020a9cde601" type="DSRevitNodesUI.Categories" nickname="Categories" x="2013.43184647325" y="-268.490316302528" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" index="429:Rooms" />
+    <DSRevitNodesUI.ElementsOfCategory guid="54efb2b2-9e3c-4197-a927-35411c1b2069" type="DSRevitNodesUI.ElementsOfCategory" nickname="All Elements of Category" x="2229.43184647325" y="-267.490316302528" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </DSRevitNodesUI.ElementsOfCategory>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="7fe48d02-5c4c-4926-a8ff-9a89f9cc2d6f" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.SetParameterByName" x="3635.92169279314" y="-107.650687897424" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Element.SetParameterByName@string,var">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="869a12fd-72d9-4ed4-af2d-b82b9f75b493" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.GetParameterValueByName" x="2722.57142070917" y="-381.392593185621" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.Element.GetParameterValueByName@string">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <CoreNodeModels.Input.StringInput guid="ccbd5fca-648e-4dda-93f7-6eca862b98a3" type="CoreNodeModels.Input.StringInput" nickname="Из параметра:" x="2444.26576548427" y="-135.837345088568" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>Площадь</System.String>
+      <System.String value="Площадь" />
+    </CoreNodeModels.Input.StringInput>
+    <CoreNodeModels.Input.StringInput guid="9a5dfdab-77c0-4d5c-af5c-d7dd78786b6e" type="CoreNodeModels.Input.StringInput" nickname="В параметр:" x="2441.02819157464" y="18.0808255429852" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>Площадь на 27.07.2018</System.String>
+      <System.String value="Площадь на 27.07.2018" />
+    </CoreNodeModels.Input.StringInput>
+    <PythonNodeModels.PythonNode guid="3c1257da-57c8-4982-b53c-4e8bdfcee6e9" type="PythonNodeModels.PythonNode" nickname="Заменяем пустоту на 0" x="3132.19796065919" y="-570.126955974581" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="2">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <Script>import clr
+
+list = IN[1]
+new_list = []
+
+for i in list:
+	if len(str(i)) == 0:
+		new_list.append(0)
+	else:
+		new_list.append(i)
+
+OUT = new_list</Script>
+    </PythonNodeModels.PythonNode>
+    <Prorubim.DS.Common.ForceChildrensEval guid="e5f209c8-b480-4621-b393-9072215249a7" type="Prorubim.DS.Common.ForceChildrensEval" nickname="ForceChildrensEval" x="2843.99819586689" y="-566.439155824335" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </Prorubim.DS.Common.ForceChildrensEval>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="569c634d-1cac-4645-9c72-8020a9cde601" start_index="0" end="54efb2b2-9e3c-4197-a927-35411c1b2069" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="54efb2b2-9e3c-4197-a927-35411c1b2069" start_index="0" end="869a12fd-72d9-4ed4-af2d-b82b9f75b493" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="54efb2b2-9e3c-4197-a927-35411c1b2069" start_index="0" end="7fe48d02-5c4c-4926-a8ff-9a89f9cc2d6f" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="869a12fd-72d9-4ed4-af2d-b82b9f75b493" start_index="0" end="3c1257da-57c8-4982-b53c-4e8bdfcee6e9" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="ccbd5fca-648e-4dda-93f7-6eca862b98a3" start_index="0" end="869a12fd-72d9-4ed4-af2d-b82b9f75b493" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9a5dfdab-77c0-4d5c-af5c-d7dd78786b6e" start_index="0" end="7fe48d02-5c4c-4926-a8ff-9a89f9cc2d6f" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="3c1257da-57c8-4982-b53c-4e8bdfcee6e9" start_index="0" end="7fe48d02-5c4c-4926-a8ff-9a89f9cc2d6f" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e5f209c8-b480-4621-b393-9072215249a7" start_index="0" end="3c1257da-57c8-4982-b53c-4e8bdfcee6e9" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="c89af875-3b05-4da8-a07f-e92d9700c0c2" annotationText="&lt;Нажмите здесь, чтобы изменить заголовок группы&gt;" left="2003.43184647325" top="-298.490316302528" width="410" height="124" fontSize="14" InitialTop="-268.490316302528" InitialHeight="179.79655453848" TextblockHeight="20" backgrouund="#FFC1D676">
+      <Models ModelGuid="569c634d-1cac-4645-9c72-8020a9cde601" />
+      <Models ModelGuid="54efb2b2-9e3c-4197-a927-35411c1b2069" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="40164f15-3585-4e65-8ade-7b559f568360" annotationText="" left="2431.02819157464" top="-181.837345088568" width="189" height="267.918170631553" fontSize="30" InitialTop="-135.837345088568" InitialHeight="281.641767218426" TextblockHeight="36" backgrouund="#FFFF7BAC">
+      <Models ModelGuid="ccbd5fca-648e-4dda-93f7-6eca862b98a3" />
+      <Models ModelGuid="9a5dfdab-77c0-4d5c-af5c-d7dd78786b6e" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="18d23c07-c16a-449c-8295-1ba72e237656" annotationText="" left="2712.57142070917" top="-427.392593185621" width="283" height="165" fontSize="30" InitialTop="-381.392593185621" InitialHeight="149" TextblockHeight="36" backgrouund="#FFB9F9E1">
+      <Models ModelGuid="869a12fd-72d9-4ed4-af2d-b82b9f75b493" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="523df2ef-343c-4678-8f00-eb207f576fe7" annotationText="" left="3625.92169279314" top="-153.650687897424" width="290" height="191" fontSize="30" InitialTop="-107.650687897424" InitialHeight="175" TextblockHeight="36" backgrouund="#FF48B9FF">
+      <Models ModelGuid="7fe48d02-5c4c-4926-a8ff-9a89f9cc2d6f" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="bcbd8f3a-3af9-4876-a446-e3f77d25bf00" annotationText="&lt;Click here to edit the group title&gt;" left="2833.99819586689" top="-616.126955974581" width="468.1997647923" height="165" fontSize="30" InitialTop="-570.126955974581" InitialHeight="149" TextblockHeight="36" backgrouund="#FFBB87C6">
+      <Models ModelGuid="3c1257da-57c8-4982-b53c-4e8bdfcee6e9" />
+      <Models ModelGuid="e5f209c8-b480-4621-b393-9072215249a7" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,123 @@
+<Workspace Version="1.3.3.4111" X="173.630205357218" Y="-259.14685638521" zoom="0.720043517318477" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <CoreNodeModels.Input.Directory guid="6458c47e-bffa-4e0f-9190-abdac8bd1d34" type="CoreNodeModels.Input.Directory" nickname="Directory Path" x="-625.606589260624" y="720.166382293268" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>C:\Users\babinovan\Pictures\ИСКРА-ПАРК\МОДЕЛь из СПИЧ\Отсоединено</System.String>
+      <HintPath>C:\Users\babinovan\Pictures\ИСКРА-ПАРК\МОДЕЛь из СПИЧ\Отсоединено</HintPath>
+    </CoreNodeModels.Input.Directory>
+    <PythonNodeModels.PythonNode guid="78aa752a-ec16-495c-9aac-a205455c8982" type="PythonNodeModels.PythonNode" nickname="Python Script" x="395.704185784562" y="524.017551660505" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="4">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <PortInfo index="3" default="False" />
+      <Script>#python nodes in dynamo 1.0.0
+#originally by Nicklas Østertgaard  nvo@bimshark.com / nvo@shl.fk
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+# Import geometry conversion extension methods
+clr.ImportExtensions(Revit.GeometryConversion)
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+from System.Collections.Generic import *
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+uidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+collector = Autodesk.Revit.DB.FilteredElementCollector(doc)
+linkInstances = collector.OfClass(Autodesk.Revit.DB.RevitLinkInstance)
+folderpath = IN[1]
+reloadedlinks = []
+testname = IN[2]
+prifix = IN[3]
+
+for i in linkInstances:
+	name = i.Name
+	if testname in name:
+		path = folderpath + "\\" + name
+		path = path.rsplit(' : ',2)[0]
+		path = path.replace(".rvt",prifix+".rvt")
+		filepath = FilePath(path)
+		RevitLinkType  = doc.GetElement(i.GetTypeId())
+		try:
+			RevitLinkType.LoadFrom(filepath,None)
+			reloadedlinks.append(path)#RevitLinkType)
+		except:
+			reloadedlinks.append("fail"+"―"+path)
+	else:
+		pass
+OUT= reloadedlinks</Script>
+    </PythonNodeModels.PythonNode>
+    <Prorubim.DS.Common.ForceChildrensEval guid="921bc579-ac9c-4785-a375-aa10630dc30b" type="Prorubim.DS.Common.ForceChildrensEval" nickname="ForceChildrensEval" x="103.157569685857" y="360.195101058007" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </Prorubim.DS.Common.ForceChildrensEval>
+    <CoreNodeModels.Input.StringInput guid="65bc6b1a-cdd1-4683-9b52-5386204e6d66" type="CoreNodeModels.Input.StringInput" nickname="file name contains text:" x="-21.7795415400507" y="593.551619902452" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>AR</System.String>
+      <System.String value="AR" />
+    </CoreNodeModels.Input.StringInput>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="f41f95ae-f868-4276-87fc-188b26cf59a5" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="RevitLinkType.Reload" x="318.334067946559" y="901.564172004345" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="true" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <ID value="be86878c-0364-4cb8-a139-4ffda013486d" />
+      <Name value="RevitLinkType.Reload" />
+      <Description value="Reloads a Revit or IFC link." />
+      <Inputs>
+        <Input value="revitLinkType" />
+      </Inputs>
+      <Outputs>
+        <Output value="revitLinkType" />
+        <Output value="success" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <CoreNodeModels.Input.StringInput guid="9dbd0098-d58d-4cd2-971f-804e5026cb1b" type="CoreNodeModels.Input.StringInput" nickname="file prifix (если нужен)" x="-26.7175655599064" y="692.070201916455" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>
+      </System.String>
+      <System.String value="" />
+    </CoreNodeModels.Input.StringInput>
+    <CoreNodeModels.Watch guid="7bd10fc0-a5b4-42c1-b925-6dfd64f1c92f" type="CoreNodeModels.Watch" nickname="Отчёт по загрузке" x="678.160945625346" y="520.687104317904" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.Watch>
+    <CoreNodeModels.Input.StringInput guid="0b4d2178-495e-4df1-afbf-eeb1b87a29d8" type="CoreNodeModels.Input.StringInput" nickname="Directory Path (string):" x="-604.144267010241" y="391.232229717205" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>\\Sh35fs4\департамент заказчика\Отдел информационного моделирования\Искра-Парк\04_Входящие\МОДЕЛь из СПИЧ\Модели с проверками</System.String>
+      <System.String value="\\Sh35fs4\департамент заказчика\Отдел информационного моделирования\Искра-Парк\04_Входящие\МОДЕЛь из СПИЧ\Модели с проверками" />
+    </CoreNodeModels.Input.StringInput>
+    <CoreNodeModels.Logic.If guid="7347dd70-53e1-4800-b96b-38bb8f3548a6" type="CoreNodeModels.Logic.If" nickname="If" x="-187.514356565164" y="495.209871394603" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+    </CoreNodeModels.Logic.If>
+    <CoreNodeModels.Input.BoolSelector guid="328559ae-9ccb-47a8-870e-04d237d39dac" type="CoreNodeModels.Input.BoolSelector" nickname="Написать путь, или выбрать папку:" x="-591.812610893063" y="309.478947452091" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Boolean>True</System.Boolean>
+    </CoreNodeModels.Input.BoolSelector>
+    <CoreNodeModels.Input.StringInput guid="933cb2fc-19de-4e97-af57-568b30ef1351" type="CoreNodeModels.Input.StringInput" nickname="Directory Path (string):" x="-602.400657622778" y="545.626558912117" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>rsn:\\АР</System.String>
+      <System.String value="rsn:\\" />
+    </CoreNodeModels.Input.StringInput>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="6458c47e-bffa-4e0f-9190-abdac8bd1d34" start_index="0" end="7347dd70-53e1-4800-b96b-38bb8f3548a6" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="78aa752a-ec16-495c-9aac-a205455c8982" start_index="0" end="7bd10fc0-a5b4-42c1-b925-6dfd64f1c92f" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="921bc579-ac9c-4785-a375-aa10630dc30b" start_index="0" end="78aa752a-ec16-495c-9aac-a205455c8982" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="65bc6b1a-cdd1-4683-9b52-5386204e6d66" start_index="0" end="78aa752a-ec16-495c-9aac-a205455c8982" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9dbd0098-d58d-4cd2-971f-804e5026cb1b" start_index="0" end="78aa752a-ec16-495c-9aac-a205455c8982" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="7347dd70-53e1-4800-b96b-38bb8f3548a6" start_index="0" end="78aa752a-ec16-495c-9aac-a205455c8982" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="328559ae-9ccb-47a8-870e-04d237d39dac" start_index="0" end="7347dd70-53e1-4800-b96b-38bb8f3548a6" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="933cb2fc-19de-4e97-af57-568b30ef1351" start_index="0" end="7347dd70-53e1-4800-b96b-38bb8f3548a6" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Фоновый просмотр" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

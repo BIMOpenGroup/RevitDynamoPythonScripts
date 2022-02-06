@@ -1,0 +1,1 @@
+cmd /C ""C:\Program Files (x86)\IronPython 2.7\ipy64.exe"  "C:\Program Files (x86)\IronPython 2.7\Tools\Scripts\pyc.py"" /target:winexe /main:C:\RS_scripts\excel_from_server_only_ipython.py /standalone

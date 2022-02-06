@@ -1,0 +1,304 @@
+<Workspace Version="1.3.4.6666" X="-148.693550430854" Y="-2004.04097589911" zoom="0.78811638094986" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="e9ab2c50-b4e9-40ad-9c54-62c91cd1a4be" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.SetParameterByName" x="1974.35710921137" y="2806.15388867022" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Element.SetParameterByName@string,var">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="0baeafc3-11fa-4bed-9668-4bc4caa27c59" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.SetParameterByName" x="1971.71957339396" y="2614.05733772954" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Element.SetParameterByName@string,var">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="1bf6e1f1-cff9-4b19-ab72-295c9dbcbb67" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.SetParameterByName" x="1967.10036267321" y="2430.34412199553" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Element.SetParameterByName@string,var">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <DSRevitNodesUI.Categories guid="3788eeca-8cf1-4933-8a3c-9d8d07a6ca55" type="DSRevitNodesUI.Categories" nickname="Categories" x="198.864910100975" y="2765.37252996784" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" index="451:Rooms" />
+    <DSRevitNodesUI.ElementsOfCategory guid="7ca87176-4fe0-49d9-838a-0324175c0b0c" type="DSRevitNodesUI.ElementsOfCategory" nickname="All Elements of Category" x="430.078062543191" y="2763.91231086561" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </DSRevitNodesUI.ElementsOfCategory>
+    <CoreNodeModels.Watch guid="3a4f82d4-3b39-480e-9938-a74695d8ec3e" type="CoreNodeModels.Watch" nickname="Watch" x="683.935883491017" y="2757.34786189318" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.Watch>
+    <PythonNodeModels.PythonNode guid="eaff34f2-73a4-4d6e-a255-0a8a6d098e9b" type="PythonNodeModels.PythonNode" nickname="Python Script" x="1034.47197144855" y="2640.63410366912" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="5">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <PortInfo index="3" default="False" />
+      <PortInfo index="4" default="False" />
+      <Script>import clr
+import math
+
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import UnitUtils, DisplayUnitType
+clr.AddReference('System')
+from System import Math, MidpointRounding, Decimal, Convert
+
+# На выходе 8 списков
+# l[0] - Объект Помещения
+# l[1] - Индекс помещения
+# l[2] - Количество комнат
+# l[3] - Общая площадь квартиры - площадь квартиры с балконами, лоджиями, террасами (с коэффициентом)
+# балкон, терраса – 0,3 (коэф) (тип - 4)
+# лоджия – 0,5 (коэф) (тип - 3)
+# l[4] - Жилая площадь квартиры -  только жилые комнаты – спальни, гостиные
+# l[5] - Площадь квартиры – площадь квартиры (без балконов, лоджий, террас)
+# l[6] - Коэффициент площади комнаты
+# l[7] - Площадь комнаты, умноженная на коэффициент
+
+
+class RoomInfo():
+	appartament_number = None
+	appartament_info = None
+	room = None
+	room_type = None
+	room_indeks = None
+	room_koef = None
+	room_area_by_round = None
+	room_area_by_koef = None
+	room_area_by_koef_not_round = None
+
+
+class AppartamentInfo():
+	appartament_number = None
+	appartament_full_area = 0
+	appartament_living_area = 0
+	appartament_area = 0
+	appartament_komnat = 0
+	room_info_list = []
+
+	def pack_room_info(self, room_info):
+		self.room_info_list.append(room_info)
+		self.appartament_number = room_info.appartament_number
+		if room_info.room_type == 5:
+			pass
+		elif room_info.room_type == 1:
+			self.appartament_full_area += room_info.room_area_by_round
+			self.appartament_living_area += room_info.room_area_by_round
+			self.appartament_area += room_info.room_area_by_round
+			self.appartament_komnat += 1
+		elif room_info.room_type == 2:
+			self.appartament_full_area += room_info.room_area_by_round
+			self.appartament_area += room_info.room_area_by_round
+		elif room_info.room_type == 3 or room_info.room_type == 4:
+			self.appartament_full_area += room_info.room_area_by_koef
+
+
+test = []
+
+rooms = UnwrapElement(IN[0])
+appartament_number_parameter_name = IN[1]  # № КВАРТИРЫ
+appartament_type_parameter_name = IN[2]  # Это Тип помещения
+round_count = IN[3]  # Это Округление площади
+# i = 0
+
+rooms_by_appart_number_dict = {}  # Ключь словаря номер квартиры, значения список всех помещений в квартире
+no_appart = "нет номмера квартиры"
+
+for room in rooms:
+	if room.LookupParameter(appartament_number_parameter_name):
+		appartament_number = room.LookupParameter(appartament_number_parameter_name).AsString()
+		if appartament_number:
+			if appartament_number not in rooms_by_appart_number_dict.keys():
+				rooms_by_appart_number_dict[appartament_number] = []
+				rooms_by_appart_number_dict[appartament_number].append(room)
+			else:
+				rooms_by_appart_number_dict[appartament_number].append(room)
+	# else:
+		# if no_appart not in rooms_by_appart_number_dict.keys():
+		# 	rooms_by_appart_number_dict[no_appart] = []
+		# 	rooms_by_appart_number_dict[no_appart].append(room)
+		# else:
+		# 	rooms_by_appart_number_dict[no_appart].append(room)
+
+
+# room_info_list = []
+
+
+def room_koef_by_type(room_type):
+	koeff = 1
+	if room_type == 5:
+		koeff = 0
+	elif room_type == 3:
+		koeff = 0.5
+	elif room_type == 4:
+		koeff = 0.3
+	return koeff
+
+test_list = []
+rooms_info_all = []
+
+def round_to_count(number_to_round, round_count):
+	return Convert.ToDouble(Math.Round(Convert.ToDecimal(number_to_round), round_count, MidpointRounding.AwayFromZero))
+	
+def slice_number(number_to_slice, round_count):
+	split_str_number = str(number_to_slice).split(".") # [1][0:2:]
+	sliced_number = float(split_str_number[0] + "." + split_str_number[1][0:round_count:])
+	return sliced_number
+
+for appartament_number, rooms in rooms_by_appart_number_dict.items():
+	appart_info = AppartamentInfo()
+	appart_info.appartament_number = appartament_number
+	rooms_info_by_appartament = []
+	for room in rooms:
+		room_info = RoomInfo()
+		room_info.room = room
+		if room.LookupParameter(appartament_type_parameter_name):
+			room_info.room_type = room.LookupParameter(appartament_type_parameter_name).AsInteger()
+			room_info.room_indeks = "{}_{}".format(appartament_number, room_info.room_type)
+			room_info.room_koef = room_koef_by_type(room_info.room_type)
+			# revit (round(100 * Площадь / (1000 мм * 1000 мм)) * 1000 мм * 1000 мм) / 100
+			# (round(100 * ((round(1000 * Площадь / (1000 мм * 1000 мм)) * 1000 мм * 1000 мм) / 1000) / (1000 мм * 1000 мм)) * 1000 мм * 1000 мм) / 100
+			# (round(100 * ((1000 * round(Площадь / 1 м²) * 1 м²) / 1000) / 1 м²) * 1 м²) / 100
+			# round(round(Площадь / 1 м² * 1000) / 10) * 1 м² / 100
+			
+			# version 2.13 number_to_round = Convert.ToDouble(Math.Round(Convert.ToDecimal(UnitUtils.ConvertFromInternalUnits(room.Area, DisplayUnitType.DUT_SQUARE_METERS)), round_count+1, MidpointRounding.AwayFromZero))
+			number_converted_from_internal = UnitUtils.ConvertFromInternalUnits(room.Area, DisplayUnitType.DUT_SQUARE_METERS)
+			
+			number_to_round = round_to_count(number_converted_from_internal, round_count+1)
+			
+			#test_list.append(test)
+			#test_list.append(Math.Round(Convert.ToDecimal(test), round_count, MidpointRounding.AwayFromZero))
+			
+			room_info.room_area_by_round = round_to_count(number_to_round, round_count) # Convert.ToDouble(Math.Round(Convert.ToDecimal(test), round_count, MidpointRounding.AwayFromZero))
+			
+			# room_info.room_area_by_round = Math.Round(Math.Round(UnitUtils.ConvertFromInternalUnits(room.Area, DisplayUnitType.DUT_SQUARE_METERS), round_count + 1, MidpointRounding.AwayFromZero), round_count, MidpointRounding.AwayFromZero)
+			
+			# room_info.room_area_by_round = Math.Round(UnitUtils.ConvertFromInternalUnits(Math.Round(Math.Round(room.Area, round_count + 1, MidpointRounding.AwayFromZero), round_count, MidpointRounding.AwayFromZero), DisplayUnitType.DUT_SQUARE_MILLIMETERS), round_count, MidpointRounding.AwayFromZero)
+			
+			# в версии 2.13 умножение на коэффицент было внутри, до второго округления, теперь умножение на коэффицент после всех веток округления
+			room_info.room_area_by_koef = round_to_count(round_to_count(number_to_round, round_count) * room_info.room_koef, round_count)
+			room_info.room_area_by_koef_not_round = room_info.room_area_by_round * room_info.room_koef
+			room_info.room_area_by_koef_sliced = slice_number(room_info.room_area_by_round * room_info.room_koef, round_count)
+
+	
+			appart_info.pack_room_info(room_info)
+			rooms_info_by_appartament.append(room_info)
+	for room_info in rooms_info_by_appartament:
+		room_info.appartament_info = appart_info
+	rooms_info_all.extend(rooms_info_by_appartament)
+
+
+list_of_rooms_info_data = []
+for room_info in rooms_info_all:
+	list_of_rooms_info_data.append(
+		(
+			room_info.room,  # l[0] - Объект Помещения
+			room_info.room_indeks,  # l[1] - Индекс помещения
+			room_info.appartament_info.appartament_komnat,  # l[2] - Тип помещения
+			room_info.appartament_info.appartament_full_area,  # l[3] - Общая площадь квартиры
+			room_info.appartament_info.appartament_living_area,  # l[4] - Жилая площадь квартиры
+			room_info.appartament_info.appartament_area,  # l[5] - Площадь квартиры
+			room_info.room_koef,  # l[6] - Коэффициент площади комнаты
+			room_info.room_area_by_koef,  # l[7] - Площадь комнаты, умноженная на коэффициент
+			room_info.room_area_by_round,  # l[8] - Площадь комнаты, округлённая
+			room_info.room_area_by_koef_not_round, # l[9] - Площадь комнаты, умноженная на коэффициент, без округления
+			room_info.room_area_by_koef_sliced # l[10] - Площадь комнаты, умноженная на коэффициент, с отсечение знаков после заданного числа, вместо округления
+		)
+	)
+
+OUT = list_of_rooms_info_data
+#OUT = test_list
+</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="00ee70e9-0115-45cc-a553-01d786ea0d4b" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="513.204933432259" y="2555.65340061317" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;ADSK_Номер квартиры&quot;;&#xA;&quot;ADSK_Тип помещения&quot;;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="af57443a-15ac-415d-875e-1126e1a0bb5b" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.Transpose" x="1256.55005859858" y="2640.38077769724" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="DSCoreNodes.dll" function="DSCore.List.Transpose@var[]..[]">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <CoreNodeModels.Watch guid="0797f828-8095-4766-b804-e901a0fa9e85" type="CoreNodeModels.Watch" nickname="Watch" x="1519.19032192561" y="2688.82826682908" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.Watch>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="9ef2f6f1-c4a3-4d98-813f-66d626a7c7f9" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1684.46254954359" y="3117.23482045772" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" CodeText="l[0];&#xA;l[1];&#xA;l[2];&#xA;l[3];&#xA;l[4];&#xA;l[5];&#xA;l[6];&#xA;l[7];" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="21a24e10-31f6-4c18-9141-8e937d7d9a6e" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1472.05655068862" y="2297.18598321953" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;ADSK_Номер квартиры&quot;;&#xA;&quot;ADSK_Площадь квартиры общая&quot;;&#xA;&quot;ADSK_Площадь квартиры жилая&quot;;&#xA;&quot;ADSK_Количество комнат&quot;;&#xA;&quot;ADSK_Индекс помещения&quot;;&#xA;&quot;ADSK_Коэффициент площади&quot;;&#xA;&quot;ADSK_Площадь с коэффициентом&quot;;&#xA;&quot;ADSK_Площадь квартиры&quot;;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="e545fc1f-fc68-4431-850c-0dbf98922198" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.SetParameterByName" x="1985.54478921403" y="3190.71465928296" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Element.SetParameterByName@string,var">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="c9421189-c815-4e05-9912-035d71eeeb8f" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Округлить до _ знаков" x="672.470702286115" y="3071.87131285232" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="2;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="0a4e2ac2-e518-49e3-aae7-e01e7bcb2b34" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.SetParameterByName" x="1977.87535553598" y="3371.49499255204" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Element.SetParameterByName@string,var">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="40259344-37cd-4fc0-a649-ddea115cc42a" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.SetParameterByName" x="1985.54108275878" y="3543.9528202413" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.Element.SetParameterByName@string,var">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="16e0ad54-a264-488c-936b-227d8f6007f2" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.SetParameterByName" x="1978.92172712582" y="2994.52924117752" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Element.SetParameterByName@string,var">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="2631509b-a67d-4288-a7c1-47f5abd00b48" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.GetParameterValueByName" x="949.555196698542" y="1849.7162400559" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.Element.GetParameterValueByName@string">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="8f175f0e-fa99-4c68-9e58-c77698e927e4" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.GetParameterValueByName" x="965.892410414323" y="2211.48036956271" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.Element.GetParameterValueByName@string">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <CoreNodeModels.Input.BoolSelector guid="3f983384-d7e4-445f-ba93-2964401d4a92" type="CoreNodeModels.Input.BoolSelector" nickname="Boolean" x="683.227889458071" y="3193.00826651239" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Boolean>False</System.Boolean>
+    </CoreNodeModels.Input.BoolSelector>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="3788eeca-8cf1-4933-8a3c-9d8d07a6ca55" start_index="0" end="7ca87176-4fe0-49d9-838a-0324175c0b0c" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="7ca87176-4fe0-49d9-838a-0324175c0b0c" start_index="0" end="3a4f82d4-3b39-480e-9938-a74695d8ec3e" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="3a4f82d4-3b39-480e-9938-a74695d8ec3e" start_index="0" end="eaff34f2-73a4-4d6e-a255-0a8a6d098e9b" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="3a4f82d4-3b39-480e-9938-a74695d8ec3e" start_index="0" end="2631509b-a67d-4288-a7c1-47f5abd00b48" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="3a4f82d4-3b39-480e-9938-a74695d8ec3e" start_index="0" end="8f175f0e-fa99-4c68-9e58-c77698e927e4" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="eaff34f2-73a4-4d6e-a255-0a8a6d098e9b" start_index="0" end="af57443a-15ac-415d-875e-1126e1a0bb5b" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="00ee70e9-0115-45cc-a553-01d786ea0d4b" start_index="0" end="2631509b-a67d-4288-a7c1-47f5abd00b48" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="00ee70e9-0115-45cc-a553-01d786ea0d4b" start_index="0" end="eaff34f2-73a4-4d6e-a255-0a8a6d098e9b" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="00ee70e9-0115-45cc-a553-01d786ea0d4b" start_index="1" end="8f175f0e-fa99-4c68-9e58-c77698e927e4" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="00ee70e9-0115-45cc-a553-01d786ea0d4b" start_index="1" end="eaff34f2-73a4-4d6e-a255-0a8a6d098e9b" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="af57443a-15ac-415d-875e-1126e1a0bb5b" start_index="0" end="0797f828-8095-4766-b804-e901a0fa9e85" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0797f828-8095-4766-b804-e901a0fa9e85" start_index="0" end="9ef2f6f1-c4a3-4d98-813f-66d626a7c7f9" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9ef2f6f1-c4a3-4d98-813f-66d626a7c7f9" start_index="0" end="1bf6e1f1-cff9-4b19-ab72-295c9dbcbb67" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9ef2f6f1-c4a3-4d98-813f-66d626a7c7f9" start_index="0" end="0baeafc3-11fa-4bed-9668-4bc4caa27c59" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9ef2f6f1-c4a3-4d98-813f-66d626a7c7f9" start_index="0" end="e9ab2c50-b4e9-40ad-9c54-62c91cd1a4be" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9ef2f6f1-c4a3-4d98-813f-66d626a7c7f9" start_index="0" end="0a4e2ac2-e518-49e3-aae7-e01e7bcb2b34" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9ef2f6f1-c4a3-4d98-813f-66d626a7c7f9" start_index="0" end="40259344-37cd-4fc0-a649-ddea115cc42a" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9ef2f6f1-c4a3-4d98-813f-66d626a7c7f9" start_index="0" end="16e0ad54-a264-488c-936b-227d8f6007f2" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9ef2f6f1-c4a3-4d98-813f-66d626a7c7f9" start_index="0" end="e545fc1f-fc68-4431-850c-0dbf98922198" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9ef2f6f1-c4a3-4d98-813f-66d626a7c7f9" start_index="1" end="e545fc1f-fc68-4431-850c-0dbf98922198" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9ef2f6f1-c4a3-4d98-813f-66d626a7c7f9" start_index="2" end="1bf6e1f1-cff9-4b19-ab72-295c9dbcbb67" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9ef2f6f1-c4a3-4d98-813f-66d626a7c7f9" start_index="3" end="0baeafc3-11fa-4bed-9668-4bc4caa27c59" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9ef2f6f1-c4a3-4d98-813f-66d626a7c7f9" start_index="4" end="e9ab2c50-b4e9-40ad-9c54-62c91cd1a4be" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9ef2f6f1-c4a3-4d98-813f-66d626a7c7f9" start_index="5" end="16e0ad54-a264-488c-936b-227d8f6007f2" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9ef2f6f1-c4a3-4d98-813f-66d626a7c7f9" start_index="6" end="0a4e2ac2-e518-49e3-aae7-e01e7bcb2b34" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9ef2f6f1-c4a3-4d98-813f-66d626a7c7f9" start_index="7" end="40259344-37cd-4fc0-a649-ddea115cc42a" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="21a24e10-31f6-4c18-9141-8e937d7d9a6e" start_index="1" end="0baeafc3-11fa-4bed-9668-4bc4caa27c59" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="21a24e10-31f6-4c18-9141-8e937d7d9a6e" start_index="2" end="e9ab2c50-b4e9-40ad-9c54-62c91cd1a4be" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="21a24e10-31f6-4c18-9141-8e937d7d9a6e" start_index="3" end="1bf6e1f1-cff9-4b19-ab72-295c9dbcbb67" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="21a24e10-31f6-4c18-9141-8e937d7d9a6e" start_index="4" end="e545fc1f-fc68-4431-850c-0dbf98922198" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="21a24e10-31f6-4c18-9141-8e937d7d9a6e" start_index="5" end="0a4e2ac2-e518-49e3-aae7-e01e7bcb2b34" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="21a24e10-31f6-4c18-9141-8e937d7d9a6e" start_index="6" end="40259344-37cd-4fc0-a649-ddea115cc42a" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="21a24e10-31f6-4c18-9141-8e937d7d9a6e" start_index="7" end="16e0ad54-a264-488c-936b-227d8f6007f2" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c9421189-c815-4e05-9912-035d71eeeb8f" start_index="0" end="eaff34f2-73a4-4d6e-a255-0a8a6d098e9b" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="3f983384-d7e4-445f-ba93-2964401d4a92" start_index="0" end="eaff34f2-73a4-4d6e-a255-0a8a6d098e9b" end_index="4" portType="0" />
+  </Connectors>
+  <Notes>
+    <Dynamo.Graph.Notes.NoteModel guid="cae4b2c0-bc7a-4c11-b865-cab01e0edf0f" text="Назначить - Общая площадь" x="2294.92394978199" y="2730.42826198282" />
+    <Dynamo.Graph.Notes.NoteModel guid="1fd7bbd1-1d90-422e-905d-04d9153c6a34" text="Назначить - Число комнат" x="2295.54712859414" y="2582.18155313117" />
+    <Dynamo.Graph.Notes.NoteModel guid="6d09b178-10ac-441f-b447-31092f14f471" text="Назначить - Жилая площадь" x="2302.28455411572" y="2879.20134295035" />
+    <Dynamo.Graph.Notes.NoteModel guid="9ab7bca6-d52c-4c94-96f4-8d95dcdff737" text="Назначить - Индекс помещения" x="2313.98385218299" y="3256.23876158378" />
+    <Dynamo.Graph.Notes.NoteModel guid="5c8db1aa-3f1b-40ff-b423-6eeb42e765a4" text="Сбор параметров из Revit: Площадь помещения, ADSK_Тип помещения, ADSK_Номер квартиры&#xD;&#xA;&#xD;&#xA;Расчет в динамо:&#xD;&#xA;&quot;ADSK_Площадь квартиры&quot;;&#xD;&#xA;&quot;ADSK_Площадь квартиры общая&quot;;&#xD;&#xA;&quot;ADSK_Площадь квартиры жилая&quot;;&#xD;&#xA;&quot;ADSK_Число комнат&quot;;&#xD;&#xA;&quot;ADSK_Коэффициент площади&quot;; &#xD;&#xA;&quot;ADSK_Площадь с коэффициентом&quot;&#xD;&#xA;&quot;ADSK_Индекс помещения&quot; (служебный)" x="207.563694685106" y="2325.9798620492" />
+    <Dynamo.Graph.Notes.NoteModel guid="e2a6187f-ea69-4fce-b3af-b7470bba5879" text="Назначить - Коэффициент площади" x="2314.38610591652" y="3413.83764777652" />
+    <Dynamo.Graph.Notes.NoteModel guid="ac9b816a-29ce-4a43-ba95-1edabc75e2cb" text="Назначить -Площадь с коэффициентом" x="2326.46733296454" y="3564.38097536559" />
+    <Dynamo.Graph.Notes.NoteModel guid="6d17e99c-a55e-48ee-8fdf-5dcf17947016" text="Назначить - Площадь квартиры" x="2308.88366345412" y="3014.22565446239" />
+    <Dynamo.Graph.Notes.NoteModel guid="0fd137dd-5978-4aef-99a8-32b4bdeb505a" text="# На выходе 8 списков:&#xD;&#xA;# l[0] - Объект Помещения&#xD;&#xA;&#xD;&#xA;# l[1] - Индекс помещения&#xD;&#xA;&#xD;&#xA;# l[2] - Количество комнат&#xD;&#xA;&#xD;&#xA;# l[3] - Общая площадь квартиры - площадь квартиры с балконами, лоджиями, террасами (с коэффициентом)&#xD;&#xA;балкон, терраса – 0,3 (коэф) (тип - 4)&#xD;&#xA;лоджия – 0,5 (коэф) (тип - 3)&#xD;&#xA;&#xD;&#xA;# l[4] - Жилая площадь квартиры -  только жилые комнаты – спальни, гостиные&#xD;&#xA;&#xD;&#xA;# l[5] - Площадь квартиры – площадь квартиры (без балконов, лоджий, террас)&#xD;&#xA;&#xD;&#xA;# l[6] - Коэффициент площади комнаты&#xD;&#xA;&#xD;&#xA;# l[7] - Площадь комнаты, умноженная на коэффициент&#xD;&#xA;&#xD;&#xA;# l[8] - Площадь комнаты, округлённая&#xD;&#xA;&#xD;&#xA;# l[9] - Площадь комнаты, умноженная на коэффициент, без округления&#xD;&#xA;&#xD;&#xA;# l[10] - Площадь комнаты, умноженная на коэффициент, с отсечение знаков после заданного числа, вместо округления&#xD;&#xA;" x="1232.59279704343" y="3131.09522720446" />
+  </Notes>
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Фоновый просмотр" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,402 @@
+<Workspace Version="1.3.0.875" X="-2752.81562415415" Y="-626.928608611344" zoom="0.993173092934869" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="9496f683-88f5-4533-9788-1cb8226b6675" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Максимальное отношение сторон" x="323.215884363634" y="683.379364825191" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="3;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="759ee11a-df42-4d2b-9593-a4707ac1fcc8" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Максимально допустимый диаметр, мм" x="312.323157835499" y="780.154716187523" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="400;" ShouldFocus="false" />
+    <CoreNodeModels.Input.BoolSelector guid="b474b56e-ad74-4285-a3c5-6d85a9e82de8" type="CoreNodeModels.Input.BoolSelector" nickname="Сети в связанном файле?" x="415.037838645445" y="1325.47167865585" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Boolean>True</System.Boolean>
+    </CoreNodeModels.Input.BoolSelector>
+    <CoreNodeModels.Input.StringInput guid="d547b158-3459-4810-983c-959cae9424d9" type="CoreNodeModels.Input.StringInput" nickname="Часть имени связанного файла" x="415.410169701804" y="1398.28676667522" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>ОВ</System.String>
+      <System.String value="ОВ" />
+    </CoreNodeModels.Input.StringInput>
+    <PythonNodeModels.PythonNode guid="85d17171-77c2-48cf-b89e-b0d2964029d7" type="PythonNodeModels.PythonNode" nickname="Изначальный скрипт (fix) отладка ЭС" x="2872.66458595884" y="863.365245936098" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="10">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <PortInfo index="3" default="False" />
+      <PortInfo index="4" default="False" />
+      <PortInfo index="5" default="False" />
+      <PortInfo index="6" default="False" />
+      <PortInfo index="7" default="False" />
+      <PortInfo index="8" default="False" />
+      <PortInfo index="9" default="False" />
+      <Script># Подгрузка библиотек
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+clr.AddReference('RevitAPI')
+import Autodesk
+from Autodesk.Revit.DB import *
+
+clr.AddReference('RevitServices')
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+import math
+
+# Получение текущего проекта
+doc = DocumentManager.Instance.CurrentDBDocument
+
+# Получение списка связанных файлов
+linkInstances = FilteredElementCollector(doc).OfClass(RevitLinkInstance)
+
+# Опции для работы функций
+opt = Options() # Для получения геометрии
+optS = SolidCurveIntersectionOptions() # Для нахождения пересечения объёмного тела с кривой
+nonStr = Autodesk.Revit.DB.Structure.StructuralType.NonStructural # Для вставки семейства в основу
+
+# Входные данные
+rezet = IN[0]
+rectnOpen = UnwrapElement(IN[1]) # Тип прямоугольного проёма
+roundOpen = UnwrapElement(IN[2]) # Тип круглого проёма
+rectnReserv = IN[3] / 304.8 # Запас для прямоугольного проёма в мм
+roundReserv = IN[4] / 304.8 # Запас для круглого проёма в мм
+koef = IN[5] # Максимальное отношение сторон для круглого отверстия
+maxDiam = IN[6] / 304.8 # Максимальный диаметр для круглого отверстия
+isLink = IN[7] # Определение того, в связанном ли файле находятся сети
+nameLink = IN[8] # Часть имени файла с сетями для корректного определения
+walls = UnwrapElement(IN[9])
+catparam = 0
+
+# Фильтрация связанных файлов
+if isLink:
+	a = 0
+	for inst in linkInstances:
+		if nameLink in inst.Name:
+			linkDoc = inst.GetLinkDocument()
+			a = 1
+	if a == 0:
+		linkDoc = doc
+else:
+	linkDoc = doc
+
+# Функция расчёта и создания проёма
+def creation(communication):
+	# Получение имени категории коммуникации
+	categName = communication.Category.Name
+	# Определение параметров ширины и высоты для труб
+	if categName == 'Трубы':
+		# Получение внешнего диаметра трубы
+		commDiam = communication.get_Parameter(BuiltInParameter.RBS_PIPE_OUTER_DIAMETER).AsDouble()
+		commWidth = commDiam
+		commHeight = commDiam
+		catparam = "ВК"
+	# Определение параметров ширины и высоты для воздуховодов	
+	elif categName == 'Воздуховоды':
+		# Определение формы сечения воздуховода
+		sect = communication.get_Parameter(BuiltInParameter.ELEM_FAMILY_PARAM).AsValueString()
+		if sect == 'Воздуховод круглого сечения':
+			commDiam = communication.get_Parameter(BuiltInParameter.RBS_CURVE_DIAMETER_PARAM).AsDouble()
+			commWidth = commDiam
+			commHeight = commDiam
+		elif sect == 'Воздуховод овального сечения' or sect == 'Воздуховод прямоугольного сечения':
+			commWidth = communication.get_Parameter(BuiltInParameter.RBS_CURVE_WIDTH_PARAM).AsDouble()
+			commHeight = communication.get_Parameter(BuiltInParameter.RBS_CURVE_HEIGHT_PARAM).AsDouble()
+		catparam = "ОВ"
+	elif categName == 'Кабельные лотки':
+		commWidth = communication.get_Parameter(BuiltInParameter.RBS_CABLETRAY_WIDTH_PARAM).AsDouble()
+		commHeight = communication.get_Parameter(BuiltInParameter.RBS_CABLETRAY_HEIGHT_PARAM).AsDouble()
+		catparam = "ЭС"
+	
+	# Получение коэффициентов уравнения прямой (аналогично стене)
+	pipeCurve = communication.Location.Curve # Получение кривой эскиза трубы
+	line0 = geomSolid.IntersectWithCurve(pipeCurve, optS) # Получение геометрии (списка кривых) возможно наличие нулевых списков
+	lineCount = line0.SegmentCount
+	if lineCount &gt;= 1: # Отфильтровываем нулевые списки
+		line = line0.GetCurveSegment(0)
+		end0 = line.GetEndPoint(0)
+		end1 = line.GetEndPoint(1)
+		x0_ = end0.X; y0_ = end0.Y;	x1_ = end1.X; y1_ = end1.Y; z0_ = end0.Z; z1_ = end1.Z
+		A2 = y0_-y1_; B2 = x1_-x0_; C2 = z1_-z0_
+		
+		# Получение центра пересечения стены и трубы
+		
+		#center = XYZ((end0.X + end1.X) / 2, (end0.Y + end1.Y) / 2, (end0.Z + end1.Z) / 2) # Получение центра пересечения стены и трубы
+	
+		# Получение угла пересечения кривой стены и кривой трубы в плане (для определения минимальной ширины проёма)
+		cosin = (A1*A2 + B1*B2) / ((A1**2 + B1**2)**0.5 * (A2**2 + B2**2)**0.5) # Вычисление косинуса между прямыми трубы и стены
+		angleHor = math.degrees(math.acos(cosin)) # Вычисление горизонтального угла (в градусах)
+		if angleHor &gt; 90:
+			angleHor = 180 - angleHor # Определение острого угла при пересечении
+		newAngleHor = math.radians(angleHor) # Перевод острого угла в радианы
+		# Определение минимальной ширины проёма
+		minWidth = width/math.tan(newAngleHor) + commWidth/math.sin(newAngleHor)
+		# Определение ширины проёма с учётом допуска
+		openWidth = minWidth + rectnReserv * 2
+		
+		# Получение угла пересечения кривой стены и кривой трубы по вертикали (для определения минимальной высоты проёма, аналогично предыдущему)
+		cosin = C2 / ((A2**2 + B2**2+C2**2)**0.5) # Вычисление косинуса между трубой и горизонтальной плоскостью
+		angleVert = math.degrees(math.acos(cosin)) # Вычисление вертикального угла (в градусах)
+		if angleVert &gt; 90:
+			angleVert = 180 - angleVert
+		newAngleVert = math.radians(angleVert)
+		# Определение минимальной высоты проёма
+		minHeight = width/math.tan(newAngleVert) + commHeight/math.sin(newAngleVert)
+		# Определение высоты проёма с учётом допуска
+		openHeight = minHeight + rectnReserv * 2
+		
+		# Округление размеров до сантиметров
+		openWidth = round(openWidth * 304.8, -1) / 304.8
+		openHeight = round(openHeight * 304.8, -1) / 304.8
+		
+		center = XYZ((end0.X + end1.X) / 2, (end0.Y + end1.Y) / 2, ((end0.Z + end1.Z) / 2) - openHeight / 2) # Получение центра пересечения стены и трубы
+	
+		# Проверка того, нужен ли круглый проём, и создание проёма
+		if openHeight &gt; openWidth: # Случай, если высота больше ширины
+			if openHeight/openWidth &lt;= koef and openHeight &lt;= maxDiam: # Проверка на допустимые значения
+				# Создание круглого проёма и задание его диаметра
+				cutNew = doc.Create.NewFamilyInstance(center, roundOpen, wall, doc.GetElement(wall.LevelId), nonStr)
+				cutNew.LookupParameter('Примерная ширина').Set(openWidth)
+				cutNew.LookupParameter('Примерная высота').Set(openHeight)
+			else:
+				# Создание прямоугольного проёма и задание его ширины и высоты
+				cutNew = doc.Create.NewFamilyInstance(center, rectnOpen, wall, doc.GetElement(wall.LevelId), nonStr)
+				cutNew.LookupParameter('Примерная ширина').Set(openWidth)
+				cutNew.LookupParameter('Примерная высота').Set(openHeight)
+		else: # Случай, если ширина больше высоты (аналогично)
+			if openWidth/openHeight &lt;= koef and openWidth &lt;= maxDiam:
+				cutNew = doc.Create.NewFamilyInstance(center, roundOpen, wall, doc.GetElement(wall.LevelId), nonStr)
+				cutNew.LookupParameter('Примерная ширина').Set(openWidth)
+				cutNew.LookupParameter('Примерная высота').Set(openHeight)
+			else:
+				cutNew = doc.Create.NewFamilyInstance(center, rectnOpen, wall, doc.GetElement(wall.LevelId), nonStr)
+				cutNew.LookupParameter('Примерная ширина').Set(openWidth)
+				cutNew.LookupParameter('Примерная высота').Set(openHeight)
+				
+		#catparam = cutNew.LookupParameter('Тип отверстия').AsString()
+		cutNew.LookupParameter('*Отступ от уровня').Set(cutNew.LookupParameter('Смещение по высоте').AsDouble())
+		cutNew.LookupParameter('Смещение по высоте').Set(0)
+	else:
+		pass
+	
+	return cutNew
+
+# Формирование пустого выходного списка
+lst = []
+
+# Открытие транзакции
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+# Аквтивация загруженных семейств проёмов (если ещё не были использованы)
+rectnOpen.Activate()
+roundOpen.Activate()
+
+# Обработка списка экземпляров стен
+for wall in walls:
+	# Получение ширины
+	width = wall.Width
+	
+	# Получение коэффициентов уравнения прямой
+	wallCurve = wall.Location.Curve # Получение кривой эскиза стены
+	endWall0 = wallCurve.GetEndPoint(0) # Получение начальной точки кривой
+	endWall1 = wallCurve.GetEndPoint(1) # Получение конечной точки кривой
+	x0 = endWall0.X; y0 = endWall0.Y; x1 = endWall1.X; y1 = endWall1.Y # Получение отдельных координат точек
+	A1 = y0-y1;	B1 = x1-x0 # Получение коэффициентов уравнения прямой
+	
+	# Получение геометрии стены
+	geomElem = wall.get_Geometry(opt)
+	for geomObj in geomElem:
+		geomSolid = geomObj
+		
+	# Получение коллекции всех экземпляров труб в проекте (необходимо каждый раз брать заново)
+	pipes = FilteredElementCollector(linkDoc).OfCategory(BuiltInCategory.OST_PipeCurves).WhereElementIsNotElementType()
+	# Извлечение только тех из них, которые пересекаются с объёмом данной стены
+	pipeInters = pipes.WherePasses(ElementIntersectsSolidFilter(geomSolid)).ToElements()
+	
+	# Получение коллекции всех экземпляров труб в проекте (необходимо каждый раз брать заново)
+	ducts = FilteredElementCollector(linkDoc).OfCategory(BuiltInCategory.OST_DuctCurves).WhereElementIsNotElementType()
+	# Извлечение только тех из них, которые пересекаются с объёмом данной стены
+	ductInters = ducts.WherePasses(ElementIntersectsSolidFilter(geomSolid)).ToElements()
+
+	# Получение коллекции всех экземпляров лотков в проекте (необходимо каждый раз брать заново)
+	cabels = FilteredElementCollector(linkDoc).OfCategory(BuiltInCategory.OST_CableTray).WhereElementIsNotElementType()
+		
+	# Извлечение только тех из них, которые пересекаются с объёмом данной стены
+
+	cabelInters = cabels.WherePasses(ElementIntersectsSolidFilter(geomSolid)).ToElements()
+
+	
+	# Формирование пустого промежуточного списка
+	_lst = []
+
+	# Обработка труб, пересекающихся с данной стеной
+	for pipe in pipeInters:
+		result = creation(pipe)	
+		_lst.append(result)
+	
+	# Обработка воздуховодов, пересекающихся с данной стеной	
+	for duct in ductInters:
+		result = creation(duct)	
+		_lst.append(result)
+		
+	for cabel in cabelInters:
+		result = creation(cabel)	
+		_lst.append(result)	
+	
+	lst.append(_lst)
+
+# Закрытие транзакции
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = lst
+
+
+</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="5010c3f8-8a02-4333-a25b-f1adbfac674e" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Flatten" x="3254.36666462055" y="869.949551295382" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="BuiltIn" function="Flatten@var[]..[]">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <PythonNodeModels.PythonNode guid="d7eae6c7-1d4d-429c-bb29-b689a68c1b5b" type="PythonNodeModels.PythonNode" nickname="PyS Get Revit Selection" x="983.031027444804" y="1498.28994512433" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('RevitServices')
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from Autodesk.Revit.ApplicationServices import Application
+
+reset = IN[0]
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+ids = uidoc.Selection.GetElementIds()
+
+idd = [str(i) for i in ids]
+
+if isinstance(idd, list) == True:
+	elems = [doc.GetElement(ElementId(int(i))) for i in idd]
+else:
+	elems = doc.GetElement(ElementId(int(idd)))
+
+OUT = elems
+</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="7b41d641-ca07-40fc-854f-1ffc6c956aa2" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.GetCategory" x="1246.898416347" y="1800.64520847595" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Element.GetCategory">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <CoreNodeModels.FromObject guid="27784f7d-1bef-4889-9040-b65e84804e5d" type="CoreNodeModels.FromObject" nickname="String from Object" x="1540.74726835103" y="1800.68205979916" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.FromObject>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="165f59e4-cadb-4fe8-85a0-6935db9e6eda" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.FilterByBoolMask" x="2071.31614998854" y="1711.79015046265" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="97a8d7b8-87aa-43db-af15-9a08f13b70eb" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="==" x="1769.59558748952" y="1801.07755484947" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="Operators" function="==@var[]..[],var[]..[]">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="4759852c-2c87-4e4d-a106-e0f4583c85d6" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1276.51078378149" y="1940.87195336733" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;Стены&quot;;" ShouldFocus="false" />
+    <CoreNodeModels.Input.IntegerSlider guid="4b741e08-f2fd-4bb6-96e2-f5f0951ded55" type="CoreNodeModels.Input.IntegerSlider" nickname="Монтажный зазор" x="318.575980307388" y="167.115686241724" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Int32>75</System.Int32>
+      <Range min="75" max="100" step="500" />
+    </CoreNodeModels.Input.IntegerSlider>
+    <Prorubim.DS.Common.ForceChildrensEval guid="4f4ec9f8-f7e0-4b82-bb12-88c78ed6cdf3" type="Prorubim.DS.Common.ForceChildrensEval" nickname="ForceChildrensEval" x="323.462934974791" y="-82.8593426814887" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </Prorubim.DS.Common.ForceChildrensEval>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="3e2803bc-0ea6-4663-ad51-18dc0fb781fd" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.GetParameterValueByName" x="1508.67693662634" y="706.102295652549" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.Element.GetParameterValueByName@string">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="227437b5-3daa-4aa6-9040-14d925431e64" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1261.7698526831" y="726.370379756212" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;Имя типа&quot;;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="63fc4ff4-4bae-49f4-bb52-00d042f57fdd" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Family.ByName" x="457.674278164204" y="962.958337770585" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Family.ByName@string">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="91fac08e-b491-457b-9d65-6f1fb1a9fb3b" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Family.Types" x="751.818344340102" y="954.427364522796" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.Family.Types">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="68187072-7c27-4f48-9ccf-7cacb788bc20" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="279.983987199742" y="963.779709516433" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;WallOpening&quot;;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="256031d8-138f-4b53-a00b-16a451725fdb" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="==" x="1849.84448336452" y="865.205064451952" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="Operators" function="==@var[]..[],var[]..[]">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="e626918e-9f63-4600-a21a-9cf0daaf3408" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.FilterByBoolMask" x="2124.25663271293" y="941.856703307891" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="12fca8b4-02e9-4d02-9e6f-284857339f5a" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2394.97403914632" y="920.949978442469" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="a[0];" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <DSRevitNodesUI.FamilyTypes guid="7d12d716-a62c-41b6-ad8e-f53468021aa3" type="DSRevitNodesUI.FamilyTypes" nickname="Тип прямоугольного проёма" x="2127.59934970702" y="453.756081922258" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="true" isPinned="true" index="126:WallOpening:ОВ" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="9496f683-88f5-4533-9788-1cb8226b6675" start_index="0" end="85d17171-77c2-48cf-b89e-b0d2964029d7" end_index="5" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="759ee11a-df42-4d2b-9593-a4707ac1fcc8" start_index="0" end="85d17171-77c2-48cf-b89e-b0d2964029d7" end_index="6" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b474b56e-ad74-4285-a3c5-6d85a9e82de8" start_index="0" end="85d17171-77c2-48cf-b89e-b0d2964029d7" end_index="7" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d547b158-3459-4810-983c-959cae9424d9" start_index="0" end="85d17171-77c2-48cf-b89e-b0d2964029d7" end_index="8" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d547b158-3459-4810-983c-959cae9424d9" start_index="0" end="256031d8-138f-4b53-a00b-16a451725fdb" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="85d17171-77c2-48cf-b89e-b0d2964029d7" start_index="0" end="5010c3f8-8a02-4333-a25b-f1adbfac674e" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d7eae6c7-1d4d-429c-bb29-b689a68c1b5b" start_index="0" end="7b41d641-ca07-40fc-854f-1ffc6c956aa2" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d7eae6c7-1d4d-429c-bb29-b689a68c1b5b" start_index="0" end="165f59e4-cadb-4fe8-85a0-6935db9e6eda" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="7b41d641-ca07-40fc-854f-1ffc6c956aa2" start_index="0" end="27784f7d-1bef-4889-9040-b65e84804e5d" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="27784f7d-1bef-4889-9040-b65e84804e5d" start_index="0" end="97a8d7b8-87aa-43db-af15-9a08f13b70eb" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="165f59e4-cadb-4fe8-85a0-6935db9e6eda" start_index="0" end="85d17171-77c2-48cf-b89e-b0d2964029d7" end_index="9" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="97a8d7b8-87aa-43db-af15-9a08f13b70eb" start_index="0" end="165f59e4-cadb-4fe8-85a0-6935db9e6eda" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4759852c-2c87-4e4d-a106-e0f4583c85d6" start_index="0" end="97a8d7b8-87aa-43db-af15-9a08f13b70eb" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4b741e08-f2fd-4bb6-96e2-f5f0951ded55" start_index="0" end="85d17171-77c2-48cf-b89e-b0d2964029d7" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4b741e08-f2fd-4bb6-96e2-f5f0951ded55" start_index="0" end="85d17171-77c2-48cf-b89e-b0d2964029d7" end_index="4" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4f4ec9f8-f7e0-4b82-bb12-88c78ed6cdf3" start_index="0" end="85d17171-77c2-48cf-b89e-b0d2964029d7" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4f4ec9f8-f7e0-4b82-bb12-88c78ed6cdf3" start_index="0" end="d7eae6c7-1d4d-429c-bb29-b689a68c1b5b" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="3e2803bc-0ea6-4663-ad51-18dc0fb781fd" start_index="0" end="256031d8-138f-4b53-a00b-16a451725fdb" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="227437b5-3daa-4aa6-9040-14d925431e64" start_index="0" end="3e2803bc-0ea6-4663-ad51-18dc0fb781fd" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="63fc4ff4-4bae-49f4-bb52-00d042f57fdd" start_index="0" end="91fac08e-b491-457b-9d65-6f1fb1a9fb3b" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="91fac08e-b491-457b-9d65-6f1fb1a9fb3b" start_index="0" end="3e2803bc-0ea6-4663-ad51-18dc0fb781fd" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="91fac08e-b491-457b-9d65-6f1fb1a9fb3b" start_index="0" end="e626918e-9f63-4600-a21a-9cf0daaf3408" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="68187072-7c27-4f48-9ccf-7cacb788bc20" start_index="0" end="63fc4ff4-4bae-49f4-bb52-00d042f57fdd" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="256031d8-138f-4b53-a00b-16a451725fdb" start_index="0" end="e626918e-9f63-4600-a21a-9cf0daaf3408" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e626918e-9f63-4600-a21a-9cf0daaf3408" start_index="0" end="12fca8b4-02e9-4d02-9e6f-284857339f5a" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="12fca8b4-02e9-4d02-9e6f-284857339f5a" start_index="0" end="85d17171-77c2-48cf-b89e-b0d2964029d7" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="12fca8b4-02e9-4d02-9e6f-284857339f5a" start_index="0" end="85d17171-77c2-48cf-b89e-b0d2964029d7" end_index="2" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="01dbca49-8fb5-45e2-aed0-0578a518a3ca" annotationText="Условия формирования круглого, а не прямоугольного, отверстия" left="302.323157835499" top="639.379364825191" width="296" height="233.775351362332" fontSize="14" InitialTop="683.379364825191" InitialHeight="225.221714626397" TextblockHeight="34" backgrouund="#FF48B9FF">
+      <Models ModelGuid="9496f683-88f5-4533-9788-1cb8226b6675" />
+      <Models ModelGuid="759ee11a-df42-4d2b-9593-a4707ac1fcc8" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="75beb548-e5b2-41b1-95b3-39b676047e0d" annotationText="Работа со связанными файлами" left="405.037838645445" top="1295.47167865585" width="238.372331056359" height="170.81508801937" fontSize="14" InitialTop="1325.47167865585" InitialHeight="196.810667734312" TextblockHeight="20" backgrouund="#FFFF7BAC">
+      <Models ModelGuid="b474b56e-ad74-4285-a3c5-6d85a9e82de8" />
+      <Models ModelGuid="d547b158-3459-4810-983c-959cae9424d9" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="ee9fc04e-e154-47ca-a4fe-45f208532bca" annotationText="&lt;Нажмите здесь, чтобы изменить заголовок группы&gt;" left="3244.36666462055" top="825.949551295382" width="199" height="137" fontSize="14" InitialTop="869.949551295382" InitialHeight="126.061700776288" TextblockHeight="34" backgrouund="#FFC1D676">
+      <Models ModelGuid="5010c3f8-8a02-4333-a25b-f1adbfac674e" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="df9bd62b-2f9f-476c-9e39-d33961063942" annotationText="Get Revit Selection:" left="973.031027444804" top="1468.28994512433" width="173" height="123" fontSize="14" InitialTop="1498.28994512433" InitialHeight="124.742240972743" TextblockHeight="20" backgrouund="#FF71C6A8">
+      <Models ModelGuid="d7eae6c7-1d4d-429c-bb29-b689a68c1b5b" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="4179c6fd-0b1f-4f96-b49b-a7c5a70455f1" annotationText="&lt;Нажмите здесь, чтобы изменить заголовок группы&gt;" left="308.575980307388" top="49.115686241724" width="319" height="186" fontSize="30" InitialTop="167.115686241724" InitialHeight="192" TextblockHeight="108" backgrouund="#FFFF7BAC">
+      <Models ModelGuid="4b741e08-f2fd-4bb6-96e2-f5f0951ded55" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="3199963b-9432-41c1-b950-209ebfd7272b" annotationText="" left="741.818344340102" top="908.427364522796" width="253" height="139" fontSize="30" InitialTop="954.427364522796" InitialHeight="123" TextblockHeight="36" backgrouund="#FF48B9FF">
+      <Models ModelGuid="91fac08e-b491-457b-9d65-6f1fb1a9fb3b" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="2118a03c-1794-46df-a1f2-0240eabeca10" annotationText="" left="269.983987199742" top="916.958337770585" width="390.690290964462" height="139.821371745848" fontSize="30" InitialTop="962.958337770585" InitialHeight="123.821371745848" TextblockHeight="36" backgrouund="#FFFF7BAC">
+      <Models ModelGuid="63fc4ff4-4bae-49f4-bb52-00d042f57fdd" />
+      <Models ModelGuid="68187072-7c27-4f48-9ccf-7cacb788bc20" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="f3701a91-aa15-4d66-8e98-3d7de297f608" annotationText="&lt;Нажмите здесь, чтобы изменить заголовок группы&gt;" left="1251.7698526831" top="660.102295652549" width="1243.20418646322" height="400.754407655342" fontSize="30" InitialTop="706.102295652549" InitialHeight="375.448549829929" TextblockHeight="36" backgrouund="#FFC1D676">
+      <Models ModelGuid="3e2803bc-0ea6-4663-ad51-18dc0fb781fd" />
+      <Models ModelGuid="227437b5-3daa-4aa6-9040-14d925431e64" />
+      <Models ModelGuid="256031d8-138f-4b53-a00b-16a451725fdb" />
+      <Models ModelGuid="e626918e-9f63-4600-a21a-9cf0daaf3408" />
+      <Models ModelGuid="12fca8b4-02e9-4d02-9e6f-284857339f5a" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="87622d17-3e82-4d6c-9e24-1070752763dd" annotationText="&lt;Нажмите здесь, чтобы изменить заголовок группы&gt;" left="1236.898416347" top="1665.79015046265" width="1015.41773364154" height="368.08180290468" fontSize="30" InitialTop="1711.79015046265" InitialHeight="352.08180290468" TextblockHeight="36" backgrouund="#FFC1D676">
+      <Models ModelGuid="7b41d641-ca07-40fc-854f-1ffc6c956aa2" />
+      <Models ModelGuid="27784f7d-1bef-4889-9040-b65e84804e5d" />
+      <Models ModelGuid="165f59e4-cadb-4fe8-85a0-6935db9e6eda" />
+      <Models ModelGuid="97a8d7b8-87aa-43db-af15-9a08f13b70eb" />
+      <Models ModelGuid="4759852c-2c87-4e4d-a106-e0f4583c85d6" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="00a74044-0d41-4bce-bc83-01d41098accd" annotationText="Выберите типы проёмов" left="2117.59934970702" top="423.756081922258" width="224" height="123" fontSize="14" InitialTop="453.756081922258" InitialHeight="210.919071852336" TextblockHeight="20" backgrouund="#FF848484">
+      <Models ModelGuid="7d12d716-a62c-41b6-ad8e-f53468021aa3" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="Фоновый просмотр" eyeX="1848211.75" eyeY="110226.3984375" eyeZ="-12703.408203125" lookX="-88758.515625" lookY="-115976.3984375" lookZ="-116467.3671875" upX="-0.26571249961853" upY="0.898794054985046" upZ="-0.348663330078125" />
+  </Cameras>
+</Workspace>
