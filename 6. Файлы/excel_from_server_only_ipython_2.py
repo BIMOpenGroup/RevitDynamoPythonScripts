@@ -13,13 +13,10 @@ from System.Net import WebRequest
 clr.AddReference('System.Web.Extensions')
 from System.Web.Script.Serialization import JavaScriptSerializer 
 
-
 from System import Type, Activator
 Excel = Activator.CreateInstance(Type.GetTypeFromProgID("Excel.Application"))
 
-
 #-----------------------ФУНКЦИИ----------------------
-
 def rsnrequest(p_f_n):
 	request = WebRequest.Create("http://"+revit_server_name+"/RevitServerAdminRESTService"+version+"/AdminRESTService.svc/|"+p_f_n+"|/contents")		
 	request.Method = "GET"
